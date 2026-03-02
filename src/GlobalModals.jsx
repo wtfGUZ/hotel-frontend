@@ -150,6 +150,13 @@ export default function GlobalModals({ hotelData, modalData }) {
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
                     <div className={`${theme.card} rounded-2xl p-6 max-w-md w-full shadow-2xl`}>
                         <h3 className="text-xl font-bold mb-4">Potwierdzenie usunięcia</h3>
+
+                        {deleteConfirm.type === 'guest' && deleteConfirm.hasReservations ? (
+                            <div className="text-red-500 font-bold mb-4 p-3 bg-red-500/10 rounded-lg border border-red-500/30 text-sm">
+                                ⚠️ UWAGA: Ten gość posiada przypisane rezerwacje. Usunięcie go spowoduje GŁĘBOKIE usunięcie wszystkich powiązanych z nim rezerwacji z kalendarza i bazy!
+                            </div>
+                        ) : null}
+
                         <p className={`${theme.textSecondary} mb-6`}>
                             {deleteConfirm.message || `Czy na pewno chcesz usunąć ${deleteConfirm.type === 'reservation' ? 'tę rezerwację' : deleteConfirm.type === 'room' ? 'ten pokój' : 'tego gościa'}?`}
                         </p>

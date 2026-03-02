@@ -53,7 +53,7 @@ export default function GuestsView({ hotelData, modalData }) {
                                         <Edit2 className="w-5 h-5" />
                                     </button>
                                     <button
-                                        onClick={() => setDeleteConfirm({ type: 'guest', id: guest.id })}
+                                        onClick={() => setDeleteConfirm({ type: 'guest', id: guest.id, hasReservations: guestReservations.length > 0 })}
                                         className="p-2 rounded-lg bg-red-600 hover:bg-red-700 text-white"
                                     >
                                         <Trash2 className="w-5 h-5" />
