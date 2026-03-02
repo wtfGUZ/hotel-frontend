@@ -41,14 +41,26 @@ export default function GlobalModals({ hotelData, modalData }) {
                 const checkRoomConflict = (roomId, checkIn, checkOut, excludeReservationId = null) => {
                     return reservations.find(r => {
                         if (excludeReservationId && r.id === excludeReservationId) return false;
-                        if (r.roomId !== roomId) return false;
+                        if (String(r.roomId) !== String(roomId)) return false;
+
                         const newStart = new Date(checkIn);
                         const newEnd = new Date(checkOut);
                         const existingStart = new Date(r.checkIn);
                         const existingEnd = new Date(r.checkOut);
-                        if (newEnd.getTime() === existingStart.getTime()) return false;
-                        if (newStart.getTime() === existingEnd.getTime()) return false;
-                        return newStart < existingEnd && newEnd > existingStart;
+
+                        // Zresetuj godziny do północy dla pewności (żeby strefy czasowe nie robiły psikusów)
+                        newStart.setHours(0, 0, 0, 0);
+                        newEnd.setHours(0, 0, 0, 0);
+                        existingStart.setHours(0, 0, 0, 0);
+                        existingEnd.setHours(0, 0, 0, 0);
+
+                        // Jeśli nowa data rozpoczyna się w dniu wyjazdu starej - to NIE konflikt
+                        if (newStart.getTime() >= existingEnd.getTime()) return false;
+                        // Jeśli nowa strona kończy się w dacie przyjazdu starej - to NIE konflikt
+                        if (newEnd.getTime() <= existingStart.getTime()) return false;
+
+                        // Jeśli doszliśmy tutaj, oznacza to, że zazębiają się gdzieś pośrodku - konflikt
+                        return true;
                     });
                 };
 
