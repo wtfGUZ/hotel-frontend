@@ -191,18 +191,13 @@ export default function CalendarView({ hotelData, modalData }) {
                                                     className={`px-0.5 py-1 text-center relative ${isToday ? (darkMode ? 'bg-blue-600/10' : 'bg-blue-50') : ''} ${isSelected ? 'bg-blue-500/40 border-l-2 border-r-2 border-blue-500' : 'hover:bg-blue-500/10'} cursor-pointer transition-colors border-r ${darkMode ? 'border-gray-800/30' : 'border-gray-200'} select-none`}
                                                     onMouseDown={(e) => {
                                                         if (e.button !== 0) return; // Only left click
-                                                        if (!checkOutReservation && !checkInOrFullReservation && !hasRealConflict) {
+
+                                                        // Skoro e.stopPropagation() jest na wizualnych blokach (divach) rezerwacji, 
+                                                        // każdy kliknięcie, które tu dociera, to kliknięcie w absolutnie pusty dzień 
+                                                        // LUB w "pustą" wolną połówkę dnia przyjazdu/wyjazdu kogoś innego.
+                                                        if (!hasRealConflict) {
                                                             dragInfo.current = { isDragging: true, roomId: room.id, startDate: dateStr, endDate: dateStr };
                                                             setDragState({ roomId: room.id, startDate: dateStr, endDate: dateStr });
-                                                        } else if (checkOutReservation || checkInOrFullReservation) {
-                                                            openModal('reservation', checkOutReservation || checkInOrFullReservation);
-                                                        } else {
-                                                            const newCheckOut = addDays(new Date(dateStr), 1);
-                                                            openModal('reservation', null, {
-                                                                roomId: room.id,
-                                                                checkIn: dateStr,
-                                                                checkOut: formatDate(newCheckOut)
-                                                            });
                                                         }
                                                     }}
                                                     onMouseEnter={() => {
