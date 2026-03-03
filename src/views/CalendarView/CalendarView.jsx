@@ -137,7 +137,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                 };
 
                                 return (
-                                    <tr key={room.id} className={`border-t relative ${darkMode ? 'border-gray-700/30' : 'border-gray-200'}`}>
+                                    <tr key={room.id} className={`border-t ${darkMode ? 'border-gray-700/30' : 'border-gray-200'}`}>
                                         <td className={`px-3 py-1.5 font-medium sticky left-0 z-30 ${darkMode ? 'bg-gray-800' : 'bg-white'} border-r ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
                                             <div className={`flex items-center gap-1.5 pr-2`}>
                                                 <button
@@ -159,53 +159,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                             </div>
                                         </td>
 
-                                        {/* Container for absolutely positioned reservations */}
-                                        <td className="p-0 border-0 absolute left-[120px] w-[calc(100%-120px)] h-full pointer-events-none z-10">
-                                            {reservations
-                                                .filter(r => String(r.roomId) === String(room.id))
-                                                .map(r => {
-                                                    const firstDayStr = formatDate(calendarDays[0]);
-                                                    const lastDayStr = formatDate(calendarDays[calendarDays.length - 1]);
 
-                                                    // Only render if reservation overlaps with visible calendar days
-                                                    if (r.checkOut <= firstDayStr || r.checkIn >= lastDayStr) return null;
-
-                                                    // Calculate precise offset and width
-                                                    const totalDays = calendarDays.length;
-
-                                                    // Find index of checkIn (can be fractional/negative)
-                                                    let startIndex = calendarDays.findIndex(d => formatDate(d) === r.checkIn);
-                                                    if (startIndex === -1 && r.checkIn < firstDayStr) startIndex = 0; // Starts before view
-
-                                                    let endIndex = calendarDays.findIndex(d => formatDate(d) === r.checkOut);
-                                                    if (endIndex === -1 && r.checkOut > lastDayStr) endIndex = totalDays; // Ends after view
-
-                                                    // Left position (starts in middle of the check-in day)
-                                                    const leftPercentage = (startIndex + 0.5) * (100 / totalDays);
-
-                                                    // Width (ends in middle of checkout day)
-                                                    const widthPercentage = ((endIndex + 0.5) - (startIndex + 0.5)) * (100 / totalDays);
-
-                                                    return (
-                                                        <div
-                                                            key={r.id}
-                                                            onMouseDown={(e) => e.stopPropagation()}
-                                                            onMouseUp={(e) => e.stopPropagation()}
-                                                            onClick={(e) => { e.stopPropagation(); openModal('reservation', r); }}
-                                                            className={`absolute top-1 bottom-1 rounded flex items-center justify-center cursor-pointer hover:opacity-80 hover:scale-[1.02] transition-all shadow-md border ${getStatusColor(r.status)} pointer-events-auto overflow-hidden`}
-                                                            style={{
-                                                                left: `${leftPercentage}%`,
-                                                                width: `${widthPercentage}%`,
-                                                                zIndex: 20
-                                                            }}
-                                                        >
-                                                            <span className="px-2 truncate pointer-events-none font-bold text-xs sm:text-sm drop-shadow-sm">
-                                                                {getGuestName(r.guestId)}
-                                                            </span>
-                                                        </div>
-                                                    );
-                                                })}
-                                        </td>
                                         {calendarDays.map((day, idx) => {
                                             const dateStr = formatDate(day);
 
@@ -255,7 +209,63 @@ export default function CalendarView({ hotelData, modalData }) {
                                                         }
                                                     }}
                                                 >
-                                                    <div className="h-10 relative"></div>
+                                                    <div className="h-10 relative">
+                                                        {reservations.filter(r => {
+                                                            if (String(r.roomId) !== String(room.id)) return false;
+
+                                                            const firstVisibleDate = formatDate(calendarDays[0]);
+                                                            const lastVisibleDate = formatDate(calendarDays[calendarDays.length - 1]);
+
+                                                            if (r.checkOut <= firstVisibleDate) return false;
+                                                            if (r.checkIn >= lastVisibleDate) return false;
+
+                                                            const isFirstVisibleCell = idx === 0;
+
+                                                            if (r.checkIn === dateStr) return true;
+                                                            if (r.checkIn < firstVisibleDate && isFirstVisibleCell) return true;
+
+                                                            return false;
+                                                        }).map(r => {
+                                                            const firstVisibleDate = formatDate(calendarDays[0]);
+                                                            const lastVisibleDate = formatDate(calendarDays[calendarDays.length - 1]);
+
+                                                            let startOffset = 0;
+                                                            if (r.checkIn >= firstVisibleDate) {
+                                                                startOffset = 0.5;
+                                                            } else {
+                                                                startOffset = 0;
+                                                            }
+
+                                                            let endOffset = 0;
+                                                            if (r.checkOut <= lastVisibleDate) {
+                                                                const outIdx = calendarDays.findIndex(d => formatDate(d) === r.checkOut);
+                                                                endOffset = (outIdx - idx) + 0.5;
+                                                            } else {
+                                                                endOffset = calendarDays.length - idx;
+                                                            }
+
+                                                            const widthInCells = endOffset - startOffset;
+
+                                                            return (
+                                                                <div
+                                                                    key={r.id}
+                                                                    onMouseDown={(e) => e.stopPropagation()}
+                                                                    onMouseUp={(e) => e.stopPropagation()}
+                                                                    onClick={(e) => { e.stopPropagation(); openModal('reservation', r); }}
+                                                                    className={`absolute top-0 bottom-0 rounded flex items-center justify-center cursor-pointer hover:opacity-80 hover:scale-[1.02] transition-all shadow-md border ${getStatusColor(r.status)} pointer-events-auto overflow-hidden`}
+                                                                    style={{
+                                                                        left: `calc(${startOffset * 100}%)`,
+                                                                        width: `calc(${widthInCells * 100}% - 2px)`,
+                                                                        zIndex: 20
+                                                                    }}
+                                                                >
+                                                                    <span className="px-2 truncate pointer-events-none font-bold text-xs sm:text-sm drop-shadow-sm">
+                                                                        {getGuestName(r.guestId)}
+                                                                    </span>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
                                                 </td>
                                             );
                                         })}
