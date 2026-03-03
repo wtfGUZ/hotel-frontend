@@ -8,7 +8,6 @@ export const useHotelData = () => {
     const [reservations, setReservations] = useState([]);
     const [logoUrl, setLogoUrl] = useState('/vite.png');
     const [isLoading, setIsLoading] = useState(true);
-    const [isAuthenticated, setIsAuthenticated] = useState(!!sessionStorage.getItem('adminPin'));
 
     // Wewnętrzny wrapper na fetch
     const apiFetch = async (endpoint, options = {}) => {
@@ -213,7 +212,7 @@ export const useHotelData = () => {
         return guest ? `${guest.firstName} ${guest.lastName}` : 'Nieznany';
     };
 
-    // Obsługa zabezpieczeń PIN & JWT Token
+    // Obsługa zabezpieczeń PIN
     const verifyPinAPI = async (pin) => {
         try {
             const res = await fetch(`${API_URL}/settings/verify-pin`, {
@@ -223,8 +222,6 @@ export const useHotelData = () => {
             });
             const data = await res.json();
             if (data.success) {
-                sessionStorage.setItem('adminPin', pin);
-                setIsAuthenticated(true);
                 return true;
             }
             return false;
@@ -236,9 +233,6 @@ export const useHotelData = () => {
             const res = await apiFetch('/settings/pin', { method: 'PUT', body: JSON.stringify({ oldPin, newPin }) });
             const data = await res.json();
             if (data.success) {
-                // Po zmianie pinu wymuś ponowne logowanie
-                sessionStorage.removeItem('adminPin');
-                setIsAuthenticated(false);
                 return { success: true };
             }
             return { success: false, message: data.message || 'Failed to change PIN.' };
@@ -254,8 +248,6 @@ export const useHotelData = () => {
         getRoomStatus,
         toggleRoomStatus,
         getGuestName,
-        isLoading,
-        isAuthenticated,
-        setIsAuthenticated
+        isLoading
     };
 };
