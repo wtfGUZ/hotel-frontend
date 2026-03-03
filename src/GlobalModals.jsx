@@ -19,7 +19,8 @@ export default function GlobalModals({ hotelData, modalData }) {
     const {
         rooms, setRooms, addRoomAPI, updateRoomAPI, deleteRoomAPI,
         guests, setGuests, addGuestAPI, updateGuestAPI, deleteGuestAPI,
-        reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI, deleteMultipleReservationsAPI
+        reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI, deleteMultipleReservationsAPI,
+        isSaving
     } = hotelData;
 
     const handleSubmit = async (e) => {
@@ -217,9 +218,9 @@ export default function GlobalModals({ hotelData, modalData }) {
                             {modalType === 'guest' && <GuestModal formData={formData} setFormData={setFormData} />}
 
                             <div className="flex gap-3 pt-4">
-                                <button type="submit" className={`flex-1 px-6 py-3 rounded-lg ${theme.button} font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity`}>
+                                <button type="submit" disabled={isSaving} className={`flex-1 px-6 py-3 rounded-lg ${theme.button} font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50`}>
                                     <Check className="w-5 h-5" />
-                                    {editingItem ? 'Zapisz zmiany' : 'Dodaj'}
+                                    {isSaving ? 'Zapisywanie...' : (editingItem ? 'Zapisz zmiany' : 'Dodaj')}
                                 </button>
                                 <button type="button" onClick={closeModal} className={`px-6 py-3 rounded-lg ${theme.buttonSecondary} font-medium hover:opacity-90 transition-opacity`}>
                                     Anuluj

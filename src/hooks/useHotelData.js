@@ -8,6 +8,7 @@ export const useHotelData = () => {
     const [reservations, setReservations] = useState([]);
     const [logoUrl, setLogoUrl] = useState('/vite.png');
     const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
 
     // Wewnętrzny wrapper na fetch
     const apiFetch = async (endpoint, options = {}) => {
@@ -77,12 +78,14 @@ export const useHotelData = () => {
 
     // Interfejs do modyfikacji Pokoi (Dodaj, Edytuj, Usuń)
     const addRoomAPI = async (data) => {
+        setIsSaving(true);
         try {
             const res = await apiFetch('/rooms', { method: 'POST', body: JSON.stringify(data) });
             const newRoom = await handleRes(res);
             setRooms(prev => [...prev, newRoom]);
             return newRoom;
         } catch (error) { console.error(error); throw error; }
+        finally { setIsSaving(false); }
     };
 
     const updateRoomAPI = async (id, data) => {
@@ -104,6 +107,7 @@ export const useHotelData = () => {
 
     // Interfejs do modyfikacji Rezerwacji (Dodaj, Edytuj, Usuń)
     const addReservationAPI = async (data) => {
+        setIsSaving(true);
         try {
             const res = await apiFetch('/reservations', { method: 'POST', body: JSON.stringify(data) });
             const newResv = await handleRes(res);
@@ -111,9 +115,8 @@ export const useHotelData = () => {
             return newResv;
         } catch (error) {
             console.error(error);
-            // Jeśli wystąpił konflikt 409, pokażemy to we froncie
             throw error;
-        }
+        } finally { setIsSaving(false); }
     };
 
     const updateReservationAPI = async (id, data) => {
@@ -160,12 +163,14 @@ export const useHotelData = () => {
 
     // Interfejs do modyfikacji Gości (Dodaj, Edytuj, Usuń)
     const addGuestAPI = async (data) => {
+        setIsSaving(true);
         try {
             const res = await apiFetch('/guests', { method: 'POST', body: JSON.stringify(data) });
             const newGuest = await handleRes(res);
             setGuests(prev => [...prev, newGuest]);
             return newGuest;
         } catch (error) { console.error(error); throw error; }
+        finally { setIsSaving(false); }
     };
 
     const updateGuestAPI = async (id, data) => {
@@ -215,16 +220,12 @@ export const useHotelData = () => {
     // Obsługa zabezpieczeń PIN
     const verifyPinAPI = async (pin) => {
         try {
-            const res = await fetch(`${API_URL}/settings/verify-pin`, {
+            const res = await apiFetch('/settings/verify-pin', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ pin })
             });
             const data = await res.json();
-            if (data.success) {
-                return true;
-            }
-            return false;
+            return data.success === true;
         } catch (error) { console.error(error); throw error; }
     };
 
@@ -248,6 +249,7 @@ export const useHotelData = () => {
         getRoomStatus,
         toggleRoomStatus,
         getGuestName,
-        isLoading
+        isLoading,
+        isSaving
     };
 };
