@@ -327,8 +327,11 @@ export default function CalendarView({ hotelData, modalData }) {
 
                                                             let endOffset = 0;
                                                             if (r.checkOut <= lastVisibleDate) {
-                                                                const outIdx = calendarDays.findIndex(d => formatDate(d) === r.checkOut);
-                                                                endOffset = (outIdx - idx) + 0.5;
+                                                                // Calculate offset using date arithmetic (more robust than findIndex)
+                                                                const checkOutDate = new Date(r.checkOut + 'T00:00:00');
+                                                                const cellDate = new Date(dateStr + 'T00:00:00');
+                                                                const daysDiff = Math.round((checkOutDate - cellDate) / (1000 * 60 * 60 * 24));
+                                                                endOffset = daysDiff + 0.5;
                                                             } else {
                                                                 endOffset = calendarDays.length - idx;
                                                             }
