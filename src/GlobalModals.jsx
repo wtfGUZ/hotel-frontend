@@ -198,8 +198,8 @@ export default function GlobalModals({ hotelData, modalData }) {
 
             {showModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4 overflow-y-auto">
-                    <div className={`${theme.card} rounded-2xl p-4 sm:p-6 w-full max-w-2xl my-8 shadow-2xl overflow-y-auto overflow-x-hidden scrollbar-thin`}
-                        style={{ maxHeight: 'calc(100vh - 4rem)' }}>
+                    <div className={`${theme.card} rounded-2xl p-4 sm:p-6 w-full max-w-2xl my-2 sm:my-4 shadow-2xl overflow-y-auto overflow-x-hidden scrollbar-thin`}
+                        style={{ maxHeight: 'calc(100vh - 2rem)' }}>
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="text-2xl font-bold">
                                 {modalType === 'reservation' && (editingItem ? 'Edytuj Rezerwację' : 'Nowa Rezerwacja')}
@@ -211,7 +211,7 @@ export default function GlobalModals({ hotelData, modalData }) {
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3">
                             {modalType === 'reservation' && <ReservationModal formData={formData} setFormData={setFormData} hotelData={hotelData} modalData={modalData} />}
                             {modalType === 'room' && <RoomModal formData={formData} setFormData={setFormData} />}
                             {modalType === 'guest' && <GuestModal formData={formData} setFormData={setFormData} />}

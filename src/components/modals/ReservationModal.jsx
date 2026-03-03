@@ -62,7 +62,7 @@ export default function ReservationModal({
     return (
         <>
             <div className="relative guest-search-container">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 mb-1">
                     <label className="font-medium text-sm sm:text-base">Gość (wpisz imię i nazwisko) *</label>
                     <button
                         type="button"
@@ -227,7 +227,7 @@ export default function ReservationModal({
 
             <div className="grid grid-cols-2 gap-2 sm:gap-4">
                 <div>
-                    <label className="block mb-1 sm:mb-2 font-medium text-xs sm:text-base">Zameldowanie *</label>
+                    <label className="block mb-1 font-medium text-xs sm:text-base">Zameldowanie *</label>
                     <input
                         type="date"
                         required
@@ -246,7 +246,7 @@ export default function ReservationModal({
                     />
                 </div>
                 <div>
-                    <label className="block mb-1 sm:mb-2 font-medium text-xs sm:text-base">Wymeldowanie *</label>
+                    <label className="block mb-1 font-medium text-xs sm:text-base">Wymeldowanie *</label>
                     <input
                         type="date"
                         required
@@ -258,7 +258,7 @@ export default function ReservationModal({
             </div>
 
             {formData.checkIn && formData.checkOut && (
-                <div className={`p-4 rounded-lg bg-gradient-to-br ${darkMode ? 'from-gray-800/50 to-gray-700/50' : 'from-gray-100 to-gray-50'} border ${darkMode ? 'border-blue-500/30' : 'border-blue-400/30'} shadow-lg`}>
+                <div className={`p-2 sm:p-3 rounded-lg bg-gradient-to-br ${darkMode ? 'from-gray-800/50 to-gray-700/50' : 'from-gray-100 to-gray-50'} border ${darkMode ? 'border-blue-500/30' : 'border-blue-400/30'} shadow-sm`}>
                     <div className="flex items-center justify-between">
                         <span className="text-sm font-medium">Liczba nocy:</span>
                         <div className="flex items-center gap-3">
@@ -293,9 +293,9 @@ export default function ReservationModal({
             )}
 
             <div>
-                <label className="block mb-2 font-medium">Pokoje *</label>
+                <label className="block mb-1 font-medium text-sm sm:text-base">Pokoje *</label>
                 {!formData.checkIn || !formData.checkOut ? (
-                    <div className={`p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30 mb-2`}>
+                    <div className={`p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30 mb-1`}>
                         <p className="text-sm text-yellow-400">
                             ⚠️ Najpierw wybierz daty pobytu, aby zobaczyć dostępność pokoi
                         </p>
@@ -386,7 +386,7 @@ export default function ReservationModal({
             </div>
 
             <div>
-                <label className="block mb-2 font-medium">Status</label>
+                <label className="block mb-1 font-medium text-sm sm:text-base">Status</label>
                 <select
                     required
                     value={formData.status || 'preliminary'}
@@ -401,7 +401,7 @@ export default function ReservationModal({
 
             {formData.status === 'paid' && (
                 <div>
-                    <label className="block mb-2 font-medium">Sposób płatności</label>
+                    <label className="block mb-1 font-medium text-sm sm:text-base">Sposób płatności</label>
                     <select
                         required
                         value={formData.payment || 'cash'}
@@ -429,7 +429,7 @@ export default function ReservationModal({
             </div>
 
             {((formData.roomIds && formData.roomIds.length > 0 && formData.roomIds[0] !== '') || formData.roomId) && formData.checkIn && formData.checkOut && (
-                <div className={`p-4 rounded-lg bg-green-500/10 border border-green-500/30`}>
+                <div className={`p-2 sm:p-3 rounded-lg bg-green-500/10 border border-green-500/30`}>
                     <div className="flex items-center justify-between mb-2">
                         <span className="font-medium">Łączne podsumowanie:</span>
                         <span className="text-2xl font-bold text-green-400">
@@ -465,12 +465,12 @@ export default function ReservationModal({
             )}
 
             <div>
-                <label className="block mb-2 font-medium">Notatki</label>
+                <label className="block mb-1 font-medium text-sm sm:text-base">Notatki</label>
                 <textarea
                     value={formData.notes || ''}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    rows={3}
-                    className={`w-full px-4 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none resize-none`}
+                    rows={2}
+                    className={`w-full px-4 py-1.5 sm:py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none resize-none text-sm sm:text-base`}
                     placeholder="Dodatkowe informacje..."
                 />
             </div>
