@@ -10,6 +10,7 @@ export default function ReservationsView({ hotelData, modalData }) {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
+    const [selectedIds, setSelectedIds] = useState([]);
 
     const filteredReservations = reservations.filter(r => {
         const guest = guests.find(g => String(g.id) === String(r.guestId));
@@ -57,16 +58,77 @@ export default function ReservationsView({ hotelData, modalData }) {
                 </select>
             </div>
 
+            <div className="flex justify-between items-center mb-4">
+                <div className="flex gap-2">
+                    <button
+                        onClick={() => {
+                            if (selectedIds.length === filteredReservations.length && filteredReservations.length > 0) {
+                                setSelectedIds([]);
+                            } else {
+                                setSelectedIds(filteredReservations.map(r => r.id));
+                            }
+                        }}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium ${theme.buttonSecondary} transition-opacity hover:opacity-80`}
+                    >
+                        {selectedIds.length === filteredReservations.length && filteredReservations.length > 0 ? 'Odznacz wszystkie' : 'Zaznacz wszystkie'}
+                    </button>
+                    {selectedIds.length > 0 && (
+                        <button
+                            onClick={() => setDeleteConfirm({
+                                type: 'bulk-reservations',
+                                ids: selectedIds,
+                                message: `Czy na pewno chcesz usunąć zaznaczone rezerwacje (${selectedIds.length} szt.)?`
+                            })}
+                            className="px-4 py-2 rounded-lg text-sm font-medium bg-red-600 hover:bg-red-700 text-white flex items-center gap-2 transition-colors"
+                        >
+                            <Trash2 className="w-4 h-4" />
+                            Usuń zaznaczone ({selectedIds.length})
+                        </button>
+                    )}
+                </div>
+                <div className="text-sm text-gray-400 hidden sm:block">
+                    Znaleziono: {filteredReservations.length}
+                </div>
+            </div>
+
             <div className="grid gap-4">
                 {filteredReservations.map(reservation => {
                     const guest = guests.find(g => String(g.id) === String(reservation.guestId));
                     const room = rooms.find(r => String(r.id) === String(reservation.roomId));
 
                     return (
-                        <div key={reservation.id} className={`${theme.card} rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow`}>
-                            <div className="flex items-start justify-between">
+                        <div key={reservation.id} className={`${theme.card} rounded-xl p-6 shadow-lg hover:shadow-xl transition-all ${selectedIds.includes(reservation.id) ? 'ring-2 ring-blue-500 bg-blue-500/5' : ''}`}>
+                            <div className="flex items-start gap-4">
+                                <div className="pt-1.5 hidden sm:block">
+                                    <input
+                                        type="checkbox"
+                                        className="w-5 h-5 cursor-pointer accent-blue-600 rounded"
+                                        checked={selectedIds.includes(reservation.id)}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setSelectedIds(prev => [...prev, reservation.id]);
+                                            } else {
+                                                setSelectedIds(prev => prev.filter(id => id !== reservation.id));
+                                            }
+                                        }}
+                                    />
+                                </div>
                                 <div className="flex-1">
                                     <div className="flex items-center gap-3 mb-3">
+                                        <div className="sm:hidden -ml-1 mr-1">
+                                            <input
+                                                type="checkbox"
+                                                className="w-5 h-5 cursor-pointer accent-blue-600 rounded"
+                                                checked={selectedIds.includes(reservation.id)}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setSelectedIds(prev => [...prev, reservation.id]);
+                                                    } else {
+                                                        setSelectedIds(prev => prev.filter(id => id !== reservation.id));
+                                                    }
+                                                }}
+                                            />
+                                        </div>
                                         <h3 className="text-xl font-bold">{guest ? `${guest.firstName} ${guest.lastName}` : 'Nieznany'}</h3>
                                         <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(reservation.status)}`}>
                                             {getStatusText(reservation.status)}

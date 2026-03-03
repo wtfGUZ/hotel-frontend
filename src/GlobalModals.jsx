@@ -19,7 +19,7 @@ export default function GlobalModals({ hotelData, modalData }) {
     const {
         rooms, setRooms, addRoomAPI, updateRoomAPI, deleteRoomAPI,
         guests, setGuests, addGuestAPI, updateGuestAPI, deleteGuestAPI,
-        reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI
+        reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI, deleteMultipleReservationsAPI
     } = hotelData;
 
     const handleSubmit = async (e) => {
@@ -158,7 +158,7 @@ export default function GlobalModals({ hotelData, modalData }) {
                         ) : null}
 
                         <p className={`${theme.textSecondary} mb-6`}>
-                            {deleteConfirm.message || `Czy na pewno chcesz usunąć ${deleteConfirm.type === 'reservation' ? 'tę rezerwację' : deleteConfirm.type === 'room' ? 'ten pokój' : 'tego gościa'}?`}
+                            {deleteConfirm.message || `Czy na pewno chcesz usunąć ${deleteConfirm.type === 'reservation' ? 'tę rezerwację' : deleteConfirm.type === 'room' ? 'ten pokój' : deleteConfirm.type === 'bulk-reservations' ? 'wybrane rezerwacje' : 'tego gościa'}?`}
                         </p>
                         <div className="flex gap-3">
                             <button
@@ -166,6 +166,9 @@ export default function GlobalModals({ hotelData, modalData }) {
                                     try {
                                         if (deleteConfirm.type === 'reservation') {
                                             await deleteReservationAPI(deleteConfirm.id);
+                                        }
+                                        else if (deleteConfirm.type === 'bulk-reservations') {
+                                            await deleteMultipleReservationsAPI(deleteConfirm.ids);
                                         }
                                         else if (deleteConfirm.type === 'guest') {
                                             await deleteGuestAPI(deleteConfirm.id);

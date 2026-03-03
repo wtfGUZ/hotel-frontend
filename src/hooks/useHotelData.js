@@ -127,6 +127,18 @@ export const useHotelData = () => {
         } catch (error) { console.error(error); throw error; }
     };
 
+    const deleteMultipleReservationsAPI = async (ids) => {
+        try {
+            const res = await fetch(`${API_URL}/reservations/bulk/delete`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ids })
+            });
+            await handleRes(res);
+            setReservations(prev => prev.filter(r => !ids.includes(r.id)));
+        } catch (error) { console.error(error); throw error; }
+    };
+
 
     // Interfejs do modyfikacji Gości (Dodaj, Edytuj, Usuń)
     const addGuestAPI = async (data) => {
@@ -198,7 +210,7 @@ export const useHotelData = () => {
     return {
         rooms, setRooms, addRoomAPI, updateRoomAPI, deleteRoomAPI,
         guests, setGuests, addGuestAPI, updateGuestAPI, deleteGuestAPI,
-        reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI,
+        reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI, deleteMultipleReservationsAPI,
         logoUrl, setLogoUrl,
         getRoomStatus,
         toggleRoomStatus,
