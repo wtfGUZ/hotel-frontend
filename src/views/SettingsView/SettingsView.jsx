@@ -105,7 +105,7 @@ export default function SettingsView({ hotelData, modalData }) {
 
         try {
             const result = await syncIcalAPI(icalUrl);
-            setIcalStatus(`✅ Sukces! Zaimportowano: ${result.importedCount}, Pominiętych duplikatów: ${result.skippedCount}, Brak dostępnych pokoi: ${result.conflictCount}`);
+            setIcalStatus(`✅ Sukces! Dodano/Zaktualizowano: ${result.importedCount}, Zsynchronizowano: ${result.skippedCount}, Brak pokoi: ${result.conflictCount}, Usunięto (anulowane): ${result.cancelledCount || 0}`);
         } catch (err) {
             console.error(err);
             setIcalStatus(`❌ Błąd: ${err.message || 'Nie udało się zsynchronizować kalendarza'}`);
