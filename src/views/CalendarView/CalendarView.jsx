@@ -325,12 +325,16 @@ export default function CalendarView({ hotelData, modalData }) {
                                                                 startOffset = 0;
                                                             }
 
+                                                            // Timezone-safe day difference (no browser-dependent Date parsing)
+                                                            const daysBetween = (a, b) => {
+                                                                const [ya, ma, da] = a.split('-').map(Number);
+                                                                const [yb, mb, db] = b.split('-').map(Number);
+                                                                return Math.round((Date.UTC(yb, mb - 1, db) - Date.UTC(ya, ma - 1, da)) / 86400000);
+                                                            };
+
                                                             let endOffset = 0;
                                                             if (r.checkOut <= lastVisibleDate) {
-                                                                // Calculate offset using date arithmetic (more robust than findIndex)
-                                                                const checkOutDate = new Date(r.checkOut + 'T00:00:00');
-                                                                const cellDate = new Date(dateStr + 'T00:00:00');
-                                                                const daysDiff = Math.round((checkOutDate - cellDate) / (1000 * 60 * 60 * 24));
+                                                                const daysDiff = daysBetween(dateStr, r.checkOut);
                                                                 endOffset = daysDiff + 0.5;
                                                             } else {
                                                                 endOffset = calendarDays.length - idx;
@@ -339,9 +343,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                                             const widthInCells = endOffset - startOffset;
 
                                                             // Calculate actual total duration (in days) to pick font size
-                                                            const durationDays = Math.round(
-                                                                (new Date(r.checkOut) - new Date(r.checkIn)) / (1000 * 60 * 60 * 24)
-                                                            );
+                                                            const durationDays = daysBetween(r.checkIn, r.checkOut);
                                                             const textSizeClass =
                                                                 durationDays <= 1 ? 'text-[9px] px-0.5' :
                                                                     durationDays === 2 ? 'text-[10px] px-1' :
