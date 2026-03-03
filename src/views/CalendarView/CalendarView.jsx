@@ -9,8 +9,29 @@ export default function CalendarView({ hotelData, modalData }) {
     const { openModal, setFormData } = modalData;
 
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [jumpStep, setJumpStep] = useState(7); // Domyślnie 7, zostanie nadpisane przez useEffect
     const dragInfo = useRef({ isDragging: false, roomId: null, startDate: null, endDate: null });
     const [dragState, setDragState] = useState({ roomId: null, startDate: null, endDate: null });
+
+    // Obliczanie docelowego "skoku" w dniach na podstawie szerokości okna
+    useEffect(() => {
+        const updateJumpStep = () => {
+            if (window.innerWidth < 640) {
+                setJumpStep(1); // Telefon: widać ~1 dzień na raz (zależy od scrolla, ale 1-3 to dobra wartość na przewijanie dotykiem)
+            } else if (window.innerWidth < 1024) {
+                setJumpStep(3); // Tablet: ~3 dni
+            } else {
+                setJumpStep(7); // Desktop: cały tydzień
+            }
+        };
+
+        // Oblicz przy montowaniu komponentu
+        updateJumpStep();
+
+        // Dodaj nasłuchiwacz zmiany rozmiaru okna
+        window.addEventListener('resize', updateJumpStep);
+        return () => window.removeEventListener('resize', updateJumpStep);
+    }, []);
 
     const contextRefs = useRef({ openModal, setFormData });
     useEffect(() => {
@@ -70,42 +91,49 @@ export default function CalendarView({ hotelData, modalData }) {
                 <h2 className="text-2xl sm:text-3xl font-bold">Kalendarz Rezerwacji</h2>
                 <div className="flex flex-wrap gap-2">
                     <button
-                        onClick={() => setCurrentDate(addDays(currentDate, -7))}
-                        className={`px-3 sm:px-4 py-2 rounded-lg ${theme.buttonSecondary} flex items-center gap-1`}
+                        onClick={() => setCurrentDate(addDays(currentDate, -jumpStep))}
+                        className={`px-2 sm:px-4 py-2 rounded-lg ${theme.buttonSecondary} flex flex-1 sm:flex-none justify-center items-center gap-1 min-w-[3rem]`}
+                        title={`Cofnij o ${jumpStep} dni`}
                     >
                         <ChevronLeft className="w-4 h-4" />
-                        <span className="hidden sm:inline">Tydzień wstecz</span>
+                        <span className="hidden sm:inline">Wstecz ({jumpStep}d)</span>
                     </button>
+
                     <button
                         onClick={() => setCurrentDate(new Date())}
-                        className={`px-3 sm:px-4 py-2 rounded-lg ${theme.button}`}
+                        className={`px-3 sm:px-4 py-2 rounded-lg ${theme.button} flex-1 sm:flex-none justify-center items-center text-xs sm:text-base`}
+                        title="Zawsze powrót do dzisiejszego dnia"
                     >
-                        Dzisiaj
+                        <span className="sm:hidden">Wróć do dzisiaj</span>
+                        <span className="hidden sm:inline">Wróć do dzisiaj</span>
                     </button>
+
                     <button
-                        onClick={() => setCurrentDate(addDays(currentDate, 7))}
-                        className={`px-3 sm:px-4 py-2 rounded-lg ${theme.buttonSecondary} flex items-center gap-1`}
+                        onClick={() => setCurrentDate(addDays(currentDate, jumpStep))}
+                        className={`px-2 sm:px-4 py-2 rounded-lg ${theme.buttonSecondary} flex flex-1 sm:flex-none justify-center items-center gap-1 min-w-[3rem]`}
+                        title={`Naprzód o ${jumpStep} dni`}
                     >
-                        <span className="hidden sm:inline">Tydzień naprzód</span>
+                        <span className="hidden sm:inline">Naprzód ({jumpStep}d)</span>
                         <ChevronRight className="w-4 h-4" />
                     </button>
+
                     <button
                         onClick={() => openModal('reservation')}
-                        className={`px-3 sm:px-4 py-2 rounded-lg ${theme.button} flex items-center gap-2 touch-manipulation`}
+                        className={`px-3 sm:px-4 py-2 rounded-lg ${theme.button} flex items-center justify-center gap-2 touch-manipulation w-full sm:w-auto mt-2 sm:mt-0`}
                     >
                         <Plus className="w-5 h-5" />
                         <span className="hidden sm:inline">Nowa Rezerwacja</span>
-                        <span className="sm:hidden">Dodaj</span>
+                        <span className="sm:hidden">Dodaj Rezerwację</span>
                     </button>
                 </div>
             </div>
 
             <div className={`${theme.card} rounded-xl shadow-xl overflow-hidden`}>
                 <div className="overflow-x-auto relative">
-                    <table className="w-full min-w-[640px]">
+                    <table className="w-full min-w-[390px] sm:min-w-[640px]">
                         <thead className={darkMode ? 'bg-gray-700/30' : 'bg-gray-100'}>
                             <tr>
-                                <th className={`px-3 py-2 text-left font-semibold sticky left-0 z-20 text-sm ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>Pokój</th>
+                                <th className={`px-1 sm:px-2 py-2 text-left font-semibold sticky left-0 z-20 text-[10px] sm:text-sm ${darkMode ? 'bg-gray-800' : 'bg-gray-100'} w-[50px] sm:w-auto min-w-[50px] sm:min-w-[auto]`}>Pokój</th>
                                 {calendarDays.map((day, idx) => {
                                     const isToday = formatDate(day) === formatDate(new Date());
                                     const breakfastCount = getBreakfastCount(day);
@@ -113,10 +141,10 @@ export default function CalendarView({ hotelData, modalData }) {
                                     return (
                                         <th
                                             key={idx}
-                                            className={`px-2 py-2 text-center text-xs font-medium min-w-[80px] ${isToday ? (darkMode ? 'bg-blue-600/20' : 'bg-blue-100 text-blue-800') : ''}`}
+                                            className={`px-1 py-1 sm:px-2 sm:py-2 text-center text-[10px] sm:text-xs font-medium min-w-[50px] sm:min-w-[80px] ${isToday ? (darkMode ? 'bg-blue-600/20' : 'bg-blue-100 text-blue-800') : ''}`}
                                         >
-                                            <div className="text-xs">{day.toLocaleDateString('pl-PL', { weekday: 'short' })}</div>
-                                            <div className="text-[10px] opacity-70">{day.toLocaleDateString('pl-PL', { day: 'numeric', month: 'numeric' })}</div>
+                                            <div className="text-[10px] sm:text-xs">{day.toLocaleDateString('pl-PL', { weekday: 'short' })}</div>
+                                            <div className="text-[9px] sm:text-[10px] opacity-70">{day.toLocaleDateString('pl-PL', { day: 'numeric', month: 'numeric' })}</div>
                                             {breakfastCount > 0 && (
                                                 <div className={`text-[10px] mt-0.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full ${darkMode ? 'bg-orange-500/20 text-orange-300' : 'bg-orange-100 text-orange-700'}`}>
                                                     🍳 {breakfastCount}
@@ -138,23 +166,23 @@ export default function CalendarView({ hotelData, modalData }) {
 
                                 return (
                                     <tr key={room.id} className={`border-t ${darkMode ? 'border-gray-700/30' : 'border-gray-200'}`}>
-                                        <td className={`px-3 py-1.5 font-medium sticky left-0 z-30 ${darkMode ? 'bg-gray-800' : 'bg-white'} border-r ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                                            <div className={`flex items-center gap-1.5 pr-2`}>
+                                        <td className={`px-0.5 sm:px-3 py-1 sm:py-1.5 font-medium sticky left-0 z-30 ${darkMode ? 'bg-gray-800' : 'bg-white'} border-r ${darkMode ? 'border-gray-700' : 'border-gray-200'} w-[50px] sm:w-auto max-w-[50px] sm:max-w-none`}>
+                                            <div className={`flex items-center justify-start gap-0.5 sm:gap-1.5 sm:pr-2`}>
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         toggleRoomStatus(room.id);
                                                     }}
-                                                    className={`w-1.5 h-12 rounded-full cursor-pointer hover:opacity-80 hover:scale-110 transition-all ${statusColors[roomStatus]} z-30`}
+                                                    className={`w-1 h-6 sm:w-1.5 sm:h-12 flex-shrink-0 rounded-full cursor-pointer hover:opacity-80 hover:scale-110 transition-all ${statusColors[roomStatus]} z-30`}
                                                     title={
                                                         roomStatus === 'clean' ? 'Czysty i gotowy (kliknij → Zajęty)' :
                                                             roomStatus === 'occupied' ? 'Zajęty przez gościa (kliknij → Do sprzątania)' :
                                                                 'Do sprzątania (kliknij → Czysty)'
                                                     }
                                                 />
-                                                <div className="min-w-[80px]">
-                                                    <div className={`text-xs font-semibold ${darkMode ? 'text-gray-100' : 'text-gray-900'}`}>{room.number}</div>
-                                                    <div className={`text-[10px] truncate ${darkMode ? 'text-gray-400' : 'text-gray-600'}`} title={room.name}>{room.name}</div>
+                                                <div className="w-full overflow-hidden flex flex-col justify-center">
+                                                    <div className={`text-[10px] sm:text-xs font-semibold ${darkMode ? 'text-gray-100' : 'text-gray-900'} truncate leading-tight`}>{room.number}</div>
+                                                    <div className={`text-[8px] sm:text-[10px] truncate ${darkMode ? 'text-gray-400' : 'text-gray-600'} leading-none`} title={room.name}>{room.name}</div>
                                                 </div>
                                             </div>
                                         </td>
@@ -190,7 +218,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                             return (
                                                 <td
                                                     key={idx}
-                                                    className={`px-0.5 py-1 text-center relative ${isToday ? (darkMode ? 'bg-blue-600/10' : 'bg-blue-50') : ''} ${isSelected ? 'bg-blue-500/40 border-l-2 border-r-2 border-blue-500' : 'hover:bg-blue-500/10'} cursor-pointer transition-colors border-r ${darkMode ? 'border-gray-800/30' : 'border-gray-200'} select-none`}
+                                                    className={`px-0.5 py-1 text-center relative ${isToday ? (darkMode ? 'bg-blue-600/10' : 'bg-blue-50') : ''} ${isSelected ? 'bg-blue-500/60 border-l-2 border-r-2 border-blue-500' : 'hover:bg-blue-500/10'} cursor-pointer transition-colors border-r ${darkMode ? 'border-gray-800/30' : 'border-gray-200'} select-none`}
                                                     onMouseDown={(e) => {
                                                         if (e.button !== 0) return; // Only left click
 
@@ -279,15 +307,15 @@ export default function CalendarView({ hotelData, modalData }) {
 
             <div className="mt-6 flex gap-4 items-center flex-wrap">
                 <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded bg-yellow-500/20 border border-yellow-500/30"></div>
+                    <div className="w-4 h-4 rounded bg-yellow-600 border border-yellow-700"></div>
                     <span className="text-sm">Wstępna</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded bg-blue-500/20 border border-blue-500/30"></div>
+                    <div className="w-4 h-4 rounded bg-blue-600 border border-blue-700"></div>
                     <span className="text-sm">Potwierdzona</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded bg-green-500/20 border border-green-500/30"></div>
+                    <div className="w-4 h-4 rounded bg-green-600 border border-green-700"></div>
                     <span className="text-sm">Opłacona</span>
                 </div>
                 <div className="flex items-center gap-2">

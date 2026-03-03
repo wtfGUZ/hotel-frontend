@@ -31,9 +31,9 @@ export const calculateTotalPrice = (room, checkIn, checkOut, hasBreakfast) => {
 
 export const getStatusColor = (status) => {
     const colors = {
-        preliminary: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
-        confirmed: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
-        paid: 'bg-green-500/20 text-green-300 border-green-500/30'
+        preliminary: 'bg-yellow-600/75 text-white border border-yellow-700 shadow-sm',
+        confirmed: 'bg-blue-600/75 text-white border border-blue-700 shadow-sm',
+        paid: 'bg-green-600/75 text-white border border-green-700 shadow-sm'
     };
     return colors[status] || colors.preliminary;
 };
