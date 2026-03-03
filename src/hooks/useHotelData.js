@@ -17,6 +17,11 @@ export const useHotelData = () => {
         const isPublic = endpoint === '/settings/verify-pin' || endpoint === '/settings/hotelLogo';
 
         if (!token && !isPublic) {
+            const wasLoggedIn = !!sessionStorage.getItem('adminPin');
+            if (wasLoggedIn) {
+                sessionStorage.removeItem('adminPin');
+                window.location.reload();
+            }
             throw new Error('Brak tokenu - wymagane logowanie');
         }
 
