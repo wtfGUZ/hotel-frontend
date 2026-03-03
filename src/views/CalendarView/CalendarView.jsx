@@ -192,14 +192,14 @@ export default function CalendarView({ hotelData, modalData }) {
                                                             onMouseDown={(e) => e.stopPropagation()}
                                                             onMouseUp={(e) => e.stopPropagation()}
                                                             onClick={(e) => { e.stopPropagation(); openModal('reservation', r); }}
-                                                            className={`absolute top-1 bottom-1 rounded flex items-center justify-center text-[10px] font-medium cursor-pointer hover:opacity-80 hover:scale-[1.02] transition-all shadow-md ${getStatusColor(r.status)} pointer-events-auto overflow-hidden`}
+                                                            className={`absolute top-1 bottom-1 rounded flex items-center justify-center cursor-pointer hover:opacity-80 hover:scale-[1.02] transition-all shadow-md border ${getStatusColor(r.status)} pointer-events-auto overflow-hidden`}
                                                             style={{
                                                                 left: `${leftPercentage}%`,
                                                                 width: `${widthPercentage}%`,
                                                                 zIndex: 20
                                                             }}
                                                         >
-                                                            <span className="px-2 truncate pointer-events-none text-white drop-shadow-md">
+                                                            <span className="px-2 truncate pointer-events-none font-bold text-xs sm:text-sm drop-shadow-sm">
                                                                 {getGuestName(r.guestId)}
                                                             </span>
                                                         </div>
