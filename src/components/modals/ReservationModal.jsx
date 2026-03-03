@@ -225,7 +225,7 @@ export default function ReservationModal({
                 )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 gap-2 sm:gap-4">
                 <div>
                     <label className="block mb-1 font-medium text-sm sm:text-base">Zameldowanie *</label>
                     <input
@@ -242,7 +242,7 @@ export default function ReservationModal({
                                 setFormData({ ...formData, checkIn: newCheckIn });
                             }
                         }}
-                        className={`w-full px-3 sm:px-4 py-2.5 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none text-sm sm:text-base`}
+                        className={`w-full px-1 sm:px-4 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none text-[11px] sm:text-base`}
                     />
                 </div>
                 <div>
@@ -252,7 +252,7 @@ export default function ReservationModal({
                         required
                         value={formData.checkOut || ''}
                         onChange={(e) => setFormData({ ...formData, checkOut: e.target.value })}
-                        className={`w-full px-3 sm:px-4 py-2.5 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none text-sm sm:text-base`}
+                        className={`w-full px-1 sm:px-4 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none text-[11px] sm:text-base`}
                     />
                 </div>
             </div>
