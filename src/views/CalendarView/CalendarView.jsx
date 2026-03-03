@@ -101,7 +101,7 @@ export default function CalendarView({ hotelData, modalData }) {
             </div>
 
             <div className={`${theme.card} rounded-xl shadow-xl overflow-hidden`}>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto relative">
                     <table className="w-full min-w-[640px]">
                         <thead className={darkMode ? 'bg-gray-700/30' : 'bg-gray-100'}>
                             <tr>
@@ -160,7 +160,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                         </td>
 
                                         {/* Container for absolutely positioned reservations */}
-                                        <td className="p-0 border-0 absolute left-[120px] right-0 h-full pointer-events-none z-10">
+                                        <td className="p-0 border-0 absolute left-[120px] w-[calc(100%-120px)] h-full pointer-events-none z-10">
                                             {reservations
                                                 .filter(r => String(r.roomId) === String(room.id))
                                                 .map(r => {
