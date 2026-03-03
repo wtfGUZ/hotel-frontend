@@ -8,49 +8,19 @@ export const useHotelData = () => {
     const [reservations, setReservations] = useState([]);
     const [logoUrl, setLogoUrl] = useState('/vite.png');
     const [isLoading, setIsLoading] = useState(true);
+    const [isAuthenticated, setIsAuthenticated] = useState(!!sessionStorage.getItem('adminPin'));
 
-    // Wewnętrzny wrapper na fetch dodający token JWT i reagujący na utratę sesji
+    // Wewnętrzny wrapper na fetch
     const apiFetch = async (endpoint, options = {}) => {
-        const token = localStorage.getItem('jwt_token');
-
-        // Niektóre endpointy są publiczne
-        const isPublic = endpoint === '/settings/verify-pin' || endpoint === '/settings/hotelLogo';
-
-        if (!token && !isPublic) {
-            const wasLoggedIn = !!sessionStorage.getItem('adminPin');
-            if (wasLoggedIn) {
-                sessionStorage.removeItem('adminPin');
-                window.location.reload();
-            }
-            throw new Error('Brak tokenu - wymagane logowanie');
-        }
-
         const headers = {
             'Content-Type': 'application/json',
             ...options.headers,
         };
 
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
-
         const response = await fetch(`${API_URL}${endpoint}`, {
             ...options,
             headers,
         });
-
-        if ((response.status === 401 || response.status === 403) && !isPublic) {
-            const wasLoggedIn = !!sessionStorage.getItem('adminPin');
-
-            // Token wygasł lub jest nieprawidłowy, wymuś wylogowanie
-            localStorage.removeItem('jwt_token');
-            sessionStorage.removeItem('adminPin'); // wylogowanie z UI
-
-            if (wasLoggedIn) {
-                window.location.reload(); // Przeładuj tylko jeśli użytkownik myślał, że jest zalogowany
-            }
-            throw new Error('Sesja wygasła. Zaloguj się ponownie.');
-        }
 
         return response;
     };
@@ -67,8 +37,11 @@ export const useHotelData = () => {
     // 1. Inicjalne ładowanie z zewnętrznego serwera
     useEffect(() => {
         const fetchData = async () => {
+            if (!isAuthenticated) {
+                setIsLoading(false);
+                return; // Oczekuj na PIN
+            }
             try {
-                // Do pobrania ustawień nie potrzeba tokenu, ale apiFetch to obsłuży
                 const [resRooms, resGuests, resReservations, resSettings] = await Promise.all([
                     apiFetch('/rooms'),
                     apiFetch('/guests'),
@@ -88,8 +61,8 @@ export const useHotelData = () => {
                 if (dbLogo && dbLogo.value) setLogoUrl(JSON.parse(dbLogo.value));
             } catch (error) {
                 console.error('Błąd pobierania danych z serwera:', error);
-                // Nie używamy alertu przy błędzie 401 z apiFetch, bo on już przeładował stronę
-                if (error.message !== 'Sesja wygasła. Zaloguj się ponownie.') {
+
+                if (error.message !== 'Failed to fetch') {
                     console.warn("Nie udało się połączyć z bazą danych (serwerem). Upewnij się, że backend jest uruchomiony.");
                 }
             } finally {
@@ -97,10 +70,9 @@ export const useHotelData = () => {
             }
         };
 
-        // Jeżeli nie jesteśmy zalogowani poprzez token, pobieranie chronionych zasobów i tak zwróci błąd,
-        // jednak w tym setupie UI pyta o PIN zanim renderuje kalendarz, więc fetchData ma szansę zadziałać.
+        // Ponów próbę pobrania danych jeśli status logowania się zmienił na pozytywny
         fetchData();
-    }, []);
+    }, [isAuthenticated]);
 
     // 2. Automatyczny zapis Logo do bazy (upsert)
     useEffect(() => {
@@ -258,10 +230,10 @@ export const useHotelData = () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ pin })
             });
-            const data = await handleRes(res);
-            if (data.success && data.token) {
-                // Konfigurujemy JWT przy sukcesie logowania PINem
-                localStorage.setItem('jwt_token', data.token);
+            const data = await res.json();
+            if (data.success) {
+                sessionStorage.setItem('adminPin', pin);
+                setIsAuthenticated(true);
                 return true;
             }
             return false;
@@ -271,14 +243,14 @@ export const useHotelData = () => {
     const changePinAPI = async (oldPin, newPin) => {
         try {
             const res = await apiFetch('/settings/pin', { method: 'PUT', body: JSON.stringify({ oldPin, newPin }) });
-            const result = await handleRes(res);
-            if (result.success) {
-                // Po zmianie pinu wymuśmy wylogowanie z UI by zalogować się nowym pinem
-                localStorage.removeItem('jwt_token');
+            const data = await res.json();
+            if (data.success) {
+                // Po zmianie pinu wymuś ponowne logowanie
                 sessionStorage.removeItem('adminPin');
-                window.location.reload();
+                setIsAuthenticated(false);
+                return { success: true };
             }
-            return result;
+            return { success: false, message: data.message || 'Failed to change PIN.' };
         } catch (error) { console.error(error); throw error; }
     };
 
@@ -291,6 +263,8 @@ export const useHotelData = () => {
         getRoomStatus,
         toggleRoomStatus,
         getGuestName,
-        isLoading
+        isLoading,
+        isAuthenticated,
+        setIsAuthenticated
     };
 };
