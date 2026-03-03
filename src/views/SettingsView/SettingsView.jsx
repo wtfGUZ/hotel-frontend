@@ -33,7 +33,7 @@ export default function SettingsView({ hotelData, modalData }) {
                             <p className={`text-sm ${theme.textSecondary} mb-3`}>
                                 Wszystkie dane są automatycznie zapisywane lokalnie. Możesz również eksportować i importować dane.
                             </p>
-                            <div className="flex gap-3 flex-wrap">
+                            <div className="flex flex-col sm:flex-row gap-3 w-full">
                                 <button
                                     type="button"
                                     onClick={() => {
@@ -47,7 +47,7 @@ export default function SettingsView({ hotelData, modalData }) {
                                         URL.revokeObjectURL(url);
                                         setAlertMessage('✅ Dane wyeksportowane!');
                                     }}
-                                    className={`px-4 py-2 rounded-lg ${theme.button} font-medium`}
+                                    className={`w-full sm:w-auto px-4 py-3 sm:py-2 rounded-lg ${theme.button} font-medium flex justify-center items-center gap-2`}
                                 >
                                     📥 Eksportuj dane
                                 </button>
@@ -77,7 +77,7 @@ export default function SettingsView({ hotelData, modalData }) {
                                         };
                                         input.click();
                                     }}
-                                    className={`px-4 py-2 rounded-lg ${theme.buttonSecondary} font-medium`}
+                                    className={`w-full sm:w-auto px-4 py-3 sm:py-2 rounded-lg ${theme.buttonSecondary} font-medium flex justify-center items-center gap-2`}
                                 >
                                     📤 Importuj dane
                                 </button>
@@ -90,12 +90,12 @@ export default function SettingsView({ hotelData, modalData }) {
                                             message: 'Czy na pewno chcesz wyczyścić WSZYSTKIE dane? Ta operacja jest nieodwracalna!'
                                         });
                                     }}
-                                    className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium"
+                                    className="w-full sm:w-auto px-4 py-3 sm:py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium flex justify-center items-center gap-2"
                                 >
                                     🗑️ Wyczyść wszystko
                                 </button>
                             </div>
-                            <p className={`text-xs ${theme.textSecondary} mt-2`}>
+                            <p className={`text-xs ${theme.textSecondary} mt-3`}>
                                 💡 Eksportuj dane regularnie jako backup
                             </p>
                         </div>
@@ -112,25 +112,25 @@ export default function SettingsView({ hotelData, modalData }) {
                         Dodaj Pokój
                     </button>
 
-                    <div className="space-y-2">
+                    <div className="space-y-3">
                         {rooms.map(room => (
-                            <div key={room.id} className={`${theme.input} rounded-lg p-4 flex items-center justify-between`}>
+                            <div key={room.id} className={`${theme.input} rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3`}>
                                 <div>
-                                    <div className="font-medium">{room.number} - {room.name}</div>
+                                    <div className="font-medium text-lg sm:text-base">{room.number} - {room.name}</div>
                                     <div className={`text-sm ${theme.textSecondary}`}>Max {room.maxGuests} osoby</div>
                                 </div>
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 w-full sm:w-auto">
                                     <button
                                         onClick={() => openModal('room', room)}
-                                        className={`p-2 rounded-lg ${theme.buttonSecondary}`}
+                                        className={`flex-1 sm:flex-none p-3 sm:p-2 rounded-lg flex justify-center items-center ${theme.buttonSecondary}`}
                                     >
-                                        <Edit2 className="w-4 h-4" />
+                                        <Edit2 className="w-5 h-5 sm:w-4 sm:h-4" />
                                     </button>
                                     <button
                                         onClick={() => setDeleteConfirm({ type: 'room', id: room.id })}
-                                        className="p-2 rounded-lg bg-red-600 hover:bg-red-700 text-white"
+                                        className="flex-1 sm:flex-none p-3 sm:p-2 rounded-lg flex justify-center items-center bg-red-600 hover:bg-red-700 text-white"
                                     >
-                                        <Trash2 className="w-4 h-4" />
+                                        <Trash2 className="w-5 h-5 sm:w-4 sm:h-4" />
                                     </button>
                                 </div>
                             </div>
@@ -241,18 +241,18 @@ export default function SettingsView({ hotelData, modalData }) {
                                 </div>
                             )}
 
-                            <div className="flex gap-3 mt-3">
+                            <div className="flex flex-col sm:flex-row gap-3 mt-4">
                                 <button
                                     type="button"
                                     onClick={testIcalConnection}
-                                    className={`flex-1 px-4 py-2 rounded-lg ${theme.button} font-medium hover:opacity-90 transition-opacity`}
+                                    className={`w-full sm:w-auto sm:flex-1 px-4 py-3 sm:py-2 rounded-lg ${theme.button} font-medium hover:opacity-90 transition-opacity flex justify-center items-center`}
                                 >
                                     🔄 Testuj i Importuj
                                 </button>
                                 <button
                                     type="button"
                                     onClick={() => { setIcalUrl(''); setIcalStatus(''); }}
-                                    className={`px-4 py-2 rounded-lg ${theme.buttonSecondary} font-medium hover:opacity-90 transition-opacity`}
+                                    className={`w-full sm:w-auto px-4 py-3 sm:py-2 rounded-lg ${theme.buttonSecondary} font-medium hover:opacity-90 transition-opacity flex justify-center items-center`}
                                 >
                                     Wyczyść
                                 </button>

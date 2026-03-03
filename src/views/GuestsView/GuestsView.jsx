@@ -26,10 +26,10 @@ export default function GuestsView({ hotelData, modalData }) {
 
                     return (
                         <div key={guest.id} className={`${theme.card} rounded-xl p-6 shadow-lg`}>
-                            <div className="flex items-start justify-between">
-                                <div className="flex-1">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div className="flex-1 w-full">
                                     <h3 className="text-xl font-bold mb-2">{guest.firstName} {guest.lastName}</h3>
-                                    <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 text-sm w-full">
                                         <div>
                                             <span className={theme.textSecondary}>Email: </span>
                                             <span>{guest.email}</span>
@@ -45,16 +45,16 @@ export default function GuestsView({ hotelData, modalData }) {
                                     </div>
                                 </div>
 
-                                <div className="flex gap-2">
+                                <div className="flex sm:flex-row gap-2 w-full sm:w-auto mt-2 sm:mt-0">
                                     <button
                                         onClick={() => openModal('guest', guest)}
-                                        className={`p-2 rounded-lg ${theme.buttonSecondary}`}
+                                        className={`flex-1 sm:flex-none p-3 sm:p-2 rounded-lg flex justify-center items-center ${theme.buttonSecondary}`}
                                     >
                                         <Edit2 className="w-5 h-5" />
                                     </button>
                                     <button
                                         onClick={() => setDeleteConfirm({ type: 'guest', id: guest.id, hasReservations: guestReservations.length > 0 })}
-                                        className="p-2 rounded-lg bg-red-600 hover:bg-red-700 text-white"
+                                        className="flex-1 sm:flex-none p-3 sm:p-2 rounded-lg flex justify-center items-center bg-red-600 hover:bg-red-700 text-white"
                                     >
                                         <Trash2 className="w-5 h-5" />
                                     </button>
