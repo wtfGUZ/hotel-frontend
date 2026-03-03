@@ -225,11 +225,36 @@ export const useHotelData = () => {
         return guest ? `${guest.firstName} ${guest.lastName}` : 'Nieznany';
     };
 
+    // Obługa zabezpieczeń PIN
+    const verifyPinAPI = async (pin) => {
+        try {
+            const res = await fetch(`${API_URL}/settings/verify-pin`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pin })
+            });
+            const data = await handleRes(res);
+            return data.success;
+        } catch (error) { console.error(error); throw error; }
+    };
+
+    const changePinAPI = async (oldPin, newPin) => {
+        try {
+            const res = await fetch(`${API_URL}/settings/pin`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ oldPin, newPin })
+            });
+            return await handleRes(res);
+        } catch (error) { console.error(error); throw error; }
+    };
+
     return {
         rooms, setRooms, addRoomAPI, updateRoomAPI, deleteRoomAPI,
         guests, setGuests, addGuestAPI, updateGuestAPI, deleteGuestAPI,
         reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI, deleteMultipleReservationsAPI, syncIcalAPI,
         logoUrl, setLogoUrl,
+        verifyPinAPI, changePinAPI,
         getRoomStatus,
         toggleRoomStatus,
         getGuestName
