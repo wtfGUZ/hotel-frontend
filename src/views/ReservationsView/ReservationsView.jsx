@@ -91,20 +91,22 @@ export default function ReservationsView({ hotelData, modalData }) {
                 </div>
             </div>
 
-            <div className="grid gap-4 sm:gap-6">
+            <div className="grid gap-5 sm:gap-6">
                 {filteredReservations.map(reservation => {
                     const guest = guests.find(g => String(g.id) === String(reservation.guestId));
                     const room = rooms.find(r => String(r.id) === String(reservation.roomId));
 
                     return (
                         <div key={reservation.id} className={`${theme.card} rounded-xl p-5 sm:p-6 shadow-lg hover:shadow-xl transition-all ${selectedIds.includes(reservation.id) ? 'ring-2 ring-blue-500 bg-blue-500/5' : ''}`}>
-                            <div className="flex items-center gap-4">
-                                {/* Checkbox Desktop - Centered vertically with the entire card */}
-                                <div className="hidden sm:flex items-center justify-center">
-                                    <div className="relative flex items-center justify-center w-7 h-7">
+
+                            {/* TOP ROW: Checkbox + Name + Buttons */}
+                            <div className="flex items-start justify-between gap-3 mb-4">
+                                <div className="flex items-center gap-3 min-w-0">
+                                    {/* Unified checkbox */}
+                                    <div className="relative flex items-center justify-center w-6 h-6 shrink-0 mt-0.5">
                                         <input
                                             type="checkbox"
-                                            className={`peer appearance-none w-7 h-7 border-2 rounded shadow-sm cursor-pointer transition-all ${theme.darkMode ? 'border-gray-500 bg-gray-800' : 'border-gray-300 bg-white'} checked:bg-blue-600 checked:border-blue-600 hover:border-blue-500`}
+                                            className={`peer appearance-none w-6 h-6 border-2 rounded shadow-sm cursor-pointer transition-all ${theme.darkMode ? 'border-gray-500 bg-gray-800' : 'border-gray-300 bg-white'} checked:bg-blue-600 checked:border-blue-600 hover:border-blue-500`}
                                             checked={selectedIds.includes(reservation.id)}
                                             onChange={(e) => {
                                                 if (e.target.checked) {
@@ -114,84 +116,26 @@ export default function ReservationsView({ hotelData, modalData }) {
                                                 }
                                             }}
                                         />
-                                        <Check className="absolute w-4 h-4 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" strokeWidth={3} />
+                                        <Check className="absolute w-3.5 h-3.5 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" strokeWidth={3} />
                                     </div>
-                                </div>
-
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:flex-wrap sm:gap-3 mb-4">
-                                        <div className="flex items-center gap-3">
-                                            {/* Checkbox Mobile */}
-                                            <div className="sm:hidden flex items-center justify-center shrink-0">
-                                                <div className="relative flex items-center justify-center w-6 h-6">
-                                                    <input
-                                                        type="checkbox"
-                                                        className={`peer appearance-none w-6 h-6 border-2 rounded shadow-sm cursor-pointer transition-all ${theme.darkMode ? 'border-gray-500 bg-gray-800' : 'border-gray-300 bg-white'} checked:bg-blue-600 checked:border-blue-600 hover:border-blue-500`}
-                                                        checked={selectedIds.includes(reservation.id)}
-                                                        onChange={(e) => {
-                                                            if (e.target.checked) {
-                                                                setSelectedIds(prev => [...prev, reservation.id]);
-                                                            } else {
-                                                                setSelectedIds(prev => prev.filter(id => id !== reservation.id));
-                                                            }
-                                                        }}
-                                                    />
-                                                    <Check className="absolute w-3.5 h-3.5 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" strokeWidth={3} />
-                                                </div>
-                                            </div>
-                                            <h3 className="text-xl font-bold">{guest ? `${guest.firstName} ${guest.lastName}` : 'Nieznany'}</h3>
-                                        </div>
-                                        <span className={`self-start sm:self-auto px-3 py-1 rounded-full text-xs font-medium border shrink-0 ${getStatusColor(reservation.status)}`}>
+                                    {/* Name + Status */}
+                                    <div className="min-w-0">
+                                        <h3 className="text-lg sm:text-xl font-bold leading-snug truncate">{guest ? `${guest.firstName} ${guest.lastName}` : 'Nieznany'}</h3>
+                                        <span className={`mt-1 inline-block px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(reservation.status)}`}>
                                             {getStatusText(reservation.status)}
                                         </span>
                                     </div>
-
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                                        <div className="flex flex-col gap-0.5">
-                                            <span className={`text-xs ${theme.textSecondary}`}>Pokój</span>
-                                            <span className="font-medium">{room ? `${room.number} - ${room.name}` : 'Nieznany'}</span>
-                                        </div>
-                                        <div className="flex flex-col gap-0.5">
-                                            <span className={`text-xs ${theme.textSecondary}`}>Pobyt</span>
-                                            <span className="font-medium">
-                                                {new Date(reservation.checkIn).toLocaleDateString('pl-PL')} – {new Date(reservation.checkOut).toLocaleDateString('pl-PL')}
-                                            </span>
-                                        </div>
-                                        <div className="flex flex-col gap-0.5">
-                                            <span className={`text-xs ${theme.textSecondary}`}>Płatność</span>
-                                            <span className="font-medium">
-                                                {reservation.status !== 'paid' ? 'Brak (nieopłacona)' :
-                                                    reservation.payment === 'card' ? 'Karta' :
-                                                        reservation.payment === 'cash' ? 'Gotówka' :
-                                                            reservation.payment === 'transfer' ? 'Przelew' :
-                                                                reservation.payment === 'invoice' ? 'Faktura' :
-                                                                    reservation.payment === 'booking' ? 'Booking.com' :
-                                                                        'Brak (nieopłacona)'
-                                                }
-                                            </span>
-                                        </div>
-                                        <div className="flex flex-col gap-0.5">
-                                            <span className={`text-xs ${theme.textSecondary}`}>Śniadanie</span>
-                                            <span className="font-medium">{reservation.breakfast ? 'Tak' : 'Nie'}</span>
-                                        </div>
-                                    </div>
-
-                                    {reservation.notes && (
-                                        <div className="mt-3 text-sm">
-                                            <span className={theme.textSecondary}>Notatki: </span>
-                                            <span>{reservation.notes}</span>
-                                        </div>
-                                    )}
                                 </div>
 
-                                <div className="flex gap-2 ml-4">
+                                {/* Edit / Delete – top-right always */}
+                                <div className="flex gap-1.5 shrink-0">
                                     <button
                                         type="button"
                                         onClick={() => openModal('reservation', reservation)}
                                         className={`p-2 rounded-lg ${theme.buttonSecondary} hover:opacity-80 transition-opacity`}
                                         title="Edytuj"
                                     >
-                                        <Edit2 className="w-5 h-5" />
+                                        <Edit2 className="w-4 h-4" />
                                     </button>
                                     <button
                                         type="button"
@@ -199,10 +143,46 @@ export default function ReservationsView({ hotelData, modalData }) {
                                         className={`p-2 rounded-lg ${theme.buttonDanger}`}
                                         title="Usuń"
                                     >
-                                        <Trash2 className="w-5 h-5" />
+                                        <Trash2 className="w-4 h-4" />
                                     </button>
                                 </div>
                             </div>
+
+                            {/* DETAILS – indented under checkbox */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm pl-9 sm:pl-0">
+                                <div className="flex flex-col gap-0.5">
+                                    <span className={`text-xs ${theme.textSecondary}`}>Pokój</span>
+                                    <span className="font-medium">{room ? `${room.number} – ${room.name}` : 'Nieznany'}</span>
+                                </div>
+                                <div className="flex flex-col gap-0.5">
+                                    <span className={`text-xs ${theme.textSecondary}`}>Pobyt</span>
+                                    <span className="font-medium">
+                                        {new Date(reservation.checkIn).toLocaleDateString('pl-PL')} – {new Date(reservation.checkOut).toLocaleDateString('pl-PL')}
+                                    </span>
+                                </div>
+                                <div className="flex flex-col gap-0.5">
+                                    <span className={`text-xs ${theme.textSecondary}`}>Płatność</span>
+                                    <span className="font-medium">
+                                        {reservation.status !== 'paid' ? 'Brak (nieopłacona)' :
+                                            reservation.payment === 'card' ? 'Karta' :
+                                                reservation.payment === 'cash' ? 'Gotówka' :
+                                                    reservation.payment === 'transfer' ? 'Przelew' :
+                                                        reservation.payment === 'invoice' ? 'Faktura' :
+                                                            reservation.payment === 'booking' ? 'Booking.com' : 'Brak'}
+                                    </span>
+                                </div>
+                                <div className="flex flex-col gap-0.5">
+                                    <span className={`text-xs ${theme.textSecondary}`}>Śniadanie</span>
+                                    <span className="font-medium">{reservation.breakfast ? 'Tak' : 'Nie'}</span>
+                                </div>
+                            </div>
+
+                            {reservation.notes && (
+                                <div className="mt-4 pl-9 sm:pl-0 text-sm">
+                                    <span className={theme.textSecondary}>Notatki: </span>
+                                    <span>{reservation.notes}</span>
+                                </div>
+                            )}
                         </div>
                     );
                 })}
