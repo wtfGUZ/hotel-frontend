@@ -5,7 +5,7 @@ import { addDays, formatDate, getStatusColor } from '../../utils/utils';
 
 export default function CalendarView({ hotelData, modalData }) {
     const { theme, darkMode } = useTheme();
-    const { rooms, reservations, roomStatuses, toggleRoomStatus, getRoomStatus, getGuestName } = hotelData;
+    const { rooms, reservations, roomStatuses, toggleRoomStatus, getRoomStatus, getGuestName, isLoading } = hotelData;
     const { openModal, setFormData } = modalData;
 
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -84,6 +84,72 @@ export default function CalendarView({ hotelData, modalData }) {
             return total;
         }, 0);
     };
+
+    // --- Skeleton Loader ---
+    if (isLoading) {
+        const skeletonRows = 8;
+        const skeletonCols = 6;
+        return (
+            <div>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
+                    <div className={`h-8 w-48 rounded-lg animate-pulse ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                    <div className="flex gap-2">
+                        {[1, 2, 3, 4].map(i => (
+                            <div key={i} className={`h-10 w-20 rounded-lg animate-pulse ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                        ))}
+                    </div>
+                </div>
+                <div className={`${theme.card} rounded-xl shadow-xl overflow-hidden`}>
+                    <div className="overflow-x-auto">
+                        <table className="w-full min-w-[390px] sm:min-w-[640px]">
+                            <thead>
+                                <tr>
+                                    <th className={`w-[50px] sm:w-20 px-2 py-3 ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                                        <div className={`h-4 w-10 rounded animate-pulse ${darkMode ? 'bg-gray-700' : 'bg-gray-300'}`} />
+                                    </th>
+                                    {Array.from({ length: skeletonCols }).map((_, i) => (
+                                        <th key={i} className={`px-2 py-3 min-w-[50px] sm:min-w-[80px] ${darkMode ? 'bg-gray-800' : 'bg-gray-100'}`}>
+                                            <div className={`h-3 w-8 rounded animate-pulse mx-auto mb-1 ${darkMode ? 'bg-gray-700' : 'bg-gray-300'}`} />
+                                            <div className={`h-3 w-6 rounded animate-pulse mx-auto ${darkMode ? 'bg-gray-600' : 'bg-gray-200'}`} />
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {Array.from({ length: skeletonRows }).map((_, rowIdx) => (
+                                    <tr key={rowIdx} className={`border-t ${darkMode ? 'border-gray-700/30' : 'border-gray-200'}`}>
+                                        <td className={`px-2 py-2 sticky left-0 ${darkMode ? 'bg-gray-800' : 'bg-white'} border-r ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                                            <div className={`h-4 w-10 rounded animate-pulse ${darkMode ? 'bg-gray-700' : 'bg-gray-200'}`} />
+                                        </td>
+                                        {Array.from({ length: skeletonCols }).map((_, colIdx) => (
+                                            <td key={colIdx} className="px-1 py-2">
+                                                {colIdx === 1 ? (
+                                                    <div className={`h-8 rounded-md animate-pulse ${darkMode ? 'bg-blue-900/40' : 'bg-blue-100'}`}
+                                                        style={{ width: `${200 + (rowIdx % 3) * 50}%`, marginLeft: '50%' }}
+                                                    />
+                                                ) : colIdx === 3 && rowIdx % 2 === 0 ? (
+                                                    <div className={`h-8 rounded-md animate-pulse ${darkMode ? 'bg-yellow-900/40' : 'bg-yellow-100'}`}
+                                                        style={{ width: '150%' }}
+                                                    />
+                                                ) : null}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div className={`mt-4 flex items-center justify-center gap-3 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                    <svg className="animate-spin w-5 h-5 text-blue-500" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    <span>Łączenie z serwerem... (pierwsze ładowanie może potrwać chwilę)</span>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div>

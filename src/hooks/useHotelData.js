@@ -7,6 +7,7 @@ export const useHotelData = () => {
     const [guests, setGuests] = useState([]);
     const [reservations, setReservations] = useState([]);
     const [logoUrl, setLogoUrl] = useState('/vite.png');
+    const [isLoading, setIsLoading] = useState(true);
 
     // 1. Inicjalne ładowanie z zewnętrznego serwera
     useEffect(() => {
@@ -31,6 +32,8 @@ export const useHotelData = () => {
             } catch (error) {
                 console.error('Błąd pobierania danych z serwera:', error);
                 alert("Nie udało się połączyć z bazą danych (serwerem). Upewnij się, że backend jest uruchomiony.");
+            } finally {
+                setIsLoading(false);
             }
         };
 
@@ -257,6 +260,7 @@ export const useHotelData = () => {
         verifyPinAPI, changePinAPI,
         getRoomStatus,
         toggleRoomStatus,
-        getGuestName
+        getGuestName,
+        isLoading
     };
 };
