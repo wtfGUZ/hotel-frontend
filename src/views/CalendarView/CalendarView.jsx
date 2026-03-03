@@ -335,6 +335,15 @@ export default function CalendarView({ hotelData, modalData }) {
 
                                                             const widthInCells = endOffset - startOffset;
 
+                                                            // Calculate actual total duration (in days) to pick font size
+                                                            const durationDays = Math.round(
+                                                                (new Date(r.checkOut) - new Date(r.checkIn)) / (1000 * 60 * 60 * 24)
+                                                            );
+                                                            const textSizeClass =
+                                                                durationDays <= 1 ? 'text-[9px] px-0.5' :
+                                                                    durationDays === 2 ? 'text-[10px] px-1' :
+                                                                        'text-xs sm:text-sm px-2';
+
                                                             return (
                                                                 <div
                                                                     key={r.id}
@@ -348,7 +357,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                                                         zIndex: 20
                                                                     }}
                                                                 >
-                                                                    <span className="px-2 truncate pointer-events-none font-bold text-xs sm:text-sm drop-shadow-sm">
+                                                                    <span className={`truncate pointer-events-none font-bold drop-shadow-sm ${textSizeClass}`}>
                                                                         {getGuestName(r.guestId)}
                                                                     </span>
                                                                 </div>
