@@ -62,8 +62,8 @@ export default function ReservationModal({
     return (
         <>
             <div className="relative guest-search-container">
-                <div className="flex items-center justify-between mb-2">
-                    <label className="font-medium">Gość (wpisz imię i nazwisko) *</label>
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                    <label className="font-medium text-sm sm:text-base">Gość (wpisz imię i nazwisko) *</label>
                     <button
                         type="button"
                         onClick={() => {
@@ -71,9 +71,9 @@ export default function ReservationModal({
                             setShowGuestDropdown(false);
                             setQuickGuestData({});
                         }}
-                        className={`text-sm flex items-center gap-1 px-3 py-1 rounded-lg ${theme.button} hover:opacity-80 transition-opacity`}
+                        className={`text-xs sm:text-sm whitespace-nowrap flex items-center gap-1 px-3 py-1.5 sm:py-1 rounded-lg ${theme.button} hover:opacity-80 transition-opacity`}
                     >
-                        <Plus className="w-4 h-4" />
+                        <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
                         Dodaj nowego
                     </button>
                 </div>
@@ -225,9 +225,9 @@ export default function ReservationModal({
                 )}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 gap-2 sm:gap-4">
                 <div>
-                    <label className="block mb-2 font-medium">Data zameldowania *</label>
+                    <label className="block mb-1 sm:mb-2 font-medium text-xs sm:text-base">Zameldowanie *</label>
                     <input
                         type="date"
                         required
@@ -242,17 +242,17 @@ export default function ReservationModal({
                                 setFormData({ ...formData, checkIn: newCheckIn });
                             }
                         }}
-                        className={`w-full px-4 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}
+                        className={`w-full px-2 sm:px-4 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none text-xs sm:text-base`}
                     />
                 </div>
                 <div>
-                    <label className="block mb-2 font-medium">Data wymeldowania *</label>
+                    <label className="block mb-1 sm:mb-2 font-medium text-xs sm:text-base">Wymeldowanie *</label>
                     <input
                         type="date"
                         required
                         value={formData.checkOut || ''}
                         onChange={(e) => setFormData({ ...formData, checkOut: e.target.value })}
-                        className={`w-full px-4 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}
+                        className={`w-full px-2 sm:px-4 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none text-xs sm:text-base`}
                     />
                 </div>
             </div>
