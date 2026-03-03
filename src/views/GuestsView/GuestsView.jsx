@@ -54,7 +54,7 @@ export default function GuestsView({ hotelData, modalData }) {
                                     </button>
                                     <button
                                         onClick={() => setDeleteConfirm({ type: 'guest', id: guest.id, hasReservations: guestReservations.length > 0 })}
-                                        className="flex-1 sm:flex-none p-3 sm:p-2 rounded-lg flex justify-center items-center bg-red-600 hover:bg-red-700 text-white"
+                                        className={`flex-1 sm:flex-none p-3 sm:p-2 rounded-lg flex justify-center items-center ${theme.buttonDanger}`}
                                     >
                                         <Trash2 className="w-5 h-5" />
                                     </button>

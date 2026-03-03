@@ -184,7 +184,7 @@ export default function GlobalModals({ hotelData, modalData }) {
                                         setAlertMessage('Błąd bazy danych przy usuwaniu.');
                                     }
                                 }}
-                                className="flex-1 px-6 py-3 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium transition-colors"
+                                className={`flex-1 px-6 py-3 rounded-lg ${theme.buttonDanger}`}
                             >
                                 {deleteConfirm.type === 'clearAll' ? 'Tak, wyczyść wszystko' : 'Usuń'}
                             </button>

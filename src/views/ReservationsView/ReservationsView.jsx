@@ -79,7 +79,7 @@ export default function ReservationsView({ hotelData, modalData }) {
                                 ids: selectedIds,
                                 message: `Czy na pewno chcesz usunąć zaznaczone rezerwacje (${selectedIds.length} szt.)?`
                             })}
-                            className="px-4 py-2 rounded-lg text-sm font-medium bg-red-600 hover:bg-red-700 text-white flex items-center gap-2 transition-colors"
+                            className={`px-4 py-2 rounded-lg ${theme.buttonDanger} flex items-center gap-2`}
                         >
                             <Trash2 className="w-4 h-4" />
                             Usuń zaznaczone ({selectedIds.length})
@@ -194,7 +194,7 @@ export default function ReservationsView({ hotelData, modalData }) {
                                     <button
                                         type="button"
                                         onClick={() => setDeleteConfirm({ type: 'reservation', id: reservation.id })}
-                                        className="p-2 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors"
+                                        className={`p-2 rounded-lg ${theme.buttonDanger}`}
                                         title="Usuń"
                                     >
                                         <Trash2 className="w-5 h-5" />

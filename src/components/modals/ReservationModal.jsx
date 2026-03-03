@@ -71,7 +71,7 @@ export default function ReservationModal({
                             setShowGuestDropdown(false);
                             setQuickGuestData({});
                         }}
-                        className={`text-xs sm:text-sm whitespace-nowrap flex items-center gap-1 px-3 py-1.5 sm:py-1 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/30 hover:bg-blue-500/20 transition-all font-medium`}
+                        className={`text-xs sm:text-sm whitespace-nowrap flex items-center gap-1 px-3 py-1.5 sm:py-1 rounded-lg ${theme.button}`}
                     >
                         <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
                         Dodaj nowego
@@ -134,7 +134,7 @@ export default function ReservationModal({
                                             });
                                         }
                                     }}
-                                    className={`w-full px-4 py-2 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/30 hover:bg-blue-500/20 transition-all text-sm font-medium flex items-center justify-center gap-2`}
+                                    className={`w-full px-4 py-2 rounded-lg ${theme.button} flex items-center justify-center gap-2`}
                                 >
                                     <Plus className="w-4 h-4" />
                                     Dodaj nowego gościa
@@ -354,7 +354,7 @@ export default function ReservationModal({
                                         const newIds = currentIds.filter((_, idx) => idx !== index);
                                         setFormData({ ...formData, roomIds: newIds, roomId: newIds[0] });
                                     }}
-                                    className={`px-3 py-2 rounded-lg bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/30 font-bold transition-colors`}
+                                    className={`px-3 py-2 rounded-lg ${theme.buttonDanger}`}
                                     title="Usuń pokój z tej grupy"
                                 >
                                     ✕

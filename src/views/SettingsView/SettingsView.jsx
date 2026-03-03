@@ -90,7 +90,7 @@ export default function SettingsView({ hotelData, modalData }) {
                                             message: 'Czy na pewno chcesz wyczyścić WSZYSTKIE dane? Ta operacja jest nieodwracalna!'
                                         });
                                     }}
-                                    className="w-full sm:w-auto px-4 py-3 sm:py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-medium flex justify-center items-center gap-2"
+                                    className={`w-full sm:w-auto px-4 py-3 sm:py-2 rounded-lg ${theme.buttonDanger} flex justify-center items-center gap-2`}
                                 >
                                     🗑️ Wyczyść wszystko
                                 </button>
@@ -128,7 +128,7 @@ export default function SettingsView({ hotelData, modalData }) {
                                     </button>
                                     <button
                                         onClick={() => setDeleteConfirm({ type: 'room', id: room.id })}
-                                        className="flex-1 sm:flex-none p-3 sm:p-2 rounded-lg flex justify-center items-center bg-red-600 hover:bg-red-700 text-white"
+                                        className={`flex-1 sm:flex-none p-3 sm:p-2 rounded-lg flex justify-center items-center ${theme.buttonDanger}`}
                                     >
                                         <Trash2 className="w-5 h-5 sm:w-4 sm:h-4" />
                                     </button>
