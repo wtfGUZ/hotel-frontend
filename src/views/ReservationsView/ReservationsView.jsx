@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Search, Edit2, Trash2 } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Check } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { getStatusColor, getStatusText } from '../../utils/utils';
 
@@ -98,38 +98,47 @@ export default function ReservationsView({ hotelData, modalData }) {
 
                     return (
                         <div key={reservation.id} className={`${theme.card} rounded-xl p-6 shadow-lg hover:shadow-xl transition-all ${selectedIds.includes(reservation.id) ? 'ring-2 ring-blue-500 bg-blue-500/5' : ''}`}>
-                            <div className="flex items-start gap-4">
-                                <div className="pt-1.5 hidden sm:block">
-                                    <input
-                                        type="checkbox"
-                                        className="w-5 h-5 cursor-pointer accent-blue-600 rounded"
-                                        checked={selectedIds.includes(reservation.id)}
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
-                                                setSelectedIds(prev => [...prev, reservation.id]);
-                                            } else {
-                                                setSelectedIds(prev => prev.filter(id => id !== reservation.id));
-                                            }
-                                        }}
-                                    />
+                            <div className="flex items-center gap-4">
+                                {/* Checkbox Desktop - Centered vertically with the entire card */}
+                                <div className="hidden sm:flex items-center justify-center">
+                                    <div className="relative flex items-center justify-center w-7 h-7">
+                                        <input
+                                            type="checkbox"
+                                            className={`peer appearance-none w-7 h-7 border-2 rounded shadow-sm cursor-pointer transition-all ${theme.darkMode ? 'border-gray-500 bg-gray-800' : 'border-gray-300 bg-white'} checked:bg-blue-600 checked:border-blue-600 hover:border-blue-500`}
+                                            checked={selectedIds.includes(reservation.id)}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setSelectedIds(prev => [...prev, reservation.id]);
+                                                } else {
+                                                    setSelectedIds(prev => prev.filter(id => id !== reservation.id));
+                                                }
+                                            }}
+                                        />
+                                        <Check className="absolute w-4 h-4 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" strokeWidth={3} />
+                                    </div>
                                 </div>
-                                <div className="flex-1">
+
+                                <div className="flex-1 w-full overflow-hidden">
                                     <div className="flex items-center gap-3 mb-3">
-                                        <div className="sm:hidden -ml-1 mr-1">
-                                            <input
-                                                type="checkbox"
-                                                className="w-5 h-5 cursor-pointer accent-blue-600 rounded"
-                                                checked={selectedIds.includes(reservation.id)}
-                                                onChange={(e) => {
-                                                    if (e.target.checked) {
-                                                        setSelectedIds(prev => [...prev, reservation.id]);
-                                                    } else {
-                                                        setSelectedIds(prev => prev.filter(id => id !== reservation.id));
-                                                    }
-                                                }}
-                                            />
+                                        {/* Checkbox Mobile - Aligned with the header */}
+                                        <div className="sm:hidden -ml-1 mr-1 flex items-center justify-center">
+                                            <div className="relative flex items-center justify-center w-6 h-6">
+                                                <input
+                                                    type="checkbox"
+                                                    className={`peer appearance-none w-6 h-6 border-2 rounded shadow-sm cursor-pointer transition-all ${theme.darkMode ? 'border-gray-500 bg-gray-800' : 'border-gray-300 bg-white'} checked:bg-blue-600 checked:border-blue-600 hover:border-blue-500`}
+                                                    checked={selectedIds.includes(reservation.id)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setSelectedIds(prev => [...prev, reservation.id]);
+                                                        } else {
+                                                            setSelectedIds(prev => prev.filter(id => id !== reservation.id));
+                                                        }
+                                                    }}
+                                                />
+                                                <Check className="absolute w-3.5 h-3.5 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" strokeWidth={3} />
+                                            </div>
                                         </div>
-                                        <h3 className="text-xl font-bold">{guest ? `${guest.firstName} ${guest.lastName}` : 'Nieznany'}</h3>
+                                        <h3 className="text-lg sm:text-xl font-bold truncate">{guest ? `${guest.firstName} ${guest.lastName}` : 'Nieznany'}</h3>
                                         <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(reservation.status)}`}>
                                             {getStatusText(reservation.status)}
                                         </span>
