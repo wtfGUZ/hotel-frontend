@@ -137,15 +137,15 @@ export default function CalendarView({ hotelData, modalData }) {
                                 };
 
                                 return (
-                                    <tr key={room.id} className={`border-t ${darkMode ? 'border-gray-700/30' : 'border-gray-200'}`}>
-                                        <td className={`px-3 py-1.5 font-medium sticky left-0 z-10 ${darkMode ? 'bg-gray-800/95' : 'bg-white/95'}`}>
-                                            <div className={`flex items-center gap-1.5 border-r pr-2 ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                                    <tr key={room.id} className={`border-t relative ${darkMode ? 'border-gray-700/30' : 'border-gray-200'}`}>
+                                        <td className={`px-3 py-1.5 font-medium sticky left-0 z-30 ${darkMode ? 'bg-gray-800' : 'bg-white'} border-r ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                                            <div className={`flex items-center gap-1.5 pr-2`}>
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         toggleRoomStatus(room.id);
                                                     }}
-                                                    className={`w-1.5 h-12 rounded-full cursor-pointer hover:opacity-80 hover:scale-110 transition-all ${statusColors[roomStatus]}`}
+                                                    className={`w-1.5 h-12 rounded-full cursor-pointer hover:opacity-80 hover:scale-110 transition-all ${statusColors[roomStatus]} z-30`}
                                                     title={
                                                         roomStatus === 'clean' ? 'Czysty i gotowy (kliknij → Zajęty)' :
                                                             roomStatus === 'occupied' ? 'Zajęty przez gościa (kliknij → Do sprzątania)' :
@@ -157,6 +157,54 @@ export default function CalendarView({ hotelData, modalData }) {
                                                     <div className={`text-[10px] truncate ${darkMode ? 'text-gray-400' : 'text-gray-600'}`} title={room.name}>{room.name}</div>
                                                 </div>
                                             </div>
+                                        </td>
+
+                                        {/* Container for absolutely positioned reservations */}
+                                        <td className="p-0 border-0 absolute left-[120px] right-0 h-full pointer-events-none z-10">
+                                            {reservations
+                                                .filter(r => String(r.roomId) === String(room.id))
+                                                .map(r => {
+                                                    const firstDayStr = formatDate(calendarDays[0]);
+                                                    const lastDayStr = formatDate(calendarDays[calendarDays.length - 1]);
+
+                                                    // Only render if reservation overlaps with visible calendar days
+                                                    if (r.checkOut <= firstDayStr || r.checkIn >= lastDayStr) return null;
+
+                                                    // Calculate precise offset and width
+                                                    const totalDays = calendarDays.length;
+
+                                                    // Find index of checkIn (can be fractional/negative)
+                                                    let startIndex = calendarDays.findIndex(d => formatDate(d) === r.checkIn);
+                                                    if (startIndex === -1 && r.checkIn < firstDayStr) startIndex = 0; // Starts before view
+
+                                                    let endIndex = calendarDays.findIndex(d => formatDate(d) === r.checkOut);
+                                                    if (endIndex === -1 && r.checkOut > lastDayStr) endIndex = totalDays; // Ends after view
+
+                                                    // Left position (starts in middle of the check-in day)
+                                                    const leftPercentage = (startIndex + 0.5) * (100 / totalDays);
+
+                                                    // Width (ends in middle of checkout day)
+                                                    const widthPercentage = ((endIndex + 0.5) - (startIndex + 0.5)) * (100 / totalDays);
+
+                                                    return (
+                                                        <div
+                                                            key={r.id}
+                                                            onMouseDown={(e) => e.stopPropagation()}
+                                                            onMouseUp={(e) => e.stopPropagation()}
+                                                            onClick={(e) => { e.stopPropagation(); openModal('reservation', r); }}
+                                                            className={`absolute top-1 bottom-1 rounded flex items-center justify-center text-[10px] font-medium cursor-pointer hover:opacity-80 hover:scale-[1.02] transition-all shadow-md ${getStatusColor(r.status)} pointer-events-auto overflow-hidden`}
+                                                            style={{
+                                                                left: `${leftPercentage}%`,
+                                                                width: `${widthPercentage}%`,
+                                                                zIndex: 20
+                                                            }}
+                                                        >
+                                                            <span className="px-2 truncate pointer-events-none text-white drop-shadow-md">
+                                                                {getGuestName(r.guestId)}
+                                                            </span>
+                                                        </div>
+                                                    );
+                                                })}
                                         </td>
                                         {calendarDays.map((day, idx) => {
                                             const dateStr = formatDate(day);
@@ -207,57 +255,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                                         }
                                                     }}
                                                 >
-                                                    <div className="h-10 relative">
-                                                        {checkOutReservation && (
-                                                            <div
-                                                                onMouseDown={(e) => e.stopPropagation()}
-                                                                onMouseUp={(e) => e.stopPropagation()}
-                                                                onClick={(e) => { e.stopPropagation(); openModal('reservation', checkOutReservation); }}
-                                                                className={`absolute left-0 top-0 bottom-0 w-1/2 rounded-l flex items-center justify-center text-[10px] font-medium cursor-pointer hover:opacity-80 hover:scale-105 transition-all ${getStatusColor(checkOutReservation.status)} ${hasRealConflict ? 'border-2 border-red-500 animate-pulse' : ''}`}
-                                                            />
-                                                        )}
-
-                                                        {checkInOrFullReservation && (
-                                                            <>
-                                                                {dateStr === checkInOrFullReservation.checkIn ? (
-                                                                    <div
-                                                                        onMouseDown={(e) => e.stopPropagation()}
-                                                                        onMouseUp={(e) => e.stopPropagation()}
-                                                                        onClick={(e) => { e.stopPropagation(); openModal('reservation', checkInOrFullReservation); }}
-                                                                        className={`absolute right-0 top-0 bottom-0 w-1/2 rounded-r flex items-center justify-center text-[10px] font-medium cursor-pointer hover:opacity-80 hover:scale-105 transition-all ${getStatusColor(checkInOrFullReservation.status)} border-l-4 ${hasRealConflict ? 'border-2 border-red-500 animate-pulse' : ''}`}
-                                                                    >
-                                                                        <span className="px-1 truncate text-[9px] z-10 pointer-events-none">
-                                                                            {getGuestName(checkInOrFullReservation.guestId)}
-                                                                            {hasRealConflict && <span className="ml-0.5">⚠️</span>}
-                                                                        </span>
-                                                                    </div>
-                                                                ) : dateStr === checkInOrFullReservation.checkOut ? (
-                                                                    null
-                                                                ) : (
-                                                                    <div
-                                                                        onMouseDown={(e) => e.stopPropagation()}
-                                                                        onMouseUp={(e) => e.stopPropagation()}
-                                                                        onClick={(e) => { e.stopPropagation(); openModal('reservation', checkInOrFullReservation); }}
-                                                                        className={`absolute inset-0 rounded flex items-center justify-center text-[10px] font-medium cursor-pointer hover:opacity-80 hover:scale-105 transition-all ${getStatusColor(checkInOrFullReservation.status)} ${hasRealConflict ? 'border-2 border-red-500 animate-pulse' : ''}`}
-                                                                    />
-                                                                )}
-                                                            </>
-                                                        )}
-
-                                                        {allReservations.length === 1 &&
-                                                            allReservations[0].checkIn === allReservations[0].checkOut && (
-                                                                <div
-                                                                    onMouseDown={(e) => e.stopPropagation()}
-                                                                    onMouseUp={(e) => e.stopPropagation()}
-                                                                    onClick={(e) => { e.stopPropagation(); openModal('reservation', allReservations[0]); }}
-                                                                    className={`absolute inset-0 rounded flex items-center justify-center text-[10px] font-medium cursor-pointer hover:opacity-80 hover:scale-105 transition-all ${getStatusColor(allReservations[0].status)} border-l-4`}
-                                                                >
-                                                                    <span className="px-1 truncate text-[9px] z-10 pointer-events-none">
-                                                                        {getGuestName(allReservations[0].guestId)}
-                                                                    </span>
-                                                                </div>
-                                                            )}
-                                                    </div>
+                                                    <div className="h-10 relative"></div>
                                                 </td>
                                             );
                                         })}
