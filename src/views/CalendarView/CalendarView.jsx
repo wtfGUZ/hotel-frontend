@@ -279,7 +279,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                             return (
                                                 <td
                                                     key={idx}
-                                                    className={`px-0.5 py-1 text-center relative ${isToday ? (darkMode ? 'bg-blue-600/10' : 'bg-blue-50') : ''} ${isSelected ? 'bg-blue-500/60 border-l-2 border-r-2 border-blue-500' : 'hover:bg-blue-500/10'} cursor-pointer transition-colors border-r ${darkMode ? 'border-gray-800/30' : 'border-gray-200'} select-none`}
+                                                    className={`p-0 text-center relative ${isToday ? (darkMode ? 'bg-blue-600/10' : 'bg-blue-50') : ''} ${isSelected ? 'bg-blue-500/60 border-l-2 border-r-2 border-blue-500' : 'hover:bg-blue-500/10'} cursor-pointer transition-colors border-r ${darkMode ? 'border-gray-800/30' : 'border-gray-200'} select-none`}
                                                     onMouseDown={(e) => {
                                                         if (e.button !== 0) return; // Only left click
 
