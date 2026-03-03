@@ -118,10 +118,10 @@ export default function ReservationsView({ hotelData, modalData }) {
                                     </div>
                                 </div>
 
-                                <div className="flex-1 w-full overflow-hidden">
-                                    <div className="flex items-center gap-3 mb-3">
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center flex-wrap gap-2 sm:gap-3 mb-3">
                                         {/* Checkbox Mobile - Aligned with the header */}
-                                        <div className="sm:hidden -ml-1 mr-1 flex items-center justify-center">
+                                        <div className="sm:hidden flex items-center justify-center shrink-0">
                                             <div className="relative flex items-center justify-center w-6 h-6">
                                                 <input
                                                     type="checkbox"
@@ -138,8 +138,8 @@ export default function ReservationsView({ hotelData, modalData }) {
                                                 <Check className="absolute w-3.5 h-3.5 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" strokeWidth={3} />
                                             </div>
                                         </div>
-                                        <h3 className="text-lg sm:text-xl font-bold truncate">{guest ? `${guest.firstName} ${guest.lastName}` : 'Nieznany'}</h3>
-                                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(reservation.status)}`}>
+                                        <h3 className="text-lg sm:text-xl font-bold truncate shrink-0 max-w-full">{guest ? `${guest.firstName} ${guest.lastName}` : 'Nieznany'}</h3>
+                                        <span className={`px-3 py-1 rounded-full text-xs font-medium border shrink-0 ${getStatusColor(reservation.status)}`}>
                                             {getStatusText(reservation.status)}
                                         </span>
                                     </div>
@@ -158,10 +158,14 @@ export default function ReservationsView({ hotelData, modalData }) {
                                         <div>
                                             <span className={theme.textSecondary}>Płatność: </span>
                                             <span className="font-medium">
-                                                {reservation.payment === 'card' ? 'Karta' :
-                                                    reservation.payment === 'cash' ? 'Gotówka' :
-                                                        reservation.payment === 'transfer' ? 'Przelew' :
-                                                            'Booking.com'}
+                                                {reservation.status !== 'paid' ? 'Brak (nieopłacona)' :
+                                                    reservation.payment === 'card' ? 'Karta' :
+                                                        reservation.payment === 'cash' ? 'Gotówka' :
+                                                            reservation.payment === 'transfer' ? 'Przelew' :
+                                                                reservation.payment === 'invoice' ? 'Faktura' :
+                                                                    reservation.payment === 'booking' ? 'Booking.com' :
+                                                                        'Brak (nieopłacona)'
+                                                }
                                             </span>
                                         </div>
                                         <div>

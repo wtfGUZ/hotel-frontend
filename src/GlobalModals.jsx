@@ -82,7 +82,7 @@ export default function GlobalModals({ hotelData, modalData }) {
                     checkIn: formData.checkIn,
                     checkOut: formData.checkOut,
                     status: String(formData.status || 'preliminary'),
-                    payment: String(formData.payment || 'unpaid'),
+                    payment: formData.status === 'paid' ? String(formData.payment || 'cash') : 'unpaid',
                     breakfast: Boolean(formData.breakfast),
                     notes: formData.notes ? String(formData.notes) : ''
                 };
