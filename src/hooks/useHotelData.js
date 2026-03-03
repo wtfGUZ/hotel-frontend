@@ -37,10 +37,6 @@ export const useHotelData = () => {
     // 1. Inicjalne ładowanie z zewnętrznego serwera
     useEffect(() => {
         const fetchData = async () => {
-            if (!isAuthenticated) {
-                setIsLoading(false);
-                return; // Oczekuj na PIN
-            }
             try {
                 const [resRooms, resGuests, resReservations, resSettings] = await Promise.all([
                     apiFetch('/rooms'),
@@ -49,7 +45,6 @@ export const useHotelData = () => {
                     apiFetch('/settings/hotelLogo')
                 ]);
 
-                // Jeśli apiFetch wyrzuci błąd (np. 401), spadnie do catch i zatrzyma ładowanie
                 const dbRooms = await resRooms.json();
                 const dbGuests = await resGuests.json();
                 const dbReservations = await resReservations.json();
@@ -61,18 +56,14 @@ export const useHotelData = () => {
                 if (dbLogo && dbLogo.value) setLogoUrl(JSON.parse(dbLogo.value));
             } catch (error) {
                 console.error('Błąd pobierania danych z serwera:', error);
-
-                if (error.message !== 'Failed to fetch') {
-                    console.warn("Nie udało się połączyć z bazą danych (serwerem). Upewnij się, że backend jest uruchomiony.");
-                }
+                console.warn("Nie udało się połączyć z bazą danych (serwerem). Upewnij się, że backend jest uruchomiony.");
             } finally {
                 setIsLoading(false);
             }
         };
 
-        // Ponów próbę pobrania danych jeśli status logowania się zmienił na pozytywny
         fetchData();
-    }, [isAuthenticated]);
+    }, []);
 
     // 2. Automatyczny zapis Logo do bazy (upsert)
     useEffect(() => {
