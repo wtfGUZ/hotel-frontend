@@ -260,18 +260,13 @@ export default function CalendarView({ hotelData, modalData }) {
                                             const allReservations = reservations.filter(r =>
                                                 String(r.roomId) === String(room.id) &&
                                                 dateStr >= r.checkIn &&
-                                                dateStr <= r.checkOut
-                                            );
-
-                                            const checkOutReservation = allReservations.find(r => dateStr === r.checkOut);
-                                            const checkInOrFullReservation = allReservations.find(r =>
-                                                dateStr === r.checkIn || (dateStr > r.checkIn && dateStr < r.checkOut)
+                                                dateStr < r.checkOut
                                             );
 
                                             const isToday = formatDate(day) === formatDate(new Date());
 
-                                            const hasRealConflict = allReservations.length > 2 ||
-                                                (allReservations.length === 2 && (!checkOutReservation || !checkInOrFullReservation));
+                                            // A true conflict only happens when 2+ reservations overlap on the same day
+                                            const hasRealConflict = allReservations.length > 1;
 
                                             const isSelected = dragState.roomId === room.id &&
                                                 dragState.startDate &&
