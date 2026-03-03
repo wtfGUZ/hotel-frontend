@@ -139,6 +139,24 @@ export const useHotelData = () => {
         } catch (error) { console.error(error); throw error; }
     };
 
+    const syncIcalAPI = async (url) => {
+        try {
+            const res = await fetch(`${API_URL}/ical/sync`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+            });
+            const result = await handleRes(res);
+
+            // Reload reservations after syncing
+            const resReservations = await fetch(`${API_URL}/reservations`);
+            const dbReservations = await resReservations.json();
+            setReservations(dbReservations);
+
+            return result;
+        } catch (error) { console.error(error); throw error; }
+    };
+
 
     // Interfejs do modyfikacji Gości (Dodaj, Edytuj, Usuń)
     const addGuestAPI = async (data) => {
@@ -210,7 +228,7 @@ export const useHotelData = () => {
     return {
         rooms, setRooms, addRoomAPI, updateRoomAPI, deleteRoomAPI,
         guests, setGuests, addGuestAPI, updateGuestAPI, deleteGuestAPI,
-        reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI, deleteMultipleReservationsAPI,
+        reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI, deleteMultipleReservationsAPI, syncIcalAPI,
         logoUrl, setLogoUrl,
         getRoomStatus,
         toggleRoomStatus,

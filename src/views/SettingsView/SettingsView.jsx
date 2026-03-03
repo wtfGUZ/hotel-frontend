@@ -4,7 +4,7 @@ import { useTheme } from '../../context/ThemeContext';
 
 export default function SettingsView({ hotelData, modalData }) {
     const { theme, darkMode, toggleDarkMode } = useTheme();
-    const { rooms, setRooms, guests, setGuests, reservations, setReservations, logoUrl, setLogoUrl } = hotelData;
+    const { rooms, setRooms, guests, setGuests, reservations, setReservations, logoUrl, setLogoUrl, syncIcalAPI } = hotelData;
     const { openModal, setDeleteConfirm, setAlertMessage } = modalData;
 
     const [icalUrl, setIcalUrl] = useState('');
@@ -12,13 +12,18 @@ export default function SettingsView({ hotelData, modalData }) {
 
     const testIcalConnection = async () => {
         if (!icalUrl) {
-            setAlertMessage('Wpisz URL iCal');
+            setAlertMessage('Wpisz URL iCal z Booking.com');
             return;
         }
-        setIcalStatus('⏳ Pobieranie...');
+        setIcalStatus('⏳ Pobieranie i synchronizowanie...');
 
-        // ... iCal connection fetching logic from App.js ...
-        setIcalStatus(`❌ Błąd: Not implemented in mock`);
+        try {
+            const result = await syncIcalAPI(icalUrl);
+            setIcalStatus(`✅ Sukces! Zaimportowano: ${result.importedCount}, Pominiętych duplikatów: ${result.skippedCount}, Brak dostępnych pokoi: ${result.conflictCount}`);
+        } catch (err) {
+            console.error(err);
+            setIcalStatus(`❌ Błąd: ${err.message || 'Nie udało się zsynchronizować kalendarza'}`);
+        }
     };
 
     return (
