@@ -88,7 +88,7 @@ export default function CalendarView({ hotelData, modalData }) {
     return (
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
-                <h2 className="text-2xl sm:text-3xl font-bold">Kalendarz Rezerwacji</h2>
+                <div></div>
                 <div className="flex flex-wrap gap-2">
                     <button
                         onClick={() => setCurrentDate(addDays(currentDate, -jumpStep))}

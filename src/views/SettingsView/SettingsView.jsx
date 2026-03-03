@@ -114,7 +114,6 @@ export default function SettingsView({ hotelData, modalData }) {
 
     return (
         <div>
-            <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">Ustawienia</h2>
 
             <div className="space-y-6">
                 <div className={`${theme.card} rounded-xl p-6 shadow-lg`}>

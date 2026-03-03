@@ -25,7 +25,7 @@ export default function ReservationsView({ hotelData, modalData }) {
     return (
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
-                <h2 className="text-2xl sm:text-3xl font-bold">Lista Rezerwacji</h2>
+                <div></div>
                 <button
                     onClick={() => openModal('reservation')}
                     className={`px-4 py-3 rounded-lg ${theme.button} flex items-center justify-center gap-2 touch-manipulation`}

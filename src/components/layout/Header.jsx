@@ -37,7 +37,12 @@ export default function Header({ currentView, setCurrentView, logoUrl }) {
                             }}
                         />
                         <Bed className="w-6 h-6 sm:w-8 sm:h-8 text-blue-500 hidden" />
-                        <h1 className="text-lg sm:text-2xl font-bold">Manager</h1>
+                        <h1 className="text-lg sm:text-2xl font-bold">
+                            {currentView === 'calendar' && 'Kalendarz Rezerwacji'}
+                            {currentView === 'reservations' && 'Rezerwacje'}
+                            {currentView === 'guests' && 'Baza Gości'}
+                            {currentView === 'settings' && 'Ustawienia'}
+                        </h1>
                     </div>
 
                     {/* Desktop Navigation */}
