@@ -12,6 +12,14 @@ export const useHotelData = () => {
     // Wewnętrzny wrapper na fetch dodający token JWT i reagujący na utratę sesji
     const apiFetch = async (endpoint, options = {}) => {
         const token = localStorage.getItem('jwt_token');
+
+        // Niektóre endpointy są publiczne
+        const isPublic = endpoint === '/settings/verify-pin' || endpoint === '/settings/hotelLogo';
+
+        if (!token && !isPublic) {
+            throw new Error('Brak tokenu - wymagane logowanie');
+        }
+
         const headers = {
             'Content-Type': 'application/json',
             ...options.headers,
@@ -26,11 +34,16 @@ export const useHotelData = () => {
             headers,
         });
 
-        if ((response.status === 401 || response.status === 403) && endpoint !== '/settings/verify-pin') {
+        if ((response.status === 401 || response.status === 403) && !isPublic) {
+            const wasLoggedIn = !!sessionStorage.getItem('adminPin');
+
             // Token wygasł lub jest nieprawidłowy, wymuś wylogowanie
             localStorage.removeItem('jwt_token');
             sessionStorage.removeItem('adminPin'); // wylogowanie z UI
-            window.location.reload();
+
+            if (wasLoggedIn) {
+                window.location.reload(); // Przeładuj tylko jeśli użytkownik myślał, że jest zalogowany
+            }
             throw new Error('Sesja wygasła. Zaloguj się ponownie.');
         }
 
