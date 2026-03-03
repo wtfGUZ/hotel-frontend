@@ -10,6 +10,15 @@ export const ThemeProvider = ({ children }) => {
 
     useEffect(() => {
         localStorage.setItem('hotelDarkMode', JSON.stringify(darkMode));
+        // Wymuś kolor tła na głównym body HTML, żeby iOS Safari (i inne przeglądarki mobilne) 
+        // dziedziczyły prawidłowy, CIEMNY lub JASNY kolor "pod" całą stroną, zapobiegając białym paskom u góry/dołu
+        if (darkMode) {
+            document.body.classList.remove('bg-gray-50');
+            document.body.classList.add('bg-gray-900');
+        } else {
+            document.body.classList.remove('bg-gray-900');
+            document.body.classList.add('bg-gray-50');
+        }
     }, [darkMode]);
 
     const toggleDarkMode = () => setDarkMode(prev => !prev);

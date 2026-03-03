@@ -27,7 +27,7 @@ function AppContent() {
   }, [hotelData.logoUrl]);
 
   return (
-    <div className={`min-h-screen ${theme.bg} ${theme.text} transition-colors duration-300`}>
+    <div className={`min-h-screen overflow-x-hidden w-full ${theme.bg} ${theme.text} transition-colors duration-300`}>
       <Header currentView={currentView} setCurrentView={setCurrentView} logoUrl={hotelData.logoUrl} />
 
       <main className="max-w-[98%] mx-auto px-3 py-4">
