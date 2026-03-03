@@ -29,7 +29,7 @@ export const ThemeProvider = ({ children }) => {
         text: 'text-gray-100',
         textSecondary: 'text-gray-400',
         input: 'bg-gray-700/50 border-gray-600 text-gray-100',
-        button: 'bg-blue-600 hover:bg-blue-700 text-white',
+        button: 'bg-blue-500/10 text-blue-400 border border-blue-500/30 hover:bg-blue-500/20 transition-all font-medium',
         buttonSecondary: 'bg-gray-700 hover:bg-gray-600 text-gray-100'
     } : {
         bg: 'bg-gradient-to-br from-gray-50 via-white to-gray-100',
@@ -37,7 +37,7 @@ export const ThemeProvider = ({ children }) => {
         text: 'text-gray-900',
         textSecondary: 'text-gray-600',
         input: 'bg-gray-50 border-gray-300 text-gray-900',
-        button: 'bg-blue-600 hover:bg-blue-700 text-white',
+        button: 'bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 transition-all font-medium',
         buttonSecondary: 'bg-gray-200 hover:bg-gray-300 text-gray-900'
     };
 
