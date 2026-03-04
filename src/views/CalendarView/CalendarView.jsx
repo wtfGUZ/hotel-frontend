@@ -50,14 +50,20 @@ export default function CalendarView({ hotelData, modalData }) {
                     const start = startDate <= endDate ? startDate : endDate;
                     const end = startDate <= endDate ? endDate : startDate;
 
-                    // We calculate the checkout as the selection's end date PLUS 1 night
-                    // Assuming that clicking "Jun 1" to "Jun 3" means 3 nights -> CheckOut on "Jun 4"
-                    const newCheckOut = addDays(new Date(end), 1);
+                    let finalCheckOutDate;
+                    if (start === end) {
+                        // Pojedyncze kliknięcie (1 komórka) -> domyślnie 1 noc (wyjazd następnego dnia)
+                        finalCheckOutDate = addDays(new Date(end), 1);
+                    } else {
+                        // Przeciągnięcie myszką na kilka dni (start < end) -> 
+                        // Start to wybrany przyjazd, End to wybrany wyjazd (brak dodatkowej doby)
+                        finalCheckOutDate = new Date(end);
+                    }
 
                     contextRefs.current.openModal('reservation', null, {
                         roomId: roomId,
                         checkIn: start,
-                        checkOut: formatDate(newCheckOut)
+                        checkOut: formatDate(finalCheckOutDate)
                     });
                 }
             }
