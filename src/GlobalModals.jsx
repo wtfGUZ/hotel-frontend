@@ -10,10 +10,11 @@ export default function GlobalModals({ hotelData, modalData }) {
     const { theme, darkMode } = useTheme();
 
     const {
-        showModal, modalType, closeModal,
+        showModal, modalType, closeModal, openModal,
         editingItem, formData, setFormData,
         alertMessage, setAlertMessage,
-        deleteConfirm, setDeleteConfirm
+        deleteConfirm, setDeleteConfirm,
+        groupEditChoice, setGroupEditChoice
     } = modalData;
 
     const {
@@ -22,6 +23,31 @@ export default function GlobalModals({ hotelData, modalData }) {
         reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI, deleteMultipleReservationsAPI,
         isSaving, setIsSaving
     } = hotelData;
+
+    const openReservationSmart = (reservation) => {
+        if (reservation.groupId) {
+            const groupSiblings = reservations.filter(r => r.groupId === reservation.groupId && r.id !== reservation.id);
+            if (groupSiblings.length > 0) {
+                setGroupEditChoice({ reservation, siblings: groupSiblings });
+                return;
+            }
+        }
+        openModal('reservation', reservation);
+    };
+
+    const handleGroupEditChoice = (mode) => {
+        const { reservation, siblings } = groupEditChoice;
+        if (mode === 'single') {
+            openModal('reservation', reservation);
+        } else {
+            const allGroupRoomIds = [reservation.roomId, ...siblings.map(s => s.roomId)];
+            openModal('reservation', reservation);
+            setTimeout(() => {
+                setFormData(prev => ({ ...prev, roomIds: allGroupRoomIds, roomId: allGroupRoomIds[0] }));
+            }, 0);
+        }
+        setGroupEditChoice(null);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -93,13 +119,19 @@ export default function GlobalModals({ hotelData, modalData }) {
                     if (editingItem) {
                         // Update original reservation with first room
                         await updateReservationAPI(String(editingItem.id), { ...payload, roomId: parseInt(validRoomIds[0]) });
-                        // Create new reservations for any additional rooms
-                        for (let i = 1; i < validRoomIds.length; i++) {
-                            await addReservationAPI({ ...payload, roomId: parseInt(validRoomIds[i]) });
+                        // Create new reservations for any additional rooms (with same groupId)
+                        if (validRoomIds.length > 1) {
+                            const gId = editingItem.groupId || `grp-${Date.now()}`;
+                            // Update original to also have groupId
+                            await updateReservationAPI(String(editingItem.id), { ...payload, roomId: parseInt(validRoomIds[0]), groupId: gId });
+                            for (let i = 1; i < validRoomIds.length; i++) {
+                                await addReservationAPI({ ...payload, roomId: parseInt(validRoomIds[i]), groupId: gId });
+                            }
                         }
                     } else {
+                        const groupId = validRoomIds.length > 1 ? `grp-${Date.now()}` : null;
                         for (const rId of validRoomIds) {
-                            await addReservationAPI({ ...payload, roomId: parseInt(rId) });
+                            await addReservationAPI({ ...payload, roomId: parseInt(rId), groupId });
                         }
                     }
                 } finally {
@@ -200,6 +232,41 @@ export default function GlobalModals({ hotelData, modalData }) {
                                 {deleteConfirm.type === 'clearAll' ? 'Tak, wyczyść wszystko' : 'Usuń'}
                             </button>
                             <button onClick={() => setDeleteConfirm(null)} className={`flex-1 px-6 py-3 rounded-lg ${theme.buttonSecondary} font-medium transition-opacity hover:opacity-80`}>
+                                Anuluj
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {groupEditChoice && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+                    <div className={`${theme.card} rounded-2xl p-6 max-w-md w-full shadow-2xl`}>
+                        <h3 className="text-xl font-bold mb-2">Rezerwacja grupowa</h3>
+                        <p className={`${theme.textSecondary} mb-4 text-sm`}>
+                            Ta rezerwacja jest częścią grupy ({groupEditChoice.siblings.length + 1} pokoje:
+                            {' '}{[groupEditChoice.reservation, ...groupEditChoice.siblings].map(r => {
+                                const room = rooms.find(rm => rm.id === r.roomId);
+                                return room ? room.number : r.roomId;
+                            }).join(', ')}).
+                        </p>
+                        <div className="flex flex-col gap-2">
+                            <button
+                                onClick={() => handleGroupEditChoice('single')}
+                                className={`w-full px-4 py-3 rounded-lg ${theme.buttonSecondary} font-medium hover:opacity-80 transition-opacity text-left`}
+                            >
+                                ✏️ Edytuj tylko ten pokój
+                            </button>
+                            <button
+                                onClick={() => handleGroupEditChoice('group')}
+                                className={`w-full px-4 py-3 rounded-lg ${theme.button} font-medium hover:opacity-80 transition-opacity text-left`}
+                            >
+                                📋 Edytuj całą grupę ({groupEditChoice.siblings.length + 1} pokoje)
+                            </button>
+                            <button
+                                onClick={() => setGroupEditChoice(null)}
+                                className={`w-full px-4 py-2 rounded-lg text-sm ${theme.textSecondary} hover:opacity-80 transition-opacity`}
+                            >
                                 Anuluj
                             </button>
                         </div>

@@ -6,7 +6,7 @@ import { addDays, formatDate, getStatusColor } from '../../utils/utils';
 export default function CalendarView({ hotelData, modalData }) {
     const { theme, darkMode } = useTheme();
     const { rooms, reservations, roomStatuses, toggleRoomStatus, getRoomStatus, getGuestName, isLoading } = hotelData;
-    const { openModal, setFormData } = modalData;
+    const { openModal, setFormData, setGroupEditChoice } = modalData;
 
     const [currentDate, setCurrentDate] = useState(new Date());
     const [jumpStep, setJumpStep] = useState(7); // Domyślnie 7, zostanie nadpisane przez useEffect
@@ -354,7 +354,17 @@ export default function CalendarView({ hotelData, modalData }) {
                                                                     key={r.id}
                                                                     onMouseDown={(e) => e.stopPropagation()}
                                                                     onMouseUp={(e) => e.stopPropagation()}
-                                                                    onClick={(e) => { e.stopPropagation(); openModal('reservation', r); }}
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        if (r.groupId) {
+                                                                            const siblings = reservations.filter(s => s.groupId === r.groupId && s.id !== r.id);
+                                                                            if (siblings.length > 0) {
+                                                                                setGroupEditChoice({ reservation: r, siblings });
+                                                                                return;
+                                                                            }
+                                                                        }
+                                                                        openModal('reservation', r);
+                                                                    }}
                                                                     className={`absolute top-0.5 bottom-0.5 rounded-md flex items-center cursor-pointer hover:brightness-110 hover:scale-[1.02] transition-all ${getStatusColor(r.status)} pointer-events-auto overflow-hidden`}
                                                                     style={{
                                                                         left: `calc(${startOffset * 100}%)`,

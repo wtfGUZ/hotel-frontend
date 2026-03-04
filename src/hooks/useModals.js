@@ -11,6 +11,7 @@ export const useModals = () => {
     const [quickGuestData, setQuickGuestData] = useState({});
     const [guestSearchTerm, setGuestSearchTerm] = useState('');
     const [showGuestDropdown, setShowGuestDropdown] = useState(false);
+    const [groupEditChoice, setGroupEditChoice] = useState(null);
 
     const openModal = (type, item = null, prefillData = null) => {
         setModalType(type);
@@ -59,6 +60,8 @@ export const useModals = () => {
         setGuestSearchTerm,
         showGuestDropdown,
         setShowGuestDropdown,
+        groupEditChoice,
+        setGroupEditChoice,
         openModal,
         closeModal
     };
