@@ -43,7 +43,7 @@ export default function GlobalModals({ hotelData, modalData }) {
             const allGroupRoomIds = [reservation.roomId, ...siblings.map(s => s.roomId)];
             openModal('reservation', reservation);
             setTimeout(() => {
-                setFormData(prev => ({ ...prev, roomIds: allGroupRoomIds, roomId: allGroupRoomIds[0] }));
+                setFormData(prev => ({ ...prev, roomIds: allGroupRoomIds, roomId: allGroupRoomIds[0], isGroupEditSession: true }));
             }, 0);
         }
         setGroupEditChoice(null);
@@ -59,15 +59,22 @@ export default function GlobalModals({ hotelData, modalData }) {
                 }
                 const currentRoomIds = formData.roomIds || (formData.roomId ? [formData.roomId] : []);
                 const validRoomIds = currentRoomIds.filter(id => id !== '');
+                const uniqueRoomIds = [...new Set(validRoomIds)];
+
+                if (uniqueRoomIds.length !== validRoomIds.length) {
+                    setAlertMessage('Nie możesz wybrać tego samego pokoju wielokrotnie.');
+                    return;
+                }
 
                 if (!formData.guestId || validRoomIds.length === 0 || !formData.checkIn || !formData.checkOut) {
                     setAlertMessage('Wypełnij wszystkie wymagane pola (w tym wybór pokoju)');
                     return;
                 }
 
-                const checkRoomConflict = (roomId, checkIn, checkOut, excludeReservationId = null) => {
+                const checkRoomConflict = (roomId, checkIn, checkOut, excludeReservationId = null, excludeGroupId = null) => {
                     return reservations.find(r => {
                         if (excludeReservationId && r.id === excludeReservationId) return false;
+                        if (excludeGroupId && r.groupId === excludeGroupId) return false;
                         if (String(r.roomId) !== String(roomId)) return false;
 
                         const newStart = new Date(checkIn);
@@ -92,7 +99,13 @@ export default function GlobalModals({ hotelData, modalData }) {
                 };
 
                 for (const rId of validRoomIds) {
-                    const conflict = checkRoomConflict(rId, formData.checkIn, formData.checkOut, editingItem?.id);
+                    const conflict = checkRoomConflict(
+                        rId,
+                        formData.checkIn,
+                        formData.checkOut,
+                        editingItem?.id,
+                        formData.isGroupEditSession ? editingItem?.groupId : null
+                    );
                     if (conflict) {
                         const conflictRoom = rooms.find(r => r.id === rId);
                         const conflictGuest = guests.find(g => g.id === conflict.guestId);
@@ -117,15 +130,24 @@ export default function GlobalModals({ hotelData, modalData }) {
                 setIsSaving(true);
                 try {
                     if (editingItem) {
-                        // Update original reservation with first room
-                        await updateReservationAPI(String(editingItem.id), { ...payload, roomId: parseInt(validRoomIds[0]) });
-                        // Create new reservations for any additional rooms (with same groupId)
-                        if (validRoomIds.length > 1) {
-                            const gId = editingItem.groupId || `grp-${Date.now()}`;
-                            // Update original to also have groupId
+                        if (formData.isGroupEditSession && editingItem.groupId) {
+                            const gId = editingItem.groupId;
+                            const oldSiblings = reservations.filter(r => r.groupId === gId && r.id !== editingItem.id);
+                            if (oldSiblings.length > 0) {
+                                await deleteMultipleReservationsAPI(oldSiblings.map(s => String(s.id)));
+                            }
                             await updateReservationAPI(String(editingItem.id), { ...payload, roomId: parseInt(validRoomIds[0]), groupId: gId });
                             for (let i = 1; i < validRoomIds.length; i++) {
                                 await addReservationAPI({ ...payload, roomId: parseInt(validRoomIds[i]), groupId: gId });
+                            }
+                        } else {
+                            await updateReservationAPI(String(editingItem.id), { ...payload, roomId: parseInt(validRoomIds[0]) });
+                            if (validRoomIds.length > 1) {
+                                const gId = editingItem.groupId || `grp-${Date.now()}`;
+                                await updateReservationAPI(String(editingItem.id), { ...payload, roomId: parseInt(validRoomIds[0]), groupId: gId });
+                                for (let i = 1; i < validRoomIds.length; i++) {
+                                    await addReservationAPI({ ...payload, roomId: parseInt(validRoomIds[i]), groupId: gId });
+                                }
                             }
                         }
                     } else {
