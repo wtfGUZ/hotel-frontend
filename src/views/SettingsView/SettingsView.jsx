@@ -153,7 +153,7 @@ export default function SettingsView({ hotelData, modalData }) {
                             <div key={room.id} className={`${theme.input} rounded-lg p-4 flex flex-col gap-3`}>
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div>
-                                        <div className="font-medium text-lg sm:text-base">{room.number} - {room.name}</div>
+                                        <div className="font-medium text-lg sm:text-base">{room.number} - {roomCategories?.find(c => c.id === room.categoryId)?.name || room.name}</div>
                                         <div className={`text-sm ${theme.textSecondary}`}>Max {room.maxGuests} osoby</div>
                                     </div>
                                     <div className="flex gap-2 w-full sm:w-auto">

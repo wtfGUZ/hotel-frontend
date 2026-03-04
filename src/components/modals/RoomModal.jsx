@@ -34,17 +34,7 @@ export default function RoomModal({ formData, setFormData, hotelData }) {
                 <p className="text-xs text-gray-500 mt-1">Jeśli wybierzesz kategorię, rezerwacje z jej linku iCal będą mogły automatycznie przydzielić ten pokój, o ile jest wolny.</p>
             </div>
 
-            <div>
-                <label className="block mb-2 font-medium">Nazwa pokoju</label>
-                <input
-                    type="text"
-                    required
-                    value={formData.name || ''}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className={`w-full px-3 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}
-                    placeholder="np. Pokój Standard"
-                />
-            </div>
+            {/* Pole Nazwa pokoju usunięte - teraz używamy tylko Kategorii */}
 
             <div>
                 <label className="block mb-2 font-medium">Maksymalna liczba gości</label>

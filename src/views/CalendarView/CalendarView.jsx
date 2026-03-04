@@ -5,7 +5,7 @@ import { addDays, formatDate, getStatusColor } from '../../utils/utils';
 
 export default function CalendarView({ hotelData, modalData }) {
     const { theme, darkMode } = useTheme();
-    const { rooms, reservations, roomStatuses, toggleRoomStatus, getRoomStatus, getGuestName, isLoading } = hotelData;
+    const { rooms, reservations, roomCategories, roomStatuses, toggleRoomStatus, getRoomStatus, getGuestName, isLoading } = hotelData;
     const { openModal, setFormData, setGroupEditChoice, setDeleteConfirm } = modalData;
 
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -261,7 +261,9 @@ export default function CalendarView({ hotelData, modalData }) {
                                                 />
                                                 <div className="w-full overflow-hidden flex flex-col justify-center">
                                                     <div className={`text-[10px] sm:text-xs font-semibold ${darkMode ? 'text-gray-100' : 'text-gray-900'} truncate leading-tight`}>{room.number}</div>
-                                                    <div className={`text-[8px] sm:text-[10px] truncate ${darkMode ? 'text-gray-400' : 'text-gray-600'} leading-none`} title={room.name}>{room.name}</div>
+                                                    <div className={`text-[8px] sm:text-[10px] truncate ${darkMode ? 'text-gray-400' : 'text-gray-600'} leading-none`} title={roomCategories?.find(c => c.id === room.categoryId)?.name || room.name}>
+                                                        {roomCategories?.find(c => c.id === room.categoryId)?.name || room.name}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>

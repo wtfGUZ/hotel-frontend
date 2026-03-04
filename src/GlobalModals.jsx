@@ -160,12 +160,14 @@ export default function GlobalModals({ hotelData, modalData }) {
                     setIsSaving(false);
                 }
             } else if (modalType === 'room') {
-                if (!formData.number || !formData.name || !formData.maxGuests) {
+                if (!formData.number || !formData.maxGuests) {
                     setAlertMessage('Wypełnij wszystkie wymagane pola'); return;
                 }
+                const selectedCat = hotelData.roomCategories?.find(c => c.id === formData.categoryId);
                 const roomPayload = {
                     number: String(formData.number),
-                    name: String(formData.name),
+                    name: String(selectedCat ? selectedCat.name : (formData.name || `Pokój ${formData.number}`)),
+                    categoryId: formData.categoryId ? String(formData.categoryId) : null,
                     maxGuests: parseInt(formData.maxGuests) || 1,
                     pricePerNight: parseFloat(formData.pricePerNight) || 0,
                     priceWithBreakfast: parseFloat(formData.priceWithBreakfast) || parseFloat(formData.pricePerNight) || 0,
