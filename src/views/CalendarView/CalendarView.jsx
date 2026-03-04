@@ -373,7 +373,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                                                     }}
                                                                 >
                                                                     <span className={`truncate pointer-events-none font-semibold drop-shadow-md pl-1 ${textSizeClass}`}>
-                                                                        {getGuestName(r.guestId)}
+                                                                        {r.groupId ? '👥 ' : ''}{getGuestName(r.guestId)}
                                                                     </span>
                                                                 </div>
                                                             );
