@@ -6,7 +6,7 @@ import { getStatusColor, getStatusText } from '../../utils/utils';
 export default function ReservationsView({ hotelData, modalData }) {
     const { theme } = useTheme();
     const { rooms, guests, reservations } = hotelData;
-    const { openModal, setDeleteConfirm } = modalData;
+    const { openModal, setDeleteConfirm, setGroupEditChoice } = modalData;
 
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
@@ -131,7 +131,16 @@ export default function ReservationsView({ hotelData, modalData }) {
                                 <div className="flex gap-1.5 shrink-0">
                                     <button
                                         type="button"
-                                        onClick={() => openModal('reservation', reservation)}
+                                        onClick={() => {
+                                            if (reservation.groupId) {
+                                                const siblings = reservations.filter(s => s.groupId === reservation.groupId && s.id !== reservation.id);
+                                                if (siblings.length > 0) {
+                                                    setGroupEditChoice({ reservation, siblings });
+                                                    return;
+                                                }
+                                            }
+                                            openModal('reservation', reservation);
+                                        }}
                                         className={`p-2 rounded-lg ${theme.buttonSecondary} hover:opacity-80 transition-opacity`}
                                         title="Edytuj"
                                     >
