@@ -69,6 +69,37 @@ export const useHotelData = () => {
         fetchData();
     }, []);
 
+    // 1.5. Automatyczna synchronizacja iCal w tle (co 5 minut)
+    useEffect(() => {
+        if (!roomCategories || roomCategories.length === 0) return;
+
+        const syncAndFetch = async () => {
+            try {
+                // 1. Uruchom synchronizację dla wszystkich kategorii posiadających link iCal
+                const syncPromises = roomCategories
+                    .filter(cat => cat.icalUrl && cat.icalUrl.trim())
+                    .map(cat => apiFetch('/ical/sync', {
+                        method: 'POST',
+                        body: JSON.stringify({ url: cat.icalUrl, categoryId: cat.id })
+                    }).catch(err => console.error("Błąd auto-sync iCal dla kat:", cat.id, err)));
+
+                if (syncPromises.length > 0) {
+                    await Promise.all(syncPromises);
+                    // 2. Po zakończeniu synchronizacji, pobierz odświeżoną listę rezerwacji
+                    const resReservations = await apiFetch('/reservations');
+                    const dbReservations = await resReservations.json();
+                    setReservations(dbReservations);
+                }
+            } catch (err) {
+                console.error("Błąd w procesie działania synchronizacji w tle:", err);
+            }
+        };
+
+        // Wywołaj co 5 minut
+        const intervalId = setInterval(syncAndFetch, 5 * 60 * 1000);
+        return () => clearInterval(intervalId);
+    }, [roomCategories]);
+
     // 2. Automatyczny zapis Logo do bazy (upsert)
     useEffect(() => {
         if (!logoUrl) return;
@@ -130,6 +161,18 @@ export const useHotelData = () => {
             return updated;
         } catch (error) {
             console.error(error);
+            throw error;
+        }
+    };
+
+    const acknowledgeReservationAPI = async (id) => {
+        try {
+            const res = await apiFetch(`/reservations/${id}/acknowledge`, { method: 'PUT' });
+            const updated = await handleRes(res);
+            setReservations(prev => prev.map(r => r.id === id ? { ...r, isNewIcal: false } : r));
+            return updated;
+        } catch (error) {
+            console.error("Nie udało się potwierdzić rezerwacji:", error);
             throw error;
         }
     };
@@ -256,7 +299,7 @@ export const useHotelData = () => {
     return {
         rooms, setRooms, addRoomAPI, updateRoomAPI, deleteRoomAPI,
         guests, setGuests, addGuestAPI, updateGuestAPI, deleteGuestAPI,
-        reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI, deleteMultipleReservationsAPI,
+        reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI, deleteMultipleReservationsAPI, acknowledgeReservationAPI,
         logoUrl, setLogoUrl,
         roomCategories, setRoomCategories, saveRoomCategoriesAPI, syncIcalCategoryAPI,
         verifyPinAPI, changePinAPI,

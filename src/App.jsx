@@ -9,6 +9,7 @@ const ReservationsView = lazy(() => import('./views/ReservationsView/Reservation
 const GuestsView = lazy(() => import('./views/GuestsView/GuestsView'));
 const SettingsView = lazy(() => import('./views/SettingsView/SettingsView'));
 const GlobalModals = lazy(() => import('./GlobalModals'));
+const NotificationStack = lazy(() => import('./components/layout/NotificationStack'));
 
 function AppContent() {
   const { theme } = useTheme();
@@ -46,6 +47,7 @@ function AppContent() {
 
       <Suspense fallback={null}>
         <GlobalModals hotelData={hotelData} modalData={modalData} />
+        <NotificationStack hotelData={hotelData} />
       </Suspense>
     </div>
   );
