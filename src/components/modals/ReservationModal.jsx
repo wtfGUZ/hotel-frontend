@@ -365,7 +365,7 @@ export default function ReservationModal({
                     );
                 })}
 
-                {formData.checkIn && formData.checkOut && !editingItem && (
+                {formData.checkIn && formData.checkOut && (
                     <button
                         type="button"
                         onClick={() => {

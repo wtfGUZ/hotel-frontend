@@ -91,7 +91,12 @@ export default function GlobalModals({ hotelData, modalData }) {
                 setIsSaving(true);
                 try {
                     if (editingItem) {
-                        await updateReservationAPI(String(editingItem.id), payload);
+                        // Update original reservation with first room
+                        await updateReservationAPI(String(editingItem.id), { ...payload, roomId: parseInt(validRoomIds[0]) });
+                        // Create new reservations for any additional rooms
+                        for (let i = 1; i < validRoomIds.length; i++) {
+                            await addReservationAPI({ ...payload, roomId: parseInt(validRoomIds[i]) });
+                        }
                     } else {
                         for (const rId of validRoomIds) {
                             await addReservationAPI({ ...payload, roomId: parseInt(rId) });
