@@ -4,24 +4,23 @@ import { useTheme } from '../../context/ThemeContext';
 import PinLockScreen from '../../components/PinLockScreen';
 
 export default function SettingsView({ hotelData, modalData }) {
-    const { theme, darkMode, toggleDarkMode } = useTheme();
     const { rooms, setRooms, guests, setGuests, reservations, setReservations, logoUrl, setLogoUrl, syncIcalCategoryAPI, roomCategories, setRoomCategories, saveRoomCategoriesAPI, verifyPinAPI, changePinAPI } = hotelData;
     const { openModal, setDeleteConfirm, setAlertMessage } = modalData;
 
     const [syncStatuses, setSyncStatuses] = useState({});
 
-    const handleCategoryIcalSync = async (categoryId, url) => {
-        if (!url) {
-            setSyncStatuses(prev => ({ ...prev, [categoryId]: 'Wpisz URL iCal z Booking.com' }));
+    const handleCategoryIcalSave = async (categoryId, url) => {
+        if (!url || url.trim() === '') {
+            setSyncStatuses(prev => ({ ...prev, [categoryId]: 'Wpisz URL przed zapisaniem' }));
             return;
         }
-        setSyncStatuses(prev => ({ ...prev, [categoryId]: '⏳ Pobieranie i synchronizowanie...' }));
+        setSyncStatuses(prev => ({ ...prev, [categoryId]: 'Zapisywanie w bazie...' }));
         try {
-            const result = await syncIcalCategoryAPI(categoryId, url);
-            setSyncStatuses(prev => ({ ...prev, [categoryId]: `✅ Sukces! Zimportowano: ${result.importedCount}, Zaktualizowano/Pominięto: ${result.skippedCount}` }));
-            setTimeout(() => setSyncStatuses(prev => ({ ...prev, [categoryId]: '' })), 7000);
+            await saveRoomCategoriesAPI(roomCategories);
+            setSyncStatuses(prev => ({ ...prev, [categoryId]: `✅ Zapisano link trwale.` }));
+            setTimeout(() => setSyncStatuses(prev => ({ ...prev, [categoryId]: '' })), 4000);
         } catch (err) {
-            setSyncStatuses(prev => ({ ...prev, [categoryId]: `❌ Błąd: ${err.message}` }));
+            setSyncStatuses(prev => ({ ...prev, [categoryId]: `❌ Błąd zapisu: ${err.message}` }));
         }
     };
 
@@ -236,10 +235,10 @@ export default function SettingsView({ hotelData, modalData }) {
                                             onBlur={() => saveRoomCategoriesAPI(roomCategories)}
                                         />
                                         <button
-                                            onClick={() => handleCategoryIcalSync(cat.id, cat.icalUrl)}
+                                            onClick={() => handleCategoryIcalSave(cat.id, cat.icalUrl)}
                                             className={`px-4 py-2 text-sm rounded-lg font-medium transition-opacity hover:opacity-90 flex justify-center items-center ${theme.button}`}
                                         >
-                                            Pobierz iCal
+                                            Zapisz link
                                         </button>
                                     </div>
                                     {syncStatuses[cat.id] && (
