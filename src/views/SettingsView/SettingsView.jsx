@@ -59,22 +59,6 @@ export default function SettingsView({ hotelData, modalData }) {
         return <PinLockScreen verifyPinAPI={verifyPinAPI} onUnlock={() => setIsUnlocked(true)} />;
     }
 
-    const testIcalConnection = async () => {
-        if (!icalUrl) {
-            setAlertMessage('Wpisz URL iCal z Booking.com');
-            return;
-        }
-        setIcalStatus('⏳ Pobieranie i synchronizowanie...');
-
-        try {
-            const result = await syncIcalAPI(icalUrl);
-            setIcalStatus(`✅ Sukces! Dodano/Zaktualizowano: ${result.importedCount}, Zsynchronizowano: ${result.skippedCount}, Brak pokoi: ${result.conflictCount}, Usunięto (anulowane): ${result.cancelledCount || 0}`);
-        } catch (err) {
-            console.error(err);
-            setIcalStatus(`❌ Błąd: ${err.message || 'Nie udało się zsynchronizować kalendarza'}`);
-        }
-    };
-
     return (
         <div>
 
