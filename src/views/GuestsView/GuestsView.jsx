@@ -1,5 +1,5 @@
-import React from 'react';
-import { Plus, Edit2, Trash2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Plus, Edit2, Trash2, Search } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
 export default function GuestsView({ hotelData, modalData }) {
@@ -7,10 +7,27 @@ export default function GuestsView({ hotelData, modalData }) {
     const { guests, reservations } = hotelData;
     const { openModal, setDeleteConfirm } = modalData;
 
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filteredGuests = guests.filter(g =>
+        `${g.firstName} ${g.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (g.email && g.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (g.phone && g.phone.includes(searchTerm))
+    );
+
     return (
         <div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
-                <div></div>
+                <div className="relative w-full sm:w-72">
+                    <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${theme.textSecondary}`} />
+                    <input
+                        type="text"
+                        placeholder="Szukaj gościa..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className={`w-full pl-10 pr-4 py-2 sm:py-2.5 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none transition-shadow text-sm sm:text-base`}
+                    />
+                </div>
                 <button
                     onClick={() => openModal('guest')}
                     className={`px-4 py-3 rounded-lg ${theme.button} flex items-center justify-center gap-2 touch-manipulation`}
@@ -21,7 +38,7 @@ export default function GuestsView({ hotelData, modalData }) {
             </div>
 
             <div className="grid gap-4">
-                {guests.map(guest => {
+                {filteredGuests.length > 0 ? filteredGuests.map(guest => {
                     const guestReservations = reservations.filter(r => r.guestId === guest.id);
 
                     return (
@@ -62,7 +79,11 @@ export default function GuestsView({ hotelData, modalData }) {
                             </div>
                         </div>
                     );
-                })}
+                }) : (
+                    <div className={`${theme.card} p-8 text-center rounded-xl text-gray-500`}>
+                        Brak gości pasujących do wyszukiwania.
+                    </div>
+                )}
             </div>
         </div>
     );
