@@ -150,9 +150,9 @@ export const useHotelData = () => {
         } catch (error) { console.error(error); throw error; }
     };
 
-    const syncIcalAPI = async (url) => {
+    const syncIcalAPI = async (url, roomId = null) => {
         try {
-            const res = await apiFetch('/ical/sync', { method: 'POST', body: JSON.stringify({ url }) });
+            const res = await apiFetch('/ical/sync', { method: 'POST', body: JSON.stringify({ url, roomId }) });
             const result = await handleRes(res);
 
             // Reload reservations after syncing
@@ -162,6 +162,17 @@ export const useHotelData = () => {
 
             return result;
         } catch (error) { console.error(error); throw error; }
+    };
+
+    const saveRoomIcalAPI = async (roomId, url) => {
+        setIsSaving(true);
+        try {
+            const updated = { ...roomIcalUrls, [roomId]: url };
+            const res = await apiFetch('/settings', { method: 'POST', body: JSON.stringify({ key: 'room_icals', value: JSON.stringify(updated) }) });
+            await handleRes(res);
+            setRoomIcalUrls(updated);
+        } catch (error) { console.error(error); throw error; }
+        finally { setIsSaving(false); }
     };
 
     // Interfejs do modyfikacji Gości (Dodaj, Edytuj, Usuń)
