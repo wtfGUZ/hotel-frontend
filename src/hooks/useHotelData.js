@@ -69,16 +69,24 @@ export const useHotelData = () => {
         fetchData();
     }, []);
 
-    // 1.5. Funkcja do synchronizacji wszystkich iCal na żądanie
     const syncAllIcalCategoriesAPI = async () => {
         if (!roomCategories || roomCategories.length === 0) return;
         try {
-            const syncPromises = roomCategories
-                .filter(cat => cat.icalUrl && cat.icalUrl.trim())
-                .map(cat => apiFetch('/ical/sync', {
+            const urlGroups = {};
+            roomCategories.forEach(cat => {
+                const url = cat.icalUrl?.trim();
+                if (url) {
+                    if (!urlGroups[url]) urlGroups[url] = [];
+                    urlGroups[url].push(cat.id);
+                }
+            });
+
+            const syncPromises = Object.entries(urlGroups).map(([url, catIds]) =>
+                apiFetch('/ical/sync', {
                     method: 'POST',
-                    body: JSON.stringify({ url: cat.icalUrl, categoryId: cat.id })
-                }).catch(err => console.error("Błąd auto-sync iCal dla kat:", cat.id, err)));
+                    body: JSON.stringify({ url, categoryIds: catIds })
+                }).catch(err => console.error("Błąd auto-sync iCal dla grupowanego URL:", catIds, err))
+            );
 
             if (syncPromises.length > 0) {
                 await Promise.all(syncPromises);
