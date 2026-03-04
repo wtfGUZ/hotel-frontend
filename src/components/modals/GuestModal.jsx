@@ -34,7 +34,6 @@ export default function GuestModal({ formData, setFormData }) {
                 <label className="block mb-2 font-medium">Email</label>
                 <input
                     type="email"
-                    required
                     value={formData.email || ''}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className={`w-full px-4 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}
@@ -45,7 +44,6 @@ export default function GuestModal({ formData, setFormData }) {
                 <label className="block mb-2 font-medium">Telefon</label>
                 <input
                     type="tel"
-                    required
                     value={formData.phone || ''}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className={`w-full px-4 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}
