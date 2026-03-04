@@ -366,7 +366,7 @@ export default function GlobalModals({ hotelData, modalData }) {
 
                         <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3">
                             {modalType === 'reservation' && <ReservationModal formData={formData} setFormData={setFormData} hotelData={hotelData} modalData={modalData} />}
-                            {modalType === 'room' && <RoomModal formData={formData} setFormData={setFormData} />}
+                            {modalType === 'room' && <RoomModal formData={formData} setFormData={setFormData} hotelData={hotelData} />}
                             {modalType === 'guest' && <GuestModal formData={formData} setFormData={setFormData} />}
 
                             <div className="flex justify-between pt-4 gap-3 w-full">

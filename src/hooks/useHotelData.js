@@ -7,7 +7,7 @@ export const useHotelData = () => {
     const [guests, setGuests] = useState([]);
     const [reservations, setReservations] = useState([]);
     const [logoUrl, setLogoUrl] = useState('/vite.png');
-    const [roomIcalUrls, setRoomIcalUrls] = useState({});
+    const [roomCategories, setRoomCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -39,25 +39,25 @@ export const useHotelData = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [resRooms, resGuests, resReservations, resSettings, resRoomIcals] = await Promise.all([
+                const [resRooms, resGuests, resReservations, resSettings, resCategories] = await Promise.all([
                     apiFetch('/rooms'),
                     apiFetch('/guests'),
                     apiFetch('/reservations'),
                     apiFetch('/settings/hotelLogo'),
-                    apiFetch('/settings/room_icals')
+                    apiFetch('/settings/room_categories')
                 ]);
 
                 const dbRooms = await resRooms.json();
                 const dbGuests = await resGuests.json();
                 const dbReservations = await resReservations.json();
                 const dbLogo = await resSettings.json();
-                const dbRoomIcals = await resRoomIcals.json();
+                const dbCategories = await resCategories.json();
 
                 if (dbRooms.length > 0) setRooms(dbRooms);
                 if (dbGuests.length > 0) setGuests(dbGuests);
                 if (dbReservations.length > 0) setReservations(dbReservations);
                 if (dbLogo && dbLogo.value) setLogoUrl(JSON.parse(dbLogo.value));
-                if (dbRoomIcals && dbRoomIcals.value) setRoomIcalUrls(JSON.parse(dbRoomIcals.value));
+                if (dbCategories && dbCategories.value) setRoomCategories(JSON.parse(dbCategories.value));
             } catch (error) {
                 console.error('Błąd pobierania danych z serwera:', error);
                 console.warn("Nie udało się połączyć z bazą danych (serwerem). Upewnij się, że backend jest uruchomiony.");
@@ -150,9 +150,9 @@ export const useHotelData = () => {
         } catch (error) { console.error(error); throw error; }
     };
 
-    const syncIcalAPI = async (url, roomId = null) => {
+    const syncIcalCategoryAPI = async (categoryId, url) => {
         try {
-            const res = await apiFetch('/ical/sync', { method: 'POST', body: JSON.stringify({ url, roomId }) });
+            const res = await apiFetch('/ical/sync', { method: 'POST', body: JSON.stringify({ categoryId, url }) });
             const result = await handleRes(res);
 
             // Reload reservations after syncing
@@ -164,13 +164,12 @@ export const useHotelData = () => {
         } catch (error) { console.error(error); throw error; }
     };
 
-    const saveRoomIcalAPI = async (roomId, url) => {
+    const saveRoomCategoriesAPI = async (categories) => {
         setIsSaving(true);
         try {
-            const updated = { ...roomIcalUrls, [roomId]: url };
-            const res = await apiFetch('/settings', { method: 'POST', body: JSON.stringify({ key: 'room_icals', value: JSON.stringify(updated) }) });
+            const res = await apiFetch('/settings', { method: 'POST', body: JSON.stringify({ key: 'room_categories', value: JSON.stringify(categories) }) });
             await handleRes(res);
-            setRoomIcalUrls(updated);
+            setRoomCategories(categories);
         } catch (error) { console.error(error); throw error; }
         finally { setIsSaving(false); }
     };
@@ -257,9 +256,9 @@ export const useHotelData = () => {
     return {
         rooms, setRooms, addRoomAPI, updateRoomAPI, deleteRoomAPI,
         guests, setGuests, addGuestAPI, updateGuestAPI, deleteGuestAPI,
-        reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI, deleteMultipleReservationsAPI, syncIcalAPI,
+        reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI, deleteMultipleReservationsAPI,
         logoUrl, setLogoUrl,
-        roomIcalUrls, setRoomIcalUrls, saveRoomIcalAPI,
+        roomCategories, setRoomCategories, saveRoomCategoriesAPI, syncIcalCategoryAPI,
         verifyPinAPI, changePinAPI,
         getRoomStatus,
         toggleRoomStatus,
