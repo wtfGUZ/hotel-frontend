@@ -1,10 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../context/ThemeContext';
-import { Bell, Check } from 'lucide-react';
+import { Bell, Check, Clock, User } from 'lucide-react';
 
 export default function NotificationStack({ hotelData }) {
     const { theme, darkMode } = useTheme();
-    const { reservations, acknowledgeReservationAPI, rooms, roomCategories } = hotelData;
+    const { reservations, acknowledgeReservationAPI, rooms, roomCategories, getGuestName } = hotelData;
+    const [now, setNow] = useState(new Date());
+
+    useEffect(() => {
+        // Obliczaj czas naprzód co 60 sekund
+        const interval = setInterval(() => setNow(new Date()), 60000);
+        return () => clearInterval(interval);
+    }, []);
+
+    const getTimeAgo = (createdAtString) => {
+        if (!createdAtString) return 'przed chwilą';
+        const diffMs = now.getTime() - new Date(createdAtString).getTime();
+        if (diffMs < 60000) return 'przed chwilą';
+        const diffMins = Math.floor(diffMs / 60000);
+        if (diffMins < 60) return `${diffMins} min temu`;
+        const diffHours = Math.floor(diffMins / 60);
+        if (diffHours < 24) return `${diffHours} godz temu`;
+        const diffDays = Math.floor(diffHours / 24);
+        return `${diffDays} dni temu`;
+    };
 
     // Filter unacknowledged ical reservations
     const newReservations = reservations.filter(r => r.isNewIcal === true);
@@ -18,6 +37,8 @@ export default function NotificationStack({ hotelData }) {
                 const categoryName = roomCategories?.find(c => c.id === room?.categoryId)?.name || room?.name || 'Nieznany pokój';
                 const checkInDate = new Date(res.checkIn).toLocaleDateString('pl-PL', { day: 'numeric', month: 'short' });
                 const checkOutDate = new Date(res.checkOut).toLocaleDateString('pl-PL', { day: 'numeric', month: 'short' });
+                const guestName = getGuestName(res.guestId);
+                const timeAgo = getTimeAgo(res.createdAt);
 
                 return (
                     <div
@@ -29,11 +50,17 @@ export default function NotificationStack({ hotelData }) {
                         </div>
                         <div className="flex-1 min-w-0">
                             <h4 className="font-bold text-sm mb-1 truncate">Nowa rezerwacja z iCal</h4>
+                            <p className="text-xs opacity-80 truncate mb-0.5 flex items-center gap-1">
+                                <User className="w-3 h-3" /> {guestName}
+                            </p>
                             <p className="text-xs opacity-80 truncate mb-0.5">
                                 Pokój {room?.number} ({categoryName})
                             </p>
-                            <p className="text-xs font-semibold opacity-90 mb-2">
+                            <p className={`text-xs font-semibold mb-1.5 pb-1.5 border-b ${darkMode ? 'border-gray-700' : 'border-gray-100'}`}>
                                 {checkInDate} - {checkOutDate}
+                            </p>
+                            <p className="text-[10px] opacity-60 flex items-center gap-1 mb-2">
+                                <Clock className="w-3 h-3" /> {timeAgo}
                             </p>
                             <button
                                 onClick={() => acknowledgeReservationAPI(res.id)}
