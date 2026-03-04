@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Check } from 'lucide-react';
+import { X, Check, Trash2 } from 'lucide-react';
 import { useTheme } from './context/ThemeContext';
 import RoomModal from './components/modals/RoomModal';
 import GuestModal from './components/modals/GuestModal';
@@ -211,7 +211,7 @@ export default function GlobalModals({ hotelData, modalData }) {
                 </div>
             )}
 
-            {deleteConfirm && (
+            {deleteConfirm && deleteConfirm.type !== 'groupReservation' && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
                     <div className={`${theme.card} rounded-2xl p-6 max-w-md w-full shadow-2xl`}>
                         <h3 className="text-xl font-bold mb-4">Potwierdzenie usunięcia</h3>
@@ -254,6 +254,59 @@ export default function GlobalModals({ hotelData, modalData }) {
                                 {deleteConfirm.type === 'clearAll' ? 'Tak, wyczyść wszystko' : 'Usuń'}
                             </button>
                             <button onClick={() => setDeleteConfirm(null)} className={`flex-1 px-6 py-3 rounded-lg ${theme.buttonSecondary} font-medium transition-opacity hover:opacity-80`}>
+                                Anuluj
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {deleteConfirm && deleteConfirm.type === 'groupReservation' && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+                    <div className={`${theme.card} rounded-2xl p-6 max-w-md w-full shadow-2xl`}>
+                        <h3 className="text-xl font-bold mb-2 text-red-500">Usuwanie rezerwacji grupowej</h3>
+                        <p className={`${theme.textSecondary} mb-4 text-sm`}>
+                            Ta rezerwacja jest częścią grupy ({deleteConfirm.siblings.length + 1} pokoje:
+                            {' '}{[deleteConfirm.reservation, ...deleteConfirm.siblings].map(r => {
+                                const room = rooms.find(rm => rm.id === r.roomId);
+                                return room ? room.number : r.roomId;
+                            }).join(', ')}).
+                        </p>
+                        <div className="flex flex-col gap-2">
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    try {
+                                        await deleteReservationAPI(String(deleteConfirm.reservation.id));
+                                        setDeleteConfirm(null);
+                                    } catch (err) {
+                                        setAlertMessage('Błąd przy usuwaniu pojedynczego pokoju.');
+                                    }
+                                }}
+                                className={`w-full px-4 py-3 rounded-lg ${theme.buttonSecondary} border border-red-500/30 text-red-500 font-medium hover:bg-red-500/10 transition-colors text-left`}
+                            >
+                                🗑️ Usuń tylko ten pokój
+                            </button>
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    try {
+                                        const ids = [deleteConfirm.reservation.id, ...deleteConfirm.siblings.map(s => s.id)];
+                                        await deleteMultipleReservationsAPI(ids.map(String));
+                                        setDeleteConfirm(null);
+                                    } catch (err) {
+                                        setAlertMessage('Błąd przy usuwaniu całej grupy.');
+                                    }
+                                }}
+                                className={`w-full px-4 py-3 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors text-left shadow-lg hover:shadow-xl`}
+                            >
+                                💣 Usuń całą grupę ({deleteConfirm.siblings.length + 1} pokoje)
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setDeleteConfirm(null)}
+                                className={`w-full px-4 py-2 mt-2 rounded-lg text-sm ${theme.textSecondary} hover:opacity-80 transition-opacity`}
+                            >
                                 Anuluj
                             </button>
                         </div>
@@ -316,14 +369,50 @@ export default function GlobalModals({ hotelData, modalData }) {
                             {modalType === 'room' && <RoomModal formData={formData} setFormData={setFormData} />}
                             {modalType === 'guest' && <GuestModal formData={formData} setFormData={setFormData} />}
 
-                            <div className="flex gap-3 pt-4">
-                                <button type="submit" disabled={isSaving} className={`flex-1 px-6 py-3 rounded-lg ${theme.button} font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50`}>
-                                    <Check className="w-5 h-5" />
-                                    {isSaving ? 'Zapisywanie...' : (editingItem ? 'Zapisz zmiany' : 'Dodaj')}
-                                </button>
-                                <button type="button" onClick={closeModal} className={`px-6 py-3 rounded-lg ${theme.buttonSecondary} font-medium hover:opacity-90 transition-opacity`}>
-                                    Anuluj
-                                </button>
+                            <div className="flex justify-between pt-4 gap-3 w-full">
+                                {editingItem && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            if (modalType === 'reservation') {
+                                                if (editingItem.groupId && formData.isGroupEditSession) {
+                                                    // If we are editing the group, delete the whole group directly!
+                                                    const siblings = reservations.filter(s => s.groupId === editingItem.groupId && s.id !== editingItem.id);
+                                                    closeModal();
+                                                    setDeleteConfirm({ type: 'groupReservation', reservation: editingItem, siblings });
+                                                } else if (editingItem.groupId) {
+                                                    const siblings = reservations.filter(s => s.groupId === editingItem.groupId && s.id !== editingItem.id);
+                                                    closeModal();
+                                                    if (siblings.length > 0) {
+                                                        setDeleteConfirm({ type: 'groupReservation', reservation: editingItem, siblings });
+                                                    } else {
+                                                        setDeleteConfirm({ type: 'reservation', id: editingItem.id });
+                                                    }
+                                                } else {
+                                                    closeModal();
+                                                    setDeleteConfirm({ type: 'reservation', id: editingItem.id });
+                                                }
+                                            } else {
+                                                closeModal();
+                                                setDeleteConfirm({ type: modalType, id: editingItem.id, hasReservations: modalType === 'guest' ? hotelData.reservations.some(r => r.guestId === editingItem.id) : false });
+                                            }
+                                        }}
+                                        className={`px-3 sm:px-6 py-3 rounded-lg flex items-center justify-center gap-1 sm:gap-2 font-medium transition-colors border border-red-500/50 text-red-500 hover:bg-red-500/10 hover:border-red-500 w-auto`}
+                                        title="Usuń"
+                                    >
+                                        <Trash2 className="w-5 h-5 flex-shrink-0" />
+                                        <span className="hidden sm:inline">Usuń</span>
+                                    </button>
+                                )}
+                                <div className="flex gap-2 sm:gap-3 flex-1 justify-end w-full">
+                                    <button type="button" onClick={closeModal} className={`flex-1 sm:flex-none px-3 sm:px-6 py-3 rounded-lg ${theme.buttonSecondary} font-medium hover:opacity-90 transition-opacity`}>
+                                        Anuluj
+                                    </button>
+                                    <button type="submit" disabled={isSaving} className={`flex-[2] sm:flex-[0_1_auto] px-3 sm:px-6 py-3 rounded-lg ${theme.button} font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 min-w-0`}>
+                                        <Check className="w-5 h-5 flex-shrink-0" />
+                                        <span className="truncate">{isSaving ? 'Zapisywanie...' : (editingItem ? 'Zapisz' : 'Dodaj')}</span>
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     </div>

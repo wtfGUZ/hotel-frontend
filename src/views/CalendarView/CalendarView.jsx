@@ -1,15 +1,16 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { addDays, formatDate, getStatusColor } from '../../utils/utils';
 
 export default function CalendarView({ hotelData, modalData }) {
     const { theme, darkMode } = useTheme();
     const { rooms, reservations, roomStatuses, toggleRoomStatus, getRoomStatus, getGuestName, isLoading } = hotelData;
-    const { openModal, setFormData, setGroupEditChoice } = modalData;
+    const { openModal, setFormData, setGroupEditChoice, setDeleteConfirm } = modalData;
 
     const [currentDate, setCurrentDate] = useState(new Date());
     const [jumpStep, setJumpStep] = useState(7); // Domyślnie 7, zostanie nadpisane przez useEffect
+    const [isDeleteMode, setIsDeleteMode] = useState(false);
     const dragInfo = useRef({ isDragging: false, roomId: null, startDate: null, endDate: null });
     const [dragState, setDragState] = useState({ roomId: null, startDate: null, endDate: null });
 
@@ -181,6 +182,16 @@ export default function CalendarView({ hotelData, modalData }) {
                     >
                         <span className="hidden sm:inline">Naprzód ({jumpStep}d)</span>
                         <ChevronRight className="w-4 h-4" />
+                    </button>
+
+                    <button
+                        onClick={() => setIsDeleteMode(!isDeleteMode)}
+                        className={`px-3 sm:px-4 py-2 rounded-lg ${isDeleteMode ? 'bg-red-500 text-white hover:bg-red-600' : theme.buttonSecondary} flex items-center justify-center gap-2 touch-manipulation w-full sm:w-auto mt-2 sm:mt-0 transition-colors`}
+                        title="Tryb usuwania rezerwacji z kalendarza"
+                    >
+                        <Trash2 className="w-5 h-5" />
+                        <span className="hidden sm:inline">{isDeleteMode ? 'Wyłącz usuwanie' : 'Usuwaj'}</span>
+                        <span className="sm:hidden">{isDeleteMode ? 'Anuluj usuwanie' : 'Usuwaj'}</span>
                     </button>
 
                     <button
@@ -356,6 +367,18 @@ export default function CalendarView({ hotelData, modalData }) {
                                                                     onMouseUp={(e) => e.stopPropagation()}
                                                                     onClick={(e) => {
                                                                         e.stopPropagation();
+                                                                        if (isDeleteMode) {
+                                                                            if (r.groupId) {
+                                                                                const siblings = reservations.filter(s => s.groupId === r.groupId && s.id !== r.id);
+                                                                                if (siblings.length > 0) {
+                                                                                    setDeleteConfirm({ type: 'groupReservation', reservation: r, siblings });
+                                                                                    return;
+                                                                                }
+                                                                            }
+                                                                            setDeleteConfirm({ type: 'reservation', id: r.id });
+                                                                            return;
+                                                                        }
+
                                                                         if (r.groupId) {
                                                                             const siblings = reservations.filter(s => s.groupId === r.groupId && s.id !== r.id);
                                                                             if (siblings.length > 0) {
