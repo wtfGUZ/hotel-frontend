@@ -4,6 +4,7 @@ import { useTheme } from '../../context/ThemeContext';
 import PinLockScreen from '../../components/PinLockScreen';
 
 export default function SettingsView({ hotelData, modalData }) {
+    const { theme, darkMode, toggleDarkMode } = useTheme();
     const { rooms, setRooms, guests, setGuests, reservations, setReservations, logoUrl, setLogoUrl, syncIcalCategoryAPI, roomCategories, setRoomCategories, saveRoomCategoriesAPI, verifyPinAPI, changePinAPI } = hotelData;
     const { openModal, setDeleteConfirm, setAlertMessage } = modalData;
 
