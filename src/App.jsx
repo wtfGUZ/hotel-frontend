@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import Header from './components/layout/Header';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import { useHotelData } from './hooks/useHotelData';
 import { useModals } from './hooks/useModals';
-import CalendarView from './views/CalendarView/CalendarView';
-import ReservationsView from './views/ReservationsView/ReservationsView';
-import GuestsView from './views/GuestsView/GuestsView';
-import SettingsView from './views/SettingsView/SettingsView';
-import GlobalModals from './GlobalModals';
+
+const CalendarView = lazy(() => import('./views/CalendarView/CalendarView'));
+const ReservationsView = lazy(() => import('./views/ReservationsView/ReservationsView'));
+const GuestsView = lazy(() => import('./views/GuestsView/GuestsView'));
+const SettingsView = lazy(() => import('./views/SettingsView/SettingsView'));
+const GlobalModals = lazy(() => import('./GlobalModals'));
 
 function AppContent() {
   const { theme } = useTheme();
@@ -31,13 +32,21 @@ function AppContent() {
       <Header currentView={currentView} setCurrentView={setCurrentView} logoUrl={hotelData.logoUrl} />
 
       <main className="max-w-[98%] mx-auto px-3 py-4">
-        {currentView === 'calendar' && <CalendarView hotelData={hotelData} modalData={modalData} />}
-        {currentView === 'reservations' && <ReservationsView hotelData={hotelData} modalData={modalData} />}
-        {currentView === 'guests' && <GuestsView hotelData={hotelData} modalData={modalData} />}
-        {currentView === 'settings' && <SettingsView hotelData={hotelData} modalData={modalData} />}
+        <Suspense fallback={
+          <div className="flex justify-center items-center h-[50vh]">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+          </div>
+        }>
+          {currentView === 'calendar' && <CalendarView hotelData={hotelData} modalData={modalData} />}
+          {currentView === 'reservations' && <ReservationsView hotelData={hotelData} modalData={modalData} />}
+          {currentView === 'guests' && <GuestsView hotelData={hotelData} modalData={modalData} />}
+          {currentView === 'settings' && <SettingsView hotelData={hotelData} modalData={modalData} />}
+        </Suspense>
       </main>
 
-      <GlobalModals hotelData={hotelData} modalData={modalData} />
+      <Suspense fallback={null}>
+        <GlobalModals hotelData={hotelData} modalData={modalData} />
+      </Suspense>
     </div>
   );
 }

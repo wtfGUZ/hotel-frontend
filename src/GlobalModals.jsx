@@ -359,7 +359,7 @@ export default function GlobalModals({ hotelData, modalData }) {
                                 {modalType === 'room' && (editingItem ? 'Edytuj Pokój' : 'Nowy Pokój')}
                                 {modalType === 'guest' && (editingItem ? 'Edytuj Gościa' : 'Nowy Gość')}
                             </h3>
-                            <button onClick={closeModal} className={`p-2 rounded-lg ${theme.buttonSecondary}`}>
+                            <button onClick={closeModal} aria-label="Zamknij okno" className={`p-2 rounded-lg ${theme.buttonSecondary}`}>
                                 <X className="w-5 h-5" />
                             </button>
                         </div>

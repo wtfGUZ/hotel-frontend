@@ -161,6 +161,7 @@ export default function CalendarView({ hotelData, modalData }) {
                         onClick={() => setCurrentDate(addDays(currentDate, -jumpStep))}
                         className={`px-2 sm:px-4 py-2 rounded-lg ${theme.buttonSecondary} flex flex-1 sm:flex-none justify-center items-center gap-1 min-w-[3rem]`}
                         title={`Cofnij o ${jumpStep} dni`}
+                        aria-label={`Cofnij o ${jumpStep} dni`}
                     >
                         <ChevronLeft className="w-4 h-4" />
                         <span className="hidden sm:inline">Wstecz ({jumpStep}d)</span>
@@ -179,6 +180,7 @@ export default function CalendarView({ hotelData, modalData }) {
                         onClick={() => setCurrentDate(addDays(currentDate, jumpStep))}
                         className={`px-2 sm:px-4 py-2 rounded-lg ${theme.buttonSecondary} flex flex-1 sm:flex-none justify-center items-center gap-1 min-w-[3rem]`}
                         title={`Naprzód o ${jumpStep} dni`}
+                        aria-label={`Naprzód o ${jumpStep} dni`}
                     >
                         <span className="hidden sm:inline">Naprzód ({jumpStep}d)</span>
                         <ChevronRight className="w-4 h-4" />
