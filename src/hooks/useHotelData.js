@@ -7,6 +7,7 @@ export const useHotelData = () => {
     const [guests, setGuests] = useState([]);
     const [reservations, setReservations] = useState([]);
     const [logoUrl, setLogoUrl] = useState('/vite.png');
+    const [roomIcalUrls, setRoomIcalUrls] = useState({});
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -38,22 +39,25 @@ export const useHotelData = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [resRooms, resGuests, resReservations, resSettings] = await Promise.all([
+                const [resRooms, resGuests, resReservations, resSettings, resRoomIcals] = await Promise.all([
                     apiFetch('/rooms'),
                     apiFetch('/guests'),
                     apiFetch('/reservations'),
-                    apiFetch('/settings/hotelLogo')
+                    apiFetch('/settings/hotelLogo'),
+                    apiFetch('/settings/room_icals')
                 ]);
 
                 const dbRooms = await resRooms.json();
                 const dbGuests = await resGuests.json();
                 const dbReservations = await resReservations.json();
                 const dbLogo = await resSettings.json();
+                const dbRoomIcals = await resRoomIcals.json();
 
                 if (dbRooms.length > 0) setRooms(dbRooms);
                 if (dbGuests.length > 0) setGuests(dbGuests);
                 if (dbReservations.length > 0) setReservations(dbReservations);
                 if (dbLogo && dbLogo.value) setLogoUrl(JSON.parse(dbLogo.value));
+                if (dbRoomIcals && dbRoomIcals.value) setRoomIcalUrls(JSON.parse(dbRoomIcals.value));
             } catch (error) {
                 console.error('Błąd pobierania danych z serwera:', error);
                 console.warn("Nie udało się połączyć z bazą danych (serwerem). Upewnij się, że backend jest uruchomiony.");
@@ -244,6 +248,7 @@ export const useHotelData = () => {
         guests, setGuests, addGuestAPI, updateGuestAPI, deleteGuestAPI,
         reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI, deleteMultipleReservationsAPI, syncIcalAPI,
         logoUrl, setLogoUrl,
+        roomIcalUrls, setRoomIcalUrls, saveRoomIcalAPI,
         verifyPinAPI, changePinAPI,
         getRoomStatus,
         toggleRoomStatus,

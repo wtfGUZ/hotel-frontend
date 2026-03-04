@@ -5,11 +5,26 @@ import PinLockScreen from '../../components/PinLockScreen';
 
 export default function SettingsView({ hotelData, modalData }) {
     const { theme, darkMode, toggleDarkMode } = useTheme();
-    const { rooms, setRooms, guests, setGuests, reservations, setReservations, logoUrl, setLogoUrl, syncIcalAPI, verifyPinAPI, changePinAPI } = hotelData;
+    const { rooms, setRooms, guests, setGuests, reservations, setReservations, logoUrl, setLogoUrl, syncIcalAPI, roomIcalUrls, saveRoomIcalAPI, verifyPinAPI, changePinAPI } = hotelData;
     const { openModal, setDeleteConfirm, setAlertMessage } = modalData;
 
-    const [icalUrl, setIcalUrl] = useState('');
-    const [icalStatus, setIcalStatus] = useState('');
+    const [syncStatuses, setSyncStatuses] = useState({});
+
+    const handleRoomIcalSync = async (roomId, url) => {
+        if (!url) {
+            setSyncStatuses(prev => ({ ...prev, [roomId]: 'Wpisz URL iCal z Booking.com' }));
+            return;
+        }
+        setSyncStatuses(prev => ({ ...prev, [roomId]: '⏳ Pobieranie i synchronizowanie...' }));
+        try {
+            await saveRoomIcalAPI(roomId, url);
+            const result = await syncIcalAPI(url, roomId);
+            setSyncStatuses(prev => ({ ...prev, [roomId]: `✅ Sukces! Zimportowano: ${result.importedCount}, Zaktualizowano/Pominięto: ${result.skippedCount}` }));
+            setTimeout(() => setSyncStatuses(prev => ({ ...prev, [roomId]: '' })), 7000);
+        } catch (err) {
+            setSyncStatuses(prev => ({ ...prev, [roomId]: `❌ Błąd: ${err.message}` }));
+        }
+    };
 
     // Security States
     const [isUnlocked, setIsUnlocked] = useState(false);
@@ -172,24 +187,56 @@ export default function SettingsView({ hotelData, modalData }) {
 
                     <div className="space-y-3">
                         {rooms.map(room => (
-                            <div key={room.id} className={`${theme.input} rounded-lg p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3`}>
-                                <div>
-                                    <div className="font-medium text-lg sm:text-base">{room.number} - {room.name}</div>
-                                    <div className={`text-sm ${theme.textSecondary}`}>Max {room.maxGuests} osoby</div>
+                            <div key={room.id} className={`${theme.input} rounded-lg p-4 flex flex-col gap-3`}>
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                    <div>
+                                        <div className="font-medium text-lg sm:text-base">{room.number} - {room.name}</div>
+                                        <div className={`text-sm ${theme.textSecondary}`}>Max {room.maxGuests} osoby</div>
+                                    </div>
+                                    <div className="flex gap-2 w-full sm:w-auto">
+                                        <button
+                                            onClick={() => openModal('room', room)}
+                                            className={`flex-1 sm:flex-none p-3 sm:p-2 rounded-lg flex justify-center items-center ${theme.buttonSecondary}`}
+                                        >
+                                            <Edit2 className="w-5 h-5 sm:w-4 sm:h-4" />
+                                        </button>
+                                        <button
+                                            onClick={() => setDeleteConfirm({ type: 'room', id: room.id })}
+                                            className={`flex-1 sm:flex-none p-3 sm:p-2 rounded-lg flex justify-center items-center ${theme.buttonDanger}`}
+                                        >
+                                            <Trash2 className="w-5 h-5 sm:w-4 sm:h-4" />
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="flex gap-2 w-full sm:w-auto">
-                                    <button
-                                        onClick={() => openModal('room', room)}
-                                        className={`flex-1 sm:flex-none p-3 sm:p-2 rounded-lg flex justify-center items-center ${theme.buttonSecondary}`}
-                                    >
-                                        <Edit2 className="w-5 h-5 sm:w-4 sm:h-4" />
-                                    </button>
-                                    <button
-                                        onClick={() => setDeleteConfirm({ type: 'room', id: room.id })}
-                                        className={`flex-1 sm:flex-none p-3 sm:p-2 rounded-lg flex justify-center items-center ${theme.buttonDanger}`}
-                                    >
-                                        <Trash2 className="w-5 h-5 sm:w-4 sm:h-4" />
-                                    </button>
+
+                                <div className="mt-2 border-t border-gray-700/30 pt-3">
+                                    <label className="block text-xs font-semibold mb-1 text-gray-400">Booking.com iCal URL (tylko ten pokój)</label>
+                                    <div className="flex flex-col sm:flex-row gap-2">
+                                        <input
+                                            type="text"
+                                            className={`flex-1 px-3 py-2 text-sm rounded-lg border focus:ring-1 focus:ring-blue-500 outline-none ${theme.input}`}
+                                            placeholder="https://admin.booking.com/hotel/hoteladmin/ical.html?t=..."
+                                            defaultValue={roomIcalUrls?.[room.id] || ''}
+                                            onBlur={(e) => {
+                                                if (e.target.value !== roomIcalUrls?.[room.id]) {
+                                                    saveRoomIcalAPI(room.id, e.target.value);
+                                                }
+                                            }}
+                                            id={`ical-input-${room.id}`}
+                                        />
+                                        <button
+                                            onClick={() => {
+                                                const val = document.getElementById(`ical-input-${room.id}`).value;
+                                                handleRoomIcalSync(room.id, val);
+                                            }}
+                                            className={`px-4 py-2 text-sm rounded-lg font-medium transition-opacity hover:opacity-90 flex justify-center items-center ${theme.button}`}
+                                        >
+                                            Pobierz iCal
+                                        </button>
+                                    </div>
+                                    {syncStatuses[room.id] && (
+                                        <p className="mt-2 text-sm font-medium animate-pulse">{syncStatuses[room.id]}</p>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -279,68 +326,7 @@ export default function SettingsView({ hotelData, modalData }) {
                     </div>
                 </div>
 
-                <div className={`${theme.card} rounded-xl p-6 shadow-lg`}>
-                    <h3 className="text-xl font-bold mb-4">Integracja Booking.com</h3>
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block mb-2 font-medium">Booking.com iCal URL</label>
-                            <input
-                                type="text"
-                                placeholder="https://admin.booking.com/hotel/hoteladmin/ical.html?t=..."
-                                value={icalUrl}
-                                onChange={(e) => setIcalUrl(e.target.value)}
-                                className={`w-full px-4 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}
-                            />
-                            <p className={`text-sm ${theme.textSecondary} mt-1`}>Wklej link iCal z Booking.com do automatycznej synchronizacji</p>
-
-                            {icalStatus && (
-                                <div className={`mt-2 p-3 rounded-lg ${theme.input} text-sm`}>
-                                    {icalStatus}
-                                </div>
-                            )}
-
-                            <div className="flex flex-col sm:flex-row gap-3 mt-4">
-                                <button
-                                    type="button"
-                                    onClick={testIcalConnection}
-                                    className={`w-full sm:w-auto sm:flex-1 px-4 py-3 sm:py-2 rounded-lg ${theme.button} font-medium hover:opacity-90 transition-opacity flex justify-center items-center`}
-                                >
-                                    🔄 Testuj i Importuj
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={() => { setIcalUrl(''); setIcalStatus(''); }}
-                                    className={`w-full sm:w-auto px-4 py-3 sm:py-2 rounded-lg ${theme.buttonSecondary} font-medium hover:opacity-90 transition-opacity flex justify-center items-center`}
-                                >
-                                    Wyczyść
-                                </button>
-                            </div>
-
-                            <div className={`mt-4 p-4 rounded-lg bg-blue-500/10 border border-blue-500/30`}>
-                                <p className="text-sm font-medium text-blue-400 mb-2">💡 Testowy URL do sprawdzenia:</p>
-                                <div className="space-y-2">
-                                    <div>
-                                        <code className="text-xs break-all block mb-1">https://www.officeholidays.com/ics/poland</code>
-                                        <button
-                                            type="button"
-                                            onClick={() => setIcalUrl('https://www.officeholidays.com/ics/poland')}
-                                            className="text-xs text-blue-400 hover:text-blue-300 underline"
-                                        >
-                                            Użyj tego URL
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div className={`mt-4 p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30`}>
-                                    <p className="text-xs text-yellow-400">
-                                        ⚠️ <strong>Uwaga:</strong> Pobieranie iCal bezpośrednio z przeglądarki jest ograniczone przez politykę CORS.
-                                        W wersji desktopowej (Electron) ta funkcja działa lepiej, ale niektóre serwery mogą nadal blokować żądania.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {/* Removed Global Booking.com section since it is now per-room */}
 
                 {/* Zabezpieczenia */}
                 <div className={`${theme.card} rounded-xl p-6 shadow-lg border-t-2 border-red-500/50`}>
