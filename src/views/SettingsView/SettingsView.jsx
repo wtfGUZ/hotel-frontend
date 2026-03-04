@@ -34,26 +34,6 @@ export default function SettingsView({ hotelData, modalData }) {
     const [newPin, setNewPin] = useState('');
     const [pinChangeMsg, setPinChangeMsg] = useState({ text: '', type: '' });
 
-    const handlePinSubmit = async (e) => {
-        e.preventDefault();
-        if (!pinInput) return;
-        setIsVerifying(true);
-        setPinError('');
-        try {
-            const success = await verifyPinAPI(pinInput);
-            if (success) {
-                setIsUnlocked(true);
-            } else {
-                setPinError('Nieprawidłowy kod PIN.');
-            }
-        } catch (err) {
-            setPinError('Wystąpił błąd komunikacji z serwerem.');
-        } finally {
-            setIsVerifying(false);
-            setPinInput('');
-        }
-    };
-
     const handleChangePin = async (e) => {
         e.preventDefault();
         if (newPin.length < 4) {
