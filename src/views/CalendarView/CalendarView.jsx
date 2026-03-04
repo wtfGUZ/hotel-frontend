@@ -225,7 +225,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                     checkIn: checkIn,
                                     checkOut: checkOut,
                                     breakfast: false,
-                                    status: 'confirmed',
+                                    status: 'paid',
                                     payment: 'booking',
                                     notes: 'TESTOWY IMPORT Z BOOKING (iCal)',
                                     isNewIcal: true
