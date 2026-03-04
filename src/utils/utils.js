@@ -31,9 +31,9 @@ export const calculateTotalPrice = (room, checkIn, checkOut, hasBreakfast) => {
 
 export const getStatusColor = (status) => {
     const colors = {
-        preliminary: 'bg-yellow-600/75 text-white border border-yellow-700 shadow-sm',
-        confirmed: 'bg-blue-600/75 text-white border border-blue-700 shadow-sm',
-        paid: 'bg-green-600/75 text-white border border-green-700 shadow-sm'
+        preliminary: 'bg-gradient-to-r from-amber-500/80 to-yellow-500/70 text-white border-l-[3px] border-amber-300 backdrop-blur-sm shadow-lg shadow-amber-500/20',
+        confirmed: 'bg-gradient-to-r from-blue-500/80 to-indigo-500/70 text-white border-l-[3px] border-blue-300 backdrop-blur-sm shadow-lg shadow-blue-500/20',
+        paid: 'bg-gradient-to-r from-emerald-500/80 to-green-500/70 text-white border-l-[3px] border-emerald-300 backdrop-blur-sm shadow-lg shadow-emerald-500/20'
     };
     return colors[status] || colors.preliminary;
 };

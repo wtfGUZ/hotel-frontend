@@ -355,14 +355,14 @@ export default function CalendarView({ hotelData, modalData }) {
                                                                     onMouseDown={(e) => e.stopPropagation()}
                                                                     onMouseUp={(e) => e.stopPropagation()}
                                                                     onClick={(e) => { e.stopPropagation(); openModal('reservation', r); }}
-                                                                    className={`absolute top-0 bottom-0 rounded flex items-center justify-center cursor-pointer hover:opacity-80 hover:scale-[1.02] transition-all shadow-md border ${getStatusColor(r.status)} pointer-events-auto overflow-hidden`}
+                                                                    className={`absolute top-0.5 bottom-0.5 rounded-md flex items-center cursor-pointer hover:brightness-110 hover:scale-[1.02] transition-all ${getStatusColor(r.status)} pointer-events-auto overflow-hidden`}
                                                                     style={{
                                                                         left: `calc(${startOffset * 100}%)`,
                                                                         width: `calc(${widthInCells * 100}% - 2px)`,
                                                                         zIndex: 20
                                                                     }}
                                                                 >
-                                                                    <span className={`truncate pointer-events-none font-bold drop-shadow-sm ${textSizeClass}`}>
+                                                                    <span className={`truncate pointer-events-none font-semibold drop-shadow-md pl-1 ${textSizeClass}`}>
                                                                         {getGuestName(r.guestId)}
                                                                     </span>
                                                                 </div>
@@ -382,19 +382,19 @@ export default function CalendarView({ hotelData, modalData }) {
 
             <div className="mt-6 flex gap-4 items-center flex-wrap">
                 <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded bg-yellow-600 border border-yellow-700"></div>
+                    <div className="w-4 h-4 rounded-md bg-gradient-to-r from-amber-500 to-yellow-500 border-l-2 border-amber-300"></div>
                     <span className="text-sm">Wstępna</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded bg-blue-600 border border-blue-700"></div>
+                    <div className="w-4 h-4 rounded-md bg-gradient-to-r from-blue-500 to-indigo-500 border-l-2 border-blue-300"></div>
                     <span className="text-sm">Potwierdzona</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded bg-green-600 border border-green-700"></div>
+                    <div className="w-4 h-4 rounded-md bg-gradient-to-r from-emerald-500 to-green-500 border-l-2 border-emerald-300"></div>
                     <span className="text-sm">Opłacona</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded bg-red-600 border-2 border-red-500 animate-pulse"></div>
+                    <div className="w-4 h-4 rounded-md bg-red-600 border-2 border-red-500 animate-pulse"></div>
                     <span className="text-sm">⚠️ Konflikt</span>
                 </div>
                 <div className="h-6 w-px bg-gray-600 mx-2"></div>
