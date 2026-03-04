@@ -304,7 +304,6 @@ export default function ReservationModal({
 
                 {(formData.roomIds || (formData.roomId ? [formData.roomId] : [''])).map((selectedRoomId, index) => {
                     const currentIds = formData.roomIds || (formData.roomId ? [formData.roomId] : ['']);
-                    const isLastItem = index === currentIds.length - 1;
 
                     return (
                         <div key={index} className="flex gap-2 mb-2">
@@ -315,7 +314,7 @@ export default function ReservationModal({
                                     const val = e.target.value;
                                     const newIds = [...currentIds];
                                     newIds[index] = val ? parseInt(val) : '';
-                                    setFormData({ ...formData, roomIds: newIds, roomId: newIds[0] });
+                                    setFormData(prev => ({ ...prev, roomIds: newIds, roomId: newIds[0] }));
                                 }}
                                 className={`flex-1 px-4 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}
                                 disabled={!formData.checkIn || !formData.checkOut}
@@ -346,13 +345,15 @@ export default function ReservationModal({
                                 })}
                             </select>
 
-                            {/* Button to remove a room selector */}
                             {index > 0 && (
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        const newIds = currentIds.filter((_, idx) => idx !== index);
-                                        setFormData({ ...formData, roomIds: newIds, roomId: newIds[0] });
+                                        setFormData(prev => {
+                                            const ids = prev.roomIds || [];
+                                            const newIds = ids.filter((_, idx) => idx !== index);
+                                            return { ...prev, roomIds: newIds, roomId: newIds[0] };
+                                        });
                                     }}
                                     className={`px-3 py-2 rounded-lg ${theme.buttonDanger}`}
                                     title="Usuń pokój z tej grupy"
@@ -360,23 +361,25 @@ export default function ReservationModal({
                                     ✕
                                 </button>
                             )}
-
-                            {/* Button to add a new room selector inline (only on the last item) */}
-                            {isLastItem && formData.checkIn && formData.checkOut && (
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setFormData({ ...formData, roomIds: [...currentIds, ''] });
-                                    }}
-                                    className={`px-3 py-2 rounded-lg ${theme.buttonSecondary} hover:opacity-80 transition-opacity flex items-center justify-center`}
-                                    title="Dodaj kolejny pokój do tej rezerwacji"
-                                >
-                                    <Plus className="w-5 h-5" />
-                                </button>
-                            )}
                         </div>
                     );
                 })}
+
+                {formData.checkIn && formData.checkOut && !editingItem && (
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setFormData(prev => {
+                                const currentIds = prev.roomIds || (prev.roomId ? [prev.roomId] : ['']);
+                                return { ...prev, roomIds: [...currentIds, ''] };
+                            });
+                        }}
+                        className={`w-full mt-1 px-4 py-2 rounded-lg ${theme.buttonSecondary} border border-dashed ${darkMode ? 'border-gray-500' : 'border-gray-400'} hover:opacity-80 transition-opacity flex items-center justify-center gap-2 text-sm`}
+                    >
+                        <Plus className="w-4 h-4" />
+                        Dodaj kolejny pokój do rezerwacji
+                    </button>
+                )}
 
                 {formData.checkIn && formData.checkOut && (
                     <p className={`text-xs ${theme.textSecondary} mt-2`}>
