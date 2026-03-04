@@ -309,7 +309,7 @@ export default function ReservationModal({
                     return (
                         <div key={index} className="flex gap-2 mb-2">
                             <select
-                                required
+                                required={index === 0}
                                 value={selectedRoomId || ''}
                                 onChange={(e) => {
                                     const val = e.target.value;

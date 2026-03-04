@@ -107,7 +107,6 @@ export const useHotelData = () => {
 
     // Interfejs do modyfikacji Rezerwacji (Dodaj, Edytuj, Usuń)
     const addReservationAPI = async (data) => {
-        setIsSaving(true);
         try {
             const res = await apiFetch('/reservations', { method: 'POST', body: JSON.stringify(data) });
             const newResv = await handleRes(res);
@@ -116,7 +115,7 @@ export const useHotelData = () => {
         } catch (error) {
             console.error(error);
             throw error;
-        } finally { setIsSaving(false); }
+        }
     };
 
     const updateReservationAPI = async (id, data) => {
@@ -250,6 +249,7 @@ export const useHotelData = () => {
         toggleRoomStatus,
         getGuestName,
         isLoading,
-        isSaving
+        isSaving,
+        setIsSaving
     };
 };

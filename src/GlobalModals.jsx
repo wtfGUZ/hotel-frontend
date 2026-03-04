@@ -20,7 +20,7 @@ export default function GlobalModals({ hotelData, modalData }) {
         rooms, setRooms, addRoomAPI, updateRoomAPI, deleteRoomAPI,
         guests, setGuests, addGuestAPI, updateGuestAPI, deleteGuestAPI,
         reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI, deleteMultipleReservationsAPI,
-        isSaving
+        isSaving, setIsSaving
     } = hotelData;
 
     const handleSubmit = async (e) => {
@@ -88,12 +88,17 @@ export default function GlobalModals({ hotelData, modalData }) {
                     notes: formData.notes ? String(formData.notes) : ''
                 };
 
-                if (editingItem) {
-                    await updateReservationAPI(String(editingItem.id), payload);
-                } else {
-                    for (const rId of validRoomIds) {
-                        await addReservationAPI({ ...payload, roomId: parseInt(rId) });
+                setIsSaving(true);
+                try {
+                    if (editingItem) {
+                        await updateReservationAPI(String(editingItem.id), payload);
+                    } else {
+                        for (const rId of validRoomIds) {
+                            await addReservationAPI({ ...payload, roomId: parseInt(rId) });
+                        }
                     }
+                } finally {
+                    setIsSaving(false);
                 }
             } else if (modalType === 'room') {
                 if (!formData.number || !formData.name || !formData.maxGuests) {
