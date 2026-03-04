@@ -69,36 +69,29 @@ export const useHotelData = () => {
         fetchData();
     }, []);
 
-    // 1.5. Automatyczna synchronizacja iCal w tle (co 5 minut)
-    useEffect(() => {
+    // 1.5. Funkcja do synchronizacji wszystkich iCal na żądanie
+    const syncAllIcalCategoriesAPI = async () => {
         if (!roomCategories || roomCategories.length === 0) return;
+        try {
+            const syncPromises = roomCategories
+                .filter(cat => cat.icalUrl && cat.icalUrl.trim())
+                .map(cat => apiFetch('/ical/sync', {
+                    method: 'POST',
+                    body: JSON.stringify({ url: cat.icalUrl, categoryId: cat.id })
+                }).catch(err => console.error("Błąd auto-sync iCal dla kat:", cat.id, err)));
 
-        const syncAndFetch = async () => {
-            try {
-                // 1. Uruchom synchronizację dla wszystkich kategorii posiadających link iCal
-                const syncPromises = roomCategories
-                    .filter(cat => cat.icalUrl && cat.icalUrl.trim())
-                    .map(cat => apiFetch('/ical/sync', {
-                        method: 'POST',
-                        body: JSON.stringify({ url: cat.icalUrl, categoryId: cat.id })
-                    }).catch(err => console.error("Błąd auto-sync iCal dla kat:", cat.id, err)));
-
-                if (syncPromises.length > 0) {
-                    await Promise.all(syncPromises);
-                    // 2. Po zakończeniu synchronizacji, pobierz odświeżoną listę rezerwacji
-                    const resReservations = await apiFetch('/reservations');
-                    const dbReservations = await resReservations.json();
-                    setReservations(dbReservations);
-                }
-            } catch (err) {
-                console.error("Błąd w procesie działania synchronizacji w tle:", err);
+            if (syncPromises.length > 0) {
+                await Promise.all(syncPromises);
+                const resReservations = await apiFetch('/reservations');
+                const dbReservations = await resReservations.json();
+                setReservations(dbReservations);
             }
-        };
-
-        // Wywołaj co 5 minut
-        const intervalId = setInterval(syncAndFetch, 5 * 60 * 1000);
-        return () => clearInterval(intervalId);
-    }, [roomCategories]);
+            return true;
+        } catch (err) {
+            console.error("Błąd w procesie działania synchronizacji w tle:", err);
+            return false;
+        }
+    };
 
     // 2. Automatyczny zapis Logo do bazy (upsert)
     useEffect(() => {
@@ -301,7 +294,7 @@ export const useHotelData = () => {
         guests, setGuests, addGuestAPI, updateGuestAPI, deleteGuestAPI,
         reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI, deleteMultipleReservationsAPI, acknowledgeReservationAPI,
         logoUrl, setLogoUrl,
-        roomCategories, setRoomCategories, saveRoomCategoriesAPI, syncIcalCategoryAPI,
+        roomCategories, setRoomCategories, saveRoomCategoriesAPI, syncIcalCategoryAPI, syncAllIcalCategoriesAPI,
         verifyPinAPI, changePinAPI,
         getRoomStatus,
         toggleRoomStatus,

@@ -2,17 +2,38 @@ import React, { useState, useEffect } from 'react';
 import { Bed, Calendar, Users, Settings, Moon, Sun, Menu as MenuIcon } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
-export default function Header({ currentView, setCurrentView, logoUrl }) {
+export default function Header({ currentView, setCurrentView, hotelData }) {
     const { darkMode, toggleDarkMode, theme } = useTheme();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [syncCountdown, setSyncCountdown] = useState(60);
     const [showSyncTooltip, setShowSyncTooltip] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false);
+
+    // Przechowujemy referencję do aktualnej funkcji API unikając wciąż restartującego się useEffect interval
+    const syncFnRef = React.useRef(hotelData?.syncAllIcalCategoriesAPI);
+    useEffect(() => {
+        syncFnRef.current = hotelData?.syncAllIcalCategoriesAPI;
+    }, [hotelData?.syncAllIcalCategoriesAPI]);
+
+    const handleSync = async () => {
+        if (isSyncing) return;
+        setIsSyncing(true);
+        console.log('🔄 Wymuszona synchronizacja iCal...');
+        if (syncFnRef.current) {
+            await syncFnRef.current();
+        }
+        setSyncCountdown(60);
+        setIsSyncing(false);
+    };
 
     useEffect(() => {
         const interval = setInterval(() => {
             setSyncCountdown(prev => {
                 if (prev <= 1) {
-                    console.log('🔄 Auto-synchronizacja danych...');
+                    console.log('🔄 Automatyczna synchronizacja iCal...');
+                    if (syncFnRef.current) {
+                        syncFnRef.current().catch(console.error);
+                    }
                     return 60;
                 }
                 return prev - 1;
@@ -27,7 +48,7 @@ export default function Header({ currentView, setCurrentView, logoUrl }) {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 sm:gap-3">
                         <img
-                            src={logoUrl || "/vite.png"}
+                            src={hotelData?.logoUrl || "/vite.png"}
                             alt="Hotel Logo"
                             className="h-8 sm:h-12 w-auto object-contain rounded"
                             onError={(e) => {
@@ -81,19 +102,17 @@ export default function Header({ currentView, setCurrentView, logoUrl }) {
                             onMouseLeave={() => setShowSyncTooltip(false)}
                         >
                             <button
-                                onClick={() => {
-                                    console.log('🔄 Ręczna synchronizacja danych...');
-                                    setSyncCountdown(60);
-                                }}
-                                className={`p-2 rounded-lg ${theme.buttonSecondary} relative`}
-                                title="Synchronizuj dane"
+                                onClick={handleSync}
+                                disabled={isSyncing}
+                                className={`p-2 rounded-lg ${theme.buttonSecondary} relative flex items-center justify-center w-10 h-10 ${isSyncing ? 'opacity-70 cursor-wait' : ''}`}
+                                title="Wymuś synchronizację iCal"
                             >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className={`w-5 h-5 ${isSyncing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                 </svg>
                             </button>
                             {showSyncTooltip && (
-                                <div className={`absolute top-full mt-2 right-0 ${theme.card} px-3 py-2 rounded-lg shadow-xl text-sm whitespace-nowrap z-50`}>
+                                <div className={`absolute top-full mt-2 right-0 ${theme.card} px-3 py-2 rounded-lg shadow-xl text-sm whitespace-nowrap z-50 border ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
                                     Auto-sync za: <span className="font-bold text-blue-400">{syncCountdown}s</span>
                                 </div>
                             )}
@@ -147,17 +166,16 @@ export default function Header({ currentView, setCurrentView, logoUrl }) {
                             <span>Ustawienia</span>
                         </button>
                         <button
-                            onClick={() => {
-                                console.log('🔄 Ręczna synchronizacja danych...');
-                                setSyncCountdown(60);
-                                setMobileMenuOpen(false);
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleSync();
                             }}
-                            className={`w-full px-4 py-3 rounded-lg transition-all text-left flex items-center gap-3 ${theme.buttonSecondary}`}
+                            className={`flex-[0_0_auto] flex flex-col justify-center items-center py-2 px-1 transition-colors ${isSyncing ? 'text-blue-500 opacity-70 cursor-wait' : theme.textSecondary}`}
                         >
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className={`w-5 h-5 mb-1 ${isSyncing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
-                            <span>Wymuś synchronizację</span>
+                            <span className="text-[10px]">Sync</span>
                         </button>
                         <button
                             onClick={() => { toggleDarkMode(); setMobileMenuOpen(false); }}
