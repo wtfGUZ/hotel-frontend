@@ -42,9 +42,10 @@ export default function ReservationModal({
         setFormData({ ...formData, checkOut: formatDate(newCheckOut) });
     };
 
-    const checkRoomConflict = (roomId, checkIn, checkOut, excludeReservationId = null) => {
+    const checkRoomConflict = (roomId, checkIn, checkOut, excludeReservationId = null, excludeGroupId = null) => {
         return hotelData.reservations.find(r => {
             if (excludeReservationId && r.id === excludeReservationId) return false;
+            if (excludeGroupId && r.groupId === excludeGroupId) return false;
             if (r.roomId !== roomId) return false;
 
             const newStart = new Date(checkIn);
@@ -324,7 +325,7 @@ export default function ReservationModal({
                                 </option>
                                 {rooms.map(room => {
                                     const isConflict = formData.checkIn && formData.checkOut
-                                        ? checkRoomConflict(room.id, formData.checkIn, formData.checkOut, editingItem?.id)
+                                        ? checkRoomConflict(room.id, formData.checkIn, formData.checkOut, editingItem?.id, formData.isGroupEditSession ? editingItem?.groupId : null)
                                         : false;
 
                                     const isAlreadySelected = currentIds.includes(room.id) && selectedRoomId !== room.id;
