@@ -55,6 +55,7 @@ export default function ReservationsView({ hotelData, modalData }) {
                     <option value="preliminary">Wstępna</option>
                     <option value="confirmed">Potwierdzona</option>
                     <option value="paid">Opłacona</option>
+                    <option value="completed">Zakończona</option>
                 </select>
             </div>
 

@@ -33,7 +33,8 @@ export const getStatusColor = (status) => {
     const colors = {
         preliminary: 'bg-gradient-to-r from-amber-500/80 to-yellow-500/70 text-white border-l-[3px] border-amber-300 backdrop-blur-sm shadow-lg shadow-amber-500/20',
         confirmed: 'bg-gradient-to-r from-blue-500/80 to-indigo-500/70 text-white border-l-[3px] border-blue-300 backdrop-blur-sm shadow-lg shadow-blue-500/20',
-        paid: 'bg-gradient-to-r from-emerald-500/80 to-green-500/70 text-white border-l-[3px] border-emerald-300 backdrop-blur-sm shadow-lg shadow-emerald-500/20'
+        paid: 'bg-gradient-to-r from-emerald-500/80 to-green-500/70 text-white border-l-[3px] border-emerald-300 backdrop-blur-sm shadow-lg shadow-emerald-500/20',
+        completed: 'bg-gradient-to-r from-gray-500/80 to-gray-400/70 text-white border-l-[3px] border-gray-300 backdrop-blur-sm shadow-lg shadow-gray-500/20'
     };
     return colors[status] || colors.preliminary;
 };
@@ -42,7 +43,8 @@ export const getStatusText = (status) => {
     const texts = {
         preliminary: 'Wstępna',
         confirmed: 'Potwierdzona',
-        paid: 'Opłacona'
+        paid: 'Opłacona',
+        completed: 'Zakończona'
     };
     return texts[status] || 'Nieznany';
 };
