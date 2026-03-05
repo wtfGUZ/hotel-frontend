@@ -118,9 +118,11 @@ export default function ReservationsView({ hotelData, modalData }) {
                                         />
                                         <Check className="absolute w-3.5 h-3.5 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" strokeWidth={3} />
                                     </div>
-                                    {/* Name + Status */}
                                     <div className="min-w-0">
-                                        <h3 className="text-lg sm:text-xl font-bold leading-snug truncate">{guest ? `${guest.firstName} ${guest.lastName}` : 'Nieznany'}</h3>
+                                        <h3 className="text-lg sm:text-xl font-bold leading-snug truncate">
+                                            {reservation.payment === 'booking' || reservation.isNewIcal ? '🅱️ ' : (reservation.groupId ? '👥 ' : '')}
+                                            {guest ? `${guest.firstName} ${guest.lastName}` : 'Nieznany'}
+                                        </h3>
                                         <span className={`mt-1 inline-block px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(reservation.status)}`}>
                                             {getStatusText(reservation.status)}
                                         </span>
