@@ -112,7 +112,7 @@ export default function CalendarView({ hotelData, modalData }) {
     // --- Skeleton Loader ---
     if (isLoading) {
         const skeletonRows = 8;
-        const skeletonCols = 6;
+        const skeletonCols = 15;
         return (
             <div>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
