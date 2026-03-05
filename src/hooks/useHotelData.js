@@ -75,7 +75,7 @@ export const useHotelData = () => {
         try {
             const syncPromises = [];
 
-            // 1. Sync per-room iCal URLs (każdy pokój ma swój własny URL Booking.com)
+            // Sync per-room iCal URLs (każdy pokój ma swój własny URL Booking.com)
             if (rooms && rooms.length > 0) {
                 rooms.forEach(room => {
                     const url = room.icalUrl?.trim();
@@ -87,26 +87,6 @@ export const useHotelData = () => {
                             }).catch(err => console.error(`Błąd sync iCal dla pokoju ${room.number}:`, err))
                         );
                     }
-                });
-            }
-
-            // 2. Sync per-category iCal URLs (stary system, zachowany dla kompatybilności)
-            if (roomCategories && roomCategories.length > 0) {
-                const urlGroups = {};
-                roomCategories.forEach(cat => {
-                    const url = cat.icalUrl?.trim();
-                    if (url) {
-                        if (!urlGroups[url]) urlGroups[url] = [];
-                        urlGroups[url].push(cat.id);
-                    }
-                });
-                Object.entries(urlGroups).forEach(([url, catIds]) => {
-                    syncPromises.push(
-                        apiFetch('/ical/sync', {
-                            method: 'POST',
-                            body: JSON.stringify({ url, categoryIds: catIds })
-                        }).catch(err => console.error("Błąd sync iCal dla kategorii:", catIds, err))
-                    );
                 });
             }
 

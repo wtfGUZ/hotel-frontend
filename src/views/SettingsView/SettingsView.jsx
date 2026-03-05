@@ -235,54 +235,7 @@ export default function SettingsView({ hotelData, modalData }) {
                                         />
                                     </div>
                                 </div>
-                                <div className="mt-2 border-t border-gray-700/30 pt-3">
-                                    <label className="block text-xs font-semibold mb-1 text-gray-400">URL kalendarza iCal (Booking.com)</label>
-                                    <div className="flex flex-col sm:flex-row gap-2">
-                                        <input
-                                            type="text"
-                                            className={`flex-1 px-3 py-2 text-sm rounded-lg border focus:ring-1 focus:ring-blue-500 outline-none ${theme.input}`}
-                                            placeholder="https://admin.booking.com/hotel/hoteladmin/ical.html?t=..."
-                                            value={cat.icalUrl}
-                                            onChange={(e) => {
-                                                const updated = roomCategories.map(c => c.id === cat.id ? { ...c, icalUrl: e.target.value } : c);
-                                                setRoomCategories(updated);
-                                            }}
-                                            onBlur={() => saveRoomCategoriesAPI(roomCategories)}
-                                        />
-                                        <button
-                                            onClick={() => handleCategoryIcalSave(cat.id, cat.icalUrl)}
-                                            className={`px-4 py-2 text-sm rounded-lg font-medium transition-opacity hover:opacity-90 flex justify-center items-center ${theme.button}`}
-                                        >
-                                            Zapisz link
-                                        </button>
-                                    </div>
-                                    {syncStatuses[cat.id] && (
-                                        <p className="mt-2 text-sm font-medium animate-pulse">{syncStatuses[cat.id]}</p>
-                                    )}
 
-                                    <div className="mt-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                                        <label className="block text-xs font-bold mb-1 text-blue-400 uppercase tracking-wider">Link Eksportu (Dla Booking.com)</label>
-                                        <div className="flex items-center gap-2">
-                                            <input
-                                                type="text"
-                                                readOnly
-                                                className="flex-1 bg-transparent text-xs outline-none font-mono text-blue-300"
-                                                value={`https://hotel-backend-t1xo.onrender.com/api/ical/export/${cat.id}/calendar.ics`}
-                                            />
-                                            <button
-                                                onClick={() => {
-                                                    navigator.clipboard.writeText(`https://hotel-backend-t1xo.onrender.com/api/ical/export/${cat.id}/calendar.ics`);
-                                                    setAlertMessage('✅ Link skopiowany do schowka!');
-                                                }}
-                                                className="p-1 hover:bg-blue-500/20 rounded text-blue-400 transition-colors"
-                                                title="Kopiuj link"
-                                            >
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg>
-                                            </button>
-                                        </div>
-                                        <p className="mt-1 text-[10px] text-gray-500">Wklej ten link w Booking.com w sekcji 'Eksportuj kalendarz'.</p>
-                                    </div>
-                                </div>
                             </div>
                         ))}
                         {(!roomCategories || roomCategories.length === 0) && (
