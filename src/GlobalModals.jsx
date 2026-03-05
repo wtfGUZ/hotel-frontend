@@ -71,50 +71,6 @@ export default function GlobalModals({ hotelData, modalData }) {
                     return;
                 }
 
-                const checkRoomConflict = (roomId, checkIn, checkOut, excludeReservationId = null, excludeGroupId = null) => {
-                    return reservations.find(r => {
-                        if (excludeReservationId && r.id === excludeReservationId) return false;
-                        if (excludeGroupId && r.groupId === excludeGroupId) return false;
-                        if (String(r.roomId) !== String(roomId)) return false;
-
-                        const newStart = new Date(checkIn);
-                        const newEnd = new Date(checkOut);
-                        const existingStart = new Date(r.checkIn);
-                        const existingEnd = new Date(r.checkOut);
-
-                        // Zresetuj godziny do północy dla pewności (żeby strefy czasowe nie robiły psikusów)
-                        newStart.setHours(0, 0, 0, 0);
-                        newEnd.setHours(0, 0, 0, 0);
-                        existingStart.setHours(0, 0, 0, 0);
-                        existingEnd.setHours(0, 0, 0, 0);
-
-                        // Jeśli nowa data rozpoczyna się w dniu wyjazdu starej - to NIE konflikt
-                        if (newStart.getTime() >= existingEnd.getTime()) return false;
-                        // Jeśli nowa strona kończy się w dacie przyjazdu starej - to NIE konflikt
-                        if (newEnd.getTime() <= existingStart.getTime()) return false;
-
-                        // Jeśli doszliśmy tutaj, oznacza to, że zazębiają się gdzieś pośrodku - konflikt
-                        return true;
-                    });
-                };
-
-                for (const rId of validRoomIds) {
-                    const conflict = checkRoomConflict(
-                        rId,
-                        formData.checkIn,
-                        formData.checkOut,
-                        editingItem?.id,
-                        formData.isGroupEditSession ? editingItem?.groupId : null
-                    );
-                    if (conflict) {
-                        const conflictRoom = rooms.find(r => r.id === rId);
-                        const conflictGuest = guests.find(g => g.id === conflict.guestId);
-                        setAlertMessage(
-                            `❌ KONFLIKT REZERWACJI!\n\nPokój ${conflictRoom?.number} jest już zarezerwowany w tym terminie:\n\nGość: ${conflictGuest ? `${conflictGuest.firstName} ${conflictGuest.lastName}` : 'Nieznany'}\nData: ${new Date(conflict.checkIn).toLocaleDateString('pl-PL')} - ${new Date(conflict.checkOut).toLocaleDateString('pl-PL')}\nStatus: ${getStatusText(conflict.status)}\n\nWybierz inny pokój lub zmień daty.`
-                        );
-                        return;
-                    }
-                }
 
                 const payload = {
                     guestId: String(formData.guestId),
@@ -156,6 +112,8 @@ export default function GlobalModals({ hotelData, modalData }) {
                             await addReservationAPI({ ...payload, roomId: parseInt(rId), groupId });
                         }
                     }
+                } catch (err) {
+                    setAlertMessage(err.message || 'Wystąpił nieoczekiwany błąd podczas zapisywania.');
                 } finally {
                     setIsSaving(false);
                 }
