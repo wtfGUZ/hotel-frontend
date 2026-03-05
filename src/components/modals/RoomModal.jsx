@@ -2,13 +2,17 @@ import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
+// Wyciągnij bazowy URL backendu (obsługuje zarówno absolutne jak i relatywne VITE_API_URL)
+const BACKEND_BASE = API_URL.startsWith('http')
+    ? API_URL.replace(/\/api\/?$/, '')
+    : window.location.origin;
 
 export default function RoomModal({ formData, setFormData, hotelData, editingItem }) {
     const { theme } = useTheme();
     const { roomCategories } = hotelData || {};
 
     const exportUrl = editingItem
-        ? `${API_URL.replace('/api', '')}/api/ical/export/room/${editingItem.id}/calendar.ics`
+        ? `${BACKEND_BASE}/api/ical/export/room/${editingItem.id}/calendar.ics`
         : null;
 
     return (
