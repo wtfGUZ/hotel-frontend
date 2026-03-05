@@ -8,7 +8,7 @@ export default function ReservationModal({
     hotelData, modalData
 }) {
     const { theme, darkMode } = useTheme();
-    const { rooms, guests } = hotelData;
+    const { rooms, guests, roomCategories } = hotelData;
     const {
         editingItem,
         showQuickGuestForm, setShowQuickGuestForm,
@@ -443,7 +443,14 @@ export default function ReservationModal({
                                 let sum = 0;
                                 validIds.forEach(id => {
                                     const room = rooms.find(r => r.id === id);
-                                    if (room) sum += calculateTotalPrice(room, formData.checkIn, formData.checkOut, formData.breakfast);
+                                    if (room) {
+                                        // Pobierz ceny z kategorii (jeśli przypisana), lub z pokoju jako fallback
+                                        const cat = roomCategories?.find(c => c.id === room.categoryId);
+                                        const effectiveRoom = cat
+                                            ? { ...room, pricePerNight: cat.pricePerNight ?? room.pricePerNight, priceWithBreakfast: cat.priceWithBreakfast ?? room.priceWithBreakfast }
+                                            : room;
+                                        sum += calculateTotalPrice(effectiveRoom, formData.checkIn, formData.checkOut, formData.breakfast);
+                                    }
                                 });
                                 return sum.toFixed(2);
                             })()} zł

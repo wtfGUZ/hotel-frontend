@@ -172,7 +172,7 @@ export default function SettingsView({ hotelData, modalData }) {
                         </button>
                     </div>
                     <p className={`text-sm ${theme.textSecondary} mb-4`}>
-                        Utwórz kategorie (np. "Jednoosobowy", "Dwuosobowy") i dodaj do nich linki iCal z Booking.com. Pokoje przypiszesz do kategorii w edycji pokoju.
+                        Utwórz kategorie (np. "Jednoosobowy", "Dwuosobowy") i dodaj do nich ceny oraz linki iCal z Booking.com. Pokoje przypiszesz do kategorii w edycji pokoju.
                     </p>
                     <div className="space-y-3">
                         {(roomCategories || []).map(cat => (
@@ -200,6 +200,40 @@ export default function SettingsView({ hotelData, modalData }) {
                                     >
                                         <Trash2 className="w-5 h-5 sm:w-4 sm:h-4" />
                                     </button>
+                                </div>
+                                <div className="mt-3 grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="block text-xs font-semibold mb-1 text-gray-400">Cena za noc (zł)</label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            className={`w-full px-3 py-2 text-sm rounded-lg border focus:ring-1 focus:ring-blue-500 outline-none ${theme.input}`}
+                                            placeholder="0.00"
+                                            value={cat.pricePerNight ?? ''}
+                                            onChange={(e) => {
+                                                const updated = roomCategories.map(c => c.id === cat.id ? { ...c, pricePerNight: parseFloat(e.target.value) || 0 } : c);
+                                                setRoomCategories(updated);
+                                            }}
+                                            onBlur={() => saveRoomCategoriesAPI(roomCategories)}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-semibold mb-1 text-gray-400">Cena za noc ze śniadaniem (zł)</label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            className={`w-full px-3 py-2 text-sm rounded-lg border focus:ring-1 focus:ring-blue-500 outline-none ${theme.input}`}
+                                            placeholder="0.00"
+                                            value={cat.priceWithBreakfast ?? ''}
+                                            onChange={(e) => {
+                                                const updated = roomCategories.map(c => c.id === cat.id ? { ...c, priceWithBreakfast: parseFloat(e.target.value) || 0 } : c);
+                                                setRoomCategories(updated);
+                                            }}
+                                            onBlur={() => saveRoomCategoriesAPI(roomCategories)}
+                                        />
+                                    </div>
                                 </div>
                                 <div className="mt-2 border-t border-gray-700/30 pt-3">
                                     <label className="block text-xs font-semibold mb-1 text-gray-400">URL kalendarza iCal (Booking.com)</label>

@@ -164,13 +164,16 @@ export default function GlobalModals({ hotelData, modalData }) {
                     setAlertMessage('Wypełnij wszystkie wymagane pola'); return;
                 }
                 const selectedCat = hotelData.roomCategories?.find(c => c.id === formData.categoryId);
+                // Ceny są pobierane z kategorii (jeśli przypisana), nie z formularza pokoju
+                const pricePerNight = selectedCat?.pricePerNight != null ? parseFloat(selectedCat.pricePerNight) : 0;
+                const priceWithBreakfast = selectedCat?.priceWithBreakfast != null ? parseFloat(selectedCat.priceWithBreakfast) : pricePerNight;
                 const roomPayload = {
                     number: String(formData.number),
                     name: String(selectedCat ? selectedCat.name : (formData.name || `Pokój ${formData.number}`)),
                     categoryId: formData.categoryId ? String(formData.categoryId) : null,
                     maxGuests: parseInt(formData.maxGuests) || 1,
-                    pricePerNight: parseFloat(formData.pricePerNight) || 0,
-                    priceWithBreakfast: parseFloat(formData.priceWithBreakfast) || parseFloat(formData.pricePerNight) || 0,
+                    pricePerNight,
+                    priceWithBreakfast,
                     status: String(formData.status || 'clean')
                 };
                 if (editingItem) {
