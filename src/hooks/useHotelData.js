@@ -72,23 +72,43 @@ export const useHotelData = () => {
     }, []);
 
     const syncAllIcalCategoriesAPI = async () => {
-        if (!roomCategories || roomCategories.length === 0) return;
         try {
-            const urlGroups = {};
-            roomCategories.forEach(cat => {
-                const url = cat.icalUrl?.trim();
-                if (url) {
-                    if (!urlGroups[url]) urlGroups[url] = [];
-                    urlGroups[url].push(cat.id);
-                }
-            });
+            const syncPromises = [];
 
-            const syncPromises = Object.entries(urlGroups).map(([url, catIds]) =>
-                apiFetch('/ical/sync', {
-                    method: 'POST',
-                    body: JSON.stringify({ url, categoryIds: catIds })
-                }).catch(err => console.error("Błąd auto-sync iCal dla grupowanego URL:", catIds, err))
-            );
+            // 1. Sync per-room iCal URLs (każdy pokój ma swój własny URL Booking.com)
+            if (rooms && rooms.length > 0) {
+                rooms.forEach(room => {
+                    const url = room.icalUrl?.trim();
+                    if (url) {
+                        syncPromises.push(
+                            apiFetch('/ical/sync', {
+                                method: 'POST',
+                                body: JSON.stringify({ url, roomId: room.id })
+                            }).catch(err => console.error(`Błąd sync iCal dla pokoju ${room.number}:`, err))
+                        );
+                    }
+                });
+            }
+
+            // 2. Sync per-category iCal URLs (stary system, zachowany dla kompatybilności)
+            if (roomCategories && roomCategories.length > 0) {
+                const urlGroups = {};
+                roomCategories.forEach(cat => {
+                    const url = cat.icalUrl?.trim();
+                    if (url) {
+                        if (!urlGroups[url]) urlGroups[url] = [];
+                        urlGroups[url].push(cat.id);
+                    }
+                });
+                Object.entries(urlGroups).forEach(([url, catIds]) => {
+                    syncPromises.push(
+                        apiFetch('/ical/sync', {
+                            method: 'POST',
+                            body: JSON.stringify({ url, categoryIds: catIds })
+                        }).catch(err => console.error("Błąd sync iCal dla kategorii:", catIds, err))
+                    );
+                });
+            }
 
             if (syncPromises.length > 0) {
                 await Promise.all(syncPromises);
@@ -98,7 +118,7 @@ export const useHotelData = () => {
             }
             return true;
         } catch (err) {
-            console.error("Błąd w procesie działania synchronizacji w tle:", err);
+            console.error("Błąd w procesie synchronizacji iCal:", err);
             return false;
         }
     };

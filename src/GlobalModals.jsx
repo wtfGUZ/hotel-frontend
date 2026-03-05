@@ -171,6 +171,7 @@ export default function GlobalModals({ hotelData, modalData }) {
                     number: String(formData.number),
                     name: String(selectedCat ? selectedCat.name : (formData.name || `Pokój ${formData.number}`)),
                     categoryId: formData.categoryId ? String(formData.categoryId) : null,
+                    icalUrl: formData.icalUrl ? String(formData.icalUrl) : null,
                     maxGuests: parseInt(formData.maxGuests) || 1,
                     pricePerNight,
                     priceWithBreakfast,
@@ -371,7 +372,7 @@ export default function GlobalModals({ hotelData, modalData }) {
 
                         <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3">
                             {modalType === 'reservation' && <ReservationModal formData={formData} setFormData={setFormData} hotelData={hotelData} modalData={modalData} />}
-                            {modalType === 'room' && <RoomModal formData={formData} setFormData={setFormData} hotelData={hotelData} />}
+                            {modalType === 'room' && <RoomModal formData={formData} setFormData={setFormData} hotelData={hotelData} editingItem={editingItem} />}
                             {modalType === 'guest' && <GuestModal formData={formData} setFormData={setFormData} />}
 
                             <div className="flex justify-between pt-4 gap-3 w-full">
