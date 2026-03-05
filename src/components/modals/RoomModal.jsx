@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
+const API_URL = import.meta.env.VITE_API_URL || 'https://hotel-backend-t1xo.onrender.com/api';
 // Wyciągnij bazowy URL backendu (obsługuje zarówno absolutne jak i relatywne VITE_API_URL)
 const BACKEND_BASE = API_URL.startsWith('http')
     ? API_URL.replace(/\/api\/?$/, '')
