@@ -11,6 +11,7 @@ export const useHotelData = () => {
     const [roomCategories, setRoomCategories] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [logoInitialized, setLogoInitialized] = useState(false);
 
     // Wewnętrzny wrapper na fetch
     const apiFetch = async (endpoint, options = {}) => {
@@ -103,9 +104,13 @@ export const useHotelData = () => {
         }
     };
 
-    // 2. Automatyczny zapis Logo do bazy (upsert)
+    // 2. Automatyczny zapis Logo do bazy (upsert) — pomiń pierwszy render (dane z serwera)
     useEffect(() => {
         if (!logoUrl) return;
+        if (!logoInitialized) {
+            setLogoInitialized(true);
+            return;
+        }
 
         apiFetch('/settings', {
             method: 'POST',
