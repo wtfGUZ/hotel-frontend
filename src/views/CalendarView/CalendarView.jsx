@@ -239,6 +239,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                 <th className={`px-1 sm:px-2 py-2 text-left font-semibold sticky left-0 z-20 text-[10px] sm:text-sm ${darkMode ? 'bg-gray-800' : 'bg-gray-100'} w-[50px] sm:w-auto min-w-[50px] sm:min-w-[auto]`}>Pokój</th>
                                 {calendarDays.map((day, idx) => {
                                     const dateStr = formatDate(day);
+                                    const isToday = dateStr === formatDate(new Date());
                                     const breakfastCount = breakfastCountsByDate[dateStr] || 0;
 
                                     return (
