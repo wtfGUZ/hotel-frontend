@@ -1,16 +1,86 @@
-# React + Vite
+# 🏨 Hotel Manager — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interfejs zarządzania rezerwacjami hotelowymi — React SPA z responsywnym kalendarzem i integracją Booking.com przez iCal.
 
-Currently, two official plugins are available:
+## Technologie
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+| Warstwa | Technologia |
+|---|---|
+| Framework | React 19 (Vite 7) |
+| Styling | Tailwind CSS 4 |
+| Ikony | Lucide React |
+| Hosting | Vercel |
 
-## React Compiler
+## Uruchomienie lokalne
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+# 1. Zainstaluj zależności
+npm install
 
-## Expanding the ESLint configuration
+# 2. Uruchom serwer deweloperski
+npm run dev
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# 3. Build produkcyjny
+npm run build
+```
+
+## Zmienne środowiskowe
+
+| Zmienna | Opis |
+|---|---|
+| `VITE_API_URL` | URL backendu (domyślnie: Render) |
+| `VITE_API_SECRET` | Bearer token do API (opcjonalny) |
+
+## Struktura projektu
+
+```
+src/
+├── App.jsx                    # Router + lazy loading widoków
+├── GlobalModals.jsx           # Orchestrator modali
+├── main.jsx                   # Entry point
+├── components/
+│   ├── layout/
+│   │   ├── Header.jsx         # Nawigacja + logo
+│   │   └── Sidebar.jsx        # Menu boczne
+│   ├── modals/
+│   │   ├── AlertModal.jsx     # Komunikaty
+│   │   ├── DeleteConfirmModal.jsx
+│   │   ├── FormModal.jsx      # Otoczka formularza
+│   │   ├── GroupDeleteModal.jsx
+│   │   ├── GroupEditChoiceModal.jsx
+│   │   ├── GuestModal.jsx     # Formularz gościa
+│   │   ├── ReservationModal.jsx # Formularz rezerwacji
+│   │   └── RoomModal.jsx      # Formularz pokoju
+│   └── PinLockScreen.jsx      # Ekran PIN
+├── context/
+│   └── ThemeContext.jsx        # Dark/Light mode
+├── hooks/
+│   ├── useHotelData.js        # API + stan danych
+│   └── useModals.js           # Stan modali
+├── utils/
+│   └── utils.js               # Helpers (daty, kolory, statusy)
+└── views/
+    ├── CalendarView/           # Kalendarz rezerwacji
+    ├── GuestsView/             # Lista gości
+    ├── ReservationsView/       # Lista rezerwacji
+    └── SettingsView/           # Ustawienia hotelu
+```
+
+## Funkcjonalności
+
+- 📅 **Kalendarz rezerwacji** — widok siatki z drag-free UI
+- 🔄 **Synchronizacja iCal** — import/eksport Booking.com
+- 👥 **Rezerwacje grupowe** — wiele pokoi na jednego gościa
+- 🌓 **Dark/Light mode** — z persystencją w localStorage
+- 📱 **Mobile-first** — pełny responsive design
+- 🔐 **PIN lock** — zabezpieczenie dostępu bcryptem
+- ⚡ **Code splitting** — lazy loading widoków + Vite manualChunks
+
+## Statusy rezerwacji
+
+| Status | Kolor | Opis |
+|---|---|---|
+| Wstępna | 🟡 Żółty | Niezatwierdzona |
+| Potwierdzona | 🔵 Niebieski | Zatwierdzona |
+| Opłacona | 🟢 Zielony | Zapłacona |
+| Zakończona | ⚪ Szary | Completed |
