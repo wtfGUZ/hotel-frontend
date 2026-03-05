@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://hotel-backend-t1xo.onrender.com/api';
+const API_SECRET = import.meta.env.VITE_API_SECRET || '';
 
 export const useHotelData = () => {
     const [rooms, setRooms] = useState([]);
@@ -15,6 +16,7 @@ export const useHotelData = () => {
     const apiFetch = async (endpoint, options = {}) => {
         const headers = {
             'Content-Type': 'application/json',
+            ...(API_SECRET ? { 'Authorization': `Bearer ${API_SECRET}` } : {}),
             ...options.headers,
         };
 
@@ -53,9 +55,9 @@ export const useHotelData = () => {
                 const dbLogo = await resSettings.json();
                 const dbCategories = await resCategories.json();
 
-                if (dbRooms.length > 0) setRooms(dbRooms);
-                if (dbGuests.length > 0) setGuests(dbGuests);
-                if (dbReservations.length > 0) setReservations(dbReservations);
+                setRooms(dbRooms);
+                setGuests(dbGuests);
+                setReservations(dbReservations);
                 if (dbLogo && dbLogo.value) setLogoUrl(JSON.parse(dbLogo.value));
                 if (dbCategories && dbCategories.value) setRoomCategories(JSON.parse(dbCategories.value));
             } catch (error) {
@@ -194,19 +196,7 @@ export const useHotelData = () => {
         } catch (error) { console.error(error); throw error; }
     };
 
-    const syncIcalCategoryAPI = async (categoryId, url) => {
-        try {
-            const res = await apiFetch('/ical/sync', { method: 'POST', body: JSON.stringify({ categoryId, url }) });
-            const result = await handleRes(res);
 
-            // Reload reservations after syncing
-            const resReservations = await apiFetch('/reservations');
-            const dbReservations = await resReservations.json();
-            setReservations(dbReservations);
-
-            return result;
-        } catch (error) { console.error(error); throw error; }
-    };
 
     const saveRoomCategoriesAPI = async (categories) => {
         setIsSaving(true);
@@ -302,7 +292,7 @@ export const useHotelData = () => {
         guests, setGuests, addGuestAPI, updateGuestAPI, deleteGuestAPI,
         reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI, deleteMultipleReservationsAPI, acknowledgeReservationAPI,
         logoUrl, setLogoUrl,
-        roomCategories, setRoomCategories, saveRoomCategoriesAPI, syncIcalCategoryAPI, syncAllIcalCategoriesAPI,
+        roomCategories, setRoomCategories, saveRoomCategoriesAPI, syncAllIcalCategoriesAPI,
         verifyPinAPI, changePinAPI,
         getRoomStatus,
         toggleRoomStatus,

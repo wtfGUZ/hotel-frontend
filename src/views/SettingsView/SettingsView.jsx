@@ -5,7 +5,7 @@ import PinLockScreen from '../../components/PinLockScreen';
 
 export default function SettingsView({ hotelData, modalData }) {
     const { theme, darkMode, toggleDarkMode } = useTheme();
-    const { rooms, setRooms, guests, setGuests, reservations, setReservations, logoUrl, setLogoUrl, syncIcalCategoryAPI, roomCategories, setRoomCategories, saveRoomCategoriesAPI, verifyPinAPI, changePinAPI } = hotelData;
+    const { rooms, setRooms, guests, setGuests, reservations, setReservations, logoUrl, setLogoUrl, roomCategories, setRoomCategories, saveRoomCategoriesAPI, verifyPinAPI, changePinAPI } = hotelData;
     const { openModal, setDeleteConfirm, setAlertMessage } = modalData;
 
     const [syncStatuses, setSyncStatuses] = useState({});
@@ -90,30 +90,10 @@ export default function SettingsView({ hotelData, modalData }) {
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        const input = document.createElement('input');
-                                        input.type = 'file';
-                                        input.accept = '.json';
-                                        input.onchange = (e) => {
-                                            const file = e.target.files[0];
-                                            if (file) {
-                                                const reader = new FileReader();
-                                                reader.onload = (event) => {
-                                                    try {
-                                                        const data = JSON.parse(event.target.result);
-                                                        if (data.rooms) setRooms(data.rooms);
-                                                        if (data.guests) setGuests(data.guests);
-                                                        if (data.reservations) setReservations(data.reservations);
-                                                        setAlertMessage('✅ Dane zaimportowane!');
-                                                    } catch (error) {
-                                                        setAlertMessage('❌ Błąd podczas importu danych');
-                                                    }
-                                                };
-                                                reader.readAsText(file);
-                                            }
-                                        };
-                                        input.click();
+                                        setAlertMessage('⚠️ Import z pliku JSON nie jest jeszcze wspierany z bazą danych. Użyj panelu administracyjnego do dodawania danych.');
                                     }}
-                                    className={`w-full sm:w-auto px-4 py-3 sm:py-2 rounded-lg ${theme.buttonSecondary} font-medium flex justify-center items-center gap-2`}
+                                    className={`w-full sm:w-auto px-4 py-3 sm:py-2 rounded-lg ${theme.buttonSecondary} font-medium flex justify-center items-center gap-2 opacity-50 cursor-not-allowed`}
+                                    title="Funkcja tymczasowo wyłączona"
                                 >
                                     📤 Importuj dane
                                 </button>

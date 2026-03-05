@@ -37,7 +37,7 @@ export default function CalendarView({ hotelData, modalData }) {
     const contextRefs = useRef({ openModal, setFormData });
     useEffect(() => {
         contextRefs.current = { openModal, setFormData };
-    });
+    }, [openModal, setFormData]);
 
     useEffect(() => {
         const handleGlobalMouseUp = () => {
@@ -211,40 +211,6 @@ export default function CalendarView({ hotelData, modalData }) {
                         <span className="sm:hidden">Dodaj Rezerwację</span>
                     </button>
 
-                    <button
-                        onClick={async () => {
-                            try {
-                                const dummyGuest = hotelData.guests[0];
-                                const dummyRoom = hotelData.rooms[0];
-                                if (!dummyGuest || !dummyRoom) {
-                                    alert("Brak gości lub pokoi do przeprowadzenia testu! Dodaj najpierw gościa i pokój.");
-                                    return;
-                                }
-                                const checkIn = new Date().toISOString().split('T')[0];
-                                const nextDay = new Date();
-                                nextDay.setDate(nextDay.getDate() + 1);
-                                const checkOut = nextDay.toISOString().split('T')[0];
-
-                                await hotelData.addReservationAPI({
-                                    guestId: dummyGuest.id,
-                                    roomId: dummyRoom.id,
-                                    checkIn: checkIn,
-                                    checkOut: checkOut,
-                                    breakfast: false,
-                                    status: 'paid',
-                                    payment: 'booking',
-                                    notes: 'TESTOWY IMPORT Z BOOKING (iCal)',
-                                    isNewIcal: true
-                                });
-                            } catch (e) {
-                                alert("Błąd testu: " + e.message);
-                            }
-                        }}
-                        className={`px-3 sm:px-4 py-2 rounded-lg border-2 border-red-500 text-red-500 font-bold hover:bg-red-500 hover:text-white flex items-center justify-center gap-2 touch-manipulation w-full sm:w-auto mt-2 sm:mt-0 ml-auto transition-colors`}
-                        title="Tymczasowy przycisk do symulacji nowej rezerwacji z Booking"
-                    >
-                        <span>TEST iCal</span>
-                    </button>
                 </div>
             </div>
 
