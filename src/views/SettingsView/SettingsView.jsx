@@ -273,6 +273,8 @@ export default function SettingsView({ hotelData, modalData }) {
                                     <img
                                         src={logoUrl || '/vite.png'}
                                         alt="Current Logo"
+                                        width="128"
+                                        height="128"
                                         className="max-w-full max-h-full object-contain"
                                         onError={(e) => {
                                             e.target.style.display = 'none';

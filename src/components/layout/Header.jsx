@@ -50,6 +50,8 @@ export default function Header({ currentView, setCurrentView, hotelData }) {
                         <img
                             src={hotelData?.logoUrl || "/vite.png"}
                             alt="Hotel Logo"
+                            width="120"
+                            height="48"
                             className="h-8 sm:h-12 w-auto object-contain rounded"
                             onError={(e) => {
                                 // Fallback w przypadku braku pliku vite.png w folderze public
