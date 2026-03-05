@@ -80,17 +80,34 @@ export default function CalendarView({ hotelData, modalData }) {
         return days;
     }, [currentDate]);
 
-    const getBreakfastCount = (date) => {
-        const dateStr = formatDate(date);
-        return reservations.reduce((total, r) => {
-            const isInRange = dateStr > r.checkIn && dateStr <= r.checkOut;
-            if (isInRange && r.breakfast === true) {
-                const room = rooms.find(rm => String(rm.id) === String(r.roomId));
-                return total + (room?.maxGuests || 1);
-            }
-            return total;
-        }, 0);
-    };
+    // OPTYMALIZACJA 1: Grupujemy rezerwacje per pokój raz przy każdej zmianie `reservations`
+    const reservationsByRoom = useMemo(() => {
+        const map = {};
+        reservations.forEach(r => {
+            const roomIdStr = String(r.roomId);
+            if (!map[roomIdStr]) map[roomIdStr] = [];
+            map[roomIdStr].push(r);
+        });
+        return map;
+    }, [reservations]);
+
+    // OPTYMALIZACJA 2: Przeliczamy śniadania dla widocznych dni w siatce (zamiast w locie na komórkę `th`)
+    const breakfastCountsByDate = useMemo(() => {
+        const counts = {};
+        calendarDays.forEach(day => {
+            const dateStr = formatDate(day);
+            counts[dateStr] = reservations.reduce((total, r) => {
+                const isInRange = dateStr > r.checkIn && dateStr <= r.checkOut;
+                if (isInRange && r.breakfast === true) {
+                    const room = rooms.find(rm => String(rm.id) === String(r.roomId));
+                    return total + (room?.maxGuests || 1);
+                }
+                return total;
+            }, 0);
+        });
+        return counts;
+    }, [reservations, calendarDays, rooms]);
+
 
     // --- Skeleton Loader ---
     if (isLoading) {
@@ -221,8 +238,8 @@ export default function CalendarView({ hotelData, modalData }) {
                             <tr>
                                 <th className={`px-1 sm:px-2 py-2 text-left font-semibold sticky left-0 z-20 text-[10px] sm:text-sm ${darkMode ? 'bg-gray-800' : 'bg-gray-100'} w-[50px] sm:w-auto min-w-[50px] sm:min-w-[auto]`}>Pokój</th>
                                 {calendarDays.map((day, idx) => {
-                                    const isToday = formatDate(day) === formatDate(new Date());
-                                    const breakfastCount = getBreakfastCount(day);
+                                    const dateStr = formatDate(day);
+                                    const breakfastCount = breakfastCountsByDate[dateStr] || 0;
 
                                     return (
                                         <th
@@ -279,13 +296,13 @@ export default function CalendarView({ hotelData, modalData }) {
                                         {calendarDays.map((day, idx) => {
                                             const dateStr = formatDate(day);
 
-                                            const allReservations = reservations.filter(r =>
-                                                String(r.roomId) === String(room.id) &&
-                                                dateStr >= r.checkIn &&
-                                                dateStr < r.checkOut
-                                            );
+                                            const isToday = dateStr === formatDate(new Date());
+                                            const roomReservations = reservationsByRoom[String(room.id)] || [];
 
-                                            const isToday = formatDate(day) === formatDate(new Date());
+                                            // Rezerwacje nachodzące na dany dzień
+                                            const allReservations = roomReservations.filter(r =>
+                                                dateStr >= r.checkIn && dateStr < r.checkOut
+                                            );
 
                                             // A true conflict only happens when 2+ reservations overlap on the same day
                                             const hasRealConflict = allReservations.length > 1;
@@ -321,9 +338,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                                     }}
                                                 >
                                                     <div className="h-10 relative">
-                                                        {reservations.filter(r => {
-                                                            if (String(r.roomId) !== String(room.id)) return false;
-
+                                                        {roomReservations.filter(r => {
                                                             const firstVisibleDate = formatDate(calendarDays[0]);
                                                             const lastVisibleDate = formatDate(calendarDays[calendarDays.length - 1]);
 
