@@ -225,6 +225,29 @@ export default function SettingsView({ hotelData, modalData }) {
                                     {syncStatuses[cat.id] && (
                                         <p className="mt-2 text-sm font-medium animate-pulse">{syncStatuses[cat.id]}</p>
                                     )}
+
+                                    <div className="mt-4 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                                        <label className="block text-xs font-bold mb-1 text-blue-400 uppercase tracking-wider">Link Eksportu (Dla Booking.com)</label>
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="text"
+                                                readOnly
+                                                className="flex-1 bg-transparent text-xs outline-none font-mono text-blue-300"
+                                                value={`https://hotel-backend-t1xo.onrender.com/api/ical/export/${cat.id}/calendar.ics`}
+                                            />
+                                            <button
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(`https://hotel-backend-t1xo.onrender.com/api/ical/export/${cat.id}/calendar.ics`);
+                                                    setAlertMessage('✅ Link skopiowany do schowka!');
+                                                }}
+                                                className="p-1 hover:bg-blue-500/20 rounded text-blue-400 transition-colors"
+                                                title="Kopiuj link"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></svg>
+                                            </button>
+                                        </div>
+                                        <p className="mt-1 text-[10px] text-gray-500">Wklej ten link w Booking.com w sekcji 'Eksportuj kalendarz'.</p>
+                                    </div>
                                 </div>
                             </div>
                         ))}
