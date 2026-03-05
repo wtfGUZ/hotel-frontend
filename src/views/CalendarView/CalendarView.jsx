@@ -83,7 +83,7 @@ export default function CalendarView({ hotelData, modalData }) {
     // OPTYMALIZACJA 1: Grupujemy rezerwacje per pokój raz przy każdej zmianie `reservations`
     const reservationsByRoom = useMemo(() => {
         const map = {};
-        reservations.forEach(r => {
+        (reservations || []).forEach(r => {
             const roomIdStr = String(r.roomId);
             if (!map[roomIdStr]) map[roomIdStr] = [];
             map[roomIdStr].push(r);
@@ -94,12 +94,12 @@ export default function CalendarView({ hotelData, modalData }) {
     // OPTYMALIZACJA 2: Przeliczamy śniadania dla widocznych dni w siatce (zamiast w locie na komórkę `th`)
     const breakfastCountsByDate = useMemo(() => {
         const counts = {};
-        calendarDays.forEach(day => {
+        (calendarDays || []).forEach(day => {
             const dateStr = formatDate(day);
-            counts[dateStr] = reservations.reduce((total, r) => {
+            counts[dateStr] = (reservations || []).reduce((total, r) => {
                 const isInRange = dateStr > r.checkIn && dateStr <= r.checkOut;
                 if (isInRange && r.breakfast === true) {
-                    const room = rooms.find(rm => String(rm.id) === String(r.roomId));
+                    const room = (rooms || []).find(rm => String(rm.id) === String(r.roomId));
                     return total + (room?.maxGuests || 1);
                 }
                 return total;
