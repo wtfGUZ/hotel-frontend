@@ -44,7 +44,7 @@ export default function Header({ currentView, setCurrentView, hotelData }) {
 
     return (
         <header className={`${theme.card} shadow-lg sticky top-0 z-50`}>
-            <div className="max-w-full mx-auto px-3 sm:px-6 py-3 sm:py-4">
+            <div className="max-w-full mx-auto px-3 sm:px-6 py-3 sm:py-4 pt-[max(env(safe-area-inset-top),0.75rem)] sm:pt-[max(env(safe-area-inset-top),1rem)]">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 sm:gap-3">
                         <img
