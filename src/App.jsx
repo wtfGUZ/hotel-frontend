@@ -19,6 +19,7 @@ function AppContent() {
   const modalData = useModals();
 
   React.useEffect(() => {
+    // 1. Domyślny / Główny favicon
     let link = document.querySelector("link[rel~='icon']");
     if (!link) {
       link = document.createElement('link');
@@ -26,6 +27,15 @@ function AppContent() {
       document.getElementsByTagName('head')[0].appendChild(link);
     }
     link.href = hotelData.logoUrl || '/vite.png';
+
+    // 2. Favicon na ekran iOS/Safari (apple-touch-icon)
+    let appleIcon = document.querySelector("link[rel='apple-touch-icon']");
+    if (!appleIcon) {
+      appleIcon = document.createElement('link');
+      appleIcon.rel = 'apple-touch-icon';
+      document.getElementsByTagName('head')[0].appendChild(appleIcon);
+    }
+    appleIcon.href = hotelData.logoUrl || '/vite.png';
   }, [hotelData.logoUrl]);
 
   return (
