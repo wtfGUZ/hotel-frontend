@@ -489,7 +489,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                                                     {isDeleteMode && selectedForDelete.has(r.id) && (
                                                                         <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-[8px] font-bold z-30 shadow">✓</span>
                                                                     )}
-                                                                    <span className={`truncate pointer-events-none font-semibold drop-shadow-md pl-1 ${textSizeClass}`}>
+                                                                    <span className={`overflow-hidden whitespace-nowrap pointer-events-none font-semibold drop-shadow-md pl-1 ${textSizeClass}`}>
                                                                         {r.payment === 'booking' || r.isNewIcal ? '🅱️ ' : (r.groupId ? '👥 ' : '')}{getGuestName(r.guestId)}
                                                                     </span>
                                                                 </div>
