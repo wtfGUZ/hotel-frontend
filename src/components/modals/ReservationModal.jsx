@@ -23,15 +23,25 @@ export default function ReservationModal({
         return fullName.includes(guestSearchTerm.toLowerCase());
     });
 
-    // Initialize guest search term when editing an existing reservation
+    const hasInitializedSearchTerm = React.useRef(false);
+
+    // Initialize guest search term when editing an existing reservation (ONLY ONCE per edit session)
     React.useEffect(() => {
-        if (editingItem && editingItem.guestId && !guestSearchTerm) {
+        if (editingItem && editingItem.guestId && !hasInitializedSearchTerm.current) {
             const guest = guests.find(g => g.id === editingItem.guestId);
             if (guest) {
                 setGuestSearchTerm(`${guest.firstName} ${guest.lastName}`);
+                hasInitializedSearchTerm.current = true;
             }
         }
-    }, [editingItem, guests, guestSearchTerm, setGuestSearchTerm]);
+    }, [editingItem, guests, setGuestSearchTerm]);
+
+    // Reset flag if we change the item we are editing
+    React.useEffect(() => {
+        if (!editingItem) {
+            hasInitializedSearchTerm.current = false;
+        }
+    }, [editingItem]);
 
     const changeNights = (delta) => {
         if (!formData.checkIn) return;
