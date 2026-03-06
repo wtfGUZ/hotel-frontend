@@ -404,7 +404,7 @@ export default function ReservationModal({
                 </select>
             </div>
 
-            {formData.status === 'paid' && (
+            {(formData.status === 'paid' || formData.status === 'completed') && (
                 <div>
                     <label className="block mb-1 font-medium text-sm sm:text-base">Sposób płatności</label>
                     <select
