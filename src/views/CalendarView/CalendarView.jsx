@@ -178,36 +178,36 @@ export default function CalendarView({ hotelData, modalData }) {
 
     return (
         <div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 mb-4 sm:mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2 sm:mb-4">
                 <div></div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1 sm:gap-2">
                     <button
                         onClick={() => setCurrentDate(addDays(currentDate, -jumpStep))}
-                        className={`px-2 sm:px-4 py-2 rounded-lg ${theme.buttonSecondary} flex flex-1 sm:flex-none justify-center items-center gap-1 min-w-[3rem]`}
+                        className={`px-1 sm:px-3 py-1.5 sm:py-2 rounded-lg ${theme.buttonSecondary} flex flex-1 sm:flex-none justify-center items-center gap-1 min-w-[3rem] text-xs sm:text-sm`}
                         title={`Cofnij o ${jumpStep} dni`}
                         aria-label={`Cofnij o ${jumpStep} dni`}
                     >
-                        <ChevronLeft className="w-4 h-4" />
+                        <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         <span className="hidden sm:inline">Wstecz ({jumpStep}d)</span>
                     </button>
 
                     <button
                         onClick={() => setCurrentDate(new Date())}
-                        className={`px-3 sm:px-4 py-2 rounded-lg ${theme.button} flex-1 sm:flex-none justify-center items-center text-xs sm:text-base`}
+                        className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg ${theme.button} flex-1 sm:flex-none justify-center items-center text-xs sm:text-sm`}
                         title="Zawsze powrót do dzisiejszego dnia"
                     >
-                        <span className="sm:hidden">Wróć do dzisiaj</span>
-                        <span className="hidden sm:inline">Wróć do dzisiaj</span>
+                        <span className="sm:hidden">Dzisiaj</span>
+                        <span className="hidden sm:inline">Dzisiaj</span>
                     </button>
 
                     <button
                         onClick={() => setCurrentDate(addDays(currentDate, jumpStep))}
-                        className={`px-2 sm:px-4 py-2 rounded-lg ${theme.buttonSecondary} flex flex-1 sm:flex-none justify-center items-center gap-1 min-w-[3rem]`}
+                        className={`px-1 sm:px-3 py-1.5 sm:py-2 rounded-lg ${theme.buttonSecondary} flex flex-1 sm:flex-none justify-center items-center gap-1 min-w-[3rem] text-xs sm:text-sm`}
                         title={`Naprzód o ${jumpStep} dni`}
                         aria-label={`Naprzód o ${jumpStep} dni`}
                     >
                         <span className="hidden sm:inline">Naprzód ({jumpStep}d)</span>
-                        <ChevronRight className="w-4 h-4" />
+                        <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </button>
 
                     {isDeleteMode && selectedForDelete.size > 0 ? (
@@ -254,10 +254,10 @@ export default function CalendarView({ hotelData, modalData }) {
                                 setIsDeleteMode(false);
                                 setSelectedForDelete(new Set());
                             }}
-                            className="px-3 sm:px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 flex items-center justify-center gap-2 touch-manipulation w-full sm:w-auto mt-2 sm:mt-0 transition-colors animate-pulse"
+                            className="px-3 sm:px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 flex items-center justify-center gap-1 touch-manipulation w-full sm:w-auto mt-2 sm:mt-0 transition-colors animate-pulse text-xs sm:text-sm"
                             title={`Usuń ${selectedForDelete.size} zaznaczonych rezerwacji`}
                         >
-                            <Trash2 className="w-5 h-5" />
+                            <Trash2 className="w-4 h-4" />
                             <span>Usuń zaznaczone ({selectedForDelete.size})</span>
                         </button>
                     ) : (
@@ -272,10 +272,10 @@ export default function CalendarView({ hotelData, modalData }) {
                                     setSelectedForDelete(new Set());
                                 }
                             }}
-                            className={`px-3 sm:px-4 py-2 rounded-lg ${isDeleteMode ? 'bg-red-500/20 text-red-400 border border-red-500/50 hover:bg-red-500/30' : theme.buttonSecondary} flex items-center justify-center gap-2 touch-manipulation w-full sm:w-auto mt-2 sm:mt-0 transition-colors`}
+                            className={`px-3 sm:px-4 py-2 rounded-lg ${isDeleteMode ? 'bg-red-500/20 text-red-400 border border-red-500/50 hover:bg-red-500/30' : theme.buttonSecondary} flex items-center justify-center gap-1 touch-manipulation w-full sm:w-auto mt-2 sm:mt-0 transition-colors text-xs sm:text-sm`}
                             title="Tryb usuwania rezerwacji z kalendarza"
                         >
-                            <Trash2 className="w-5 h-5" />
+                            <Trash2 className="w-4 h-4" />
                             <span className="hidden sm:inline">{isDeleteMode ? 'Anuluj' : 'Usuwaj'}</span>
                             <span className="sm:hidden">{isDeleteMode ? 'Anuluj' : 'Usuwaj'}</span>
                         </button>
@@ -283,22 +283,21 @@ export default function CalendarView({ hotelData, modalData }) {
 
                     <button
                         onClick={() => openModal('reservation')}
-                        className={`px-3 sm:px-4 py-2 rounded-lg ${theme.button} flex items-center justify-center gap-2 touch-manipulation w-full sm:w-auto mt-2 sm:mt-0`}
+                        className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg ${theme.button} flex items-center justify-center gap-1 touch-manipulation w-full sm:w-auto mt-1 sm:mt-0 text-xs sm:text-sm`}
                     >
-                        <Plus className="w-5 h-5" />
+                        <Plus className="w-4 h-4" />
                         <span className="hidden sm:inline">Nowa Rezerwacja</span>
                         <span className="sm:hidden">Dodaj Rezerwację</span>
                     </button>
-
                 </div>
             </div>
 
-            <div className={`${theme.card} rounded-xl shadow-xl overflow-hidden`}>
+            <div className={`${theme.card} rounded-xl shadow-lg overflow-hidden border ${darkMode ? 'border-gray-700/50' : 'border-gray-200'} `}>
                 <div className="overflow-x-auto relative">
                     <table className="w-full min-w-[390px] sm:min-w-[640px]">
                         <thead className={darkMode ? 'bg-gray-700/30' : 'bg-gray-100'}>
                             <tr>
-                                <th className={`px-1 sm:px-2 py-2 text-left font-semibold sticky left-0 z-20 text-[10px] sm:text-sm ${darkMode ? 'bg-gray-800' : 'bg-gray-100'} w-[50px] sm:w-auto min-w-[50px] sm:min-w-[auto]`}>Pokój</th>
+                                <th className={`px-1 py-1 sm:px-2 sm:py-1.5 text-left font-semibold sticky left-0 z-20 text-[9px] sm:text-[11px] ${darkMode ? 'bg-gray-800' : 'bg-gray-100'} w-[45px] sm:w-[60px] min-w-[45px] sm:min-w-[60px]`}>Pokój</th>
                                 {calendarDays.map((day, idx) => {
                                     const dateStr = formatDate(day);
                                     const isToday = dateStr === formatDate(new Date());
@@ -307,12 +306,12 @@ export default function CalendarView({ hotelData, modalData }) {
                                     return (
                                         <th
                                             key={idx}
-                                            className={`px-1 py-1 sm:px-2 sm:py-2 text-center text-[10px] sm:text-xs font-medium min-w-[50px] sm:min-w-[80px] ${isToday ? (darkMode ? 'bg-blue-600/20' : 'bg-blue-100 text-blue-800') : ''}`}
+                                            className={`px-0.5 py-0.5 sm:px-1 sm:py-1 text-center text-[9px] sm:text-[11px] font-medium min-w-[45px] sm:min-w-[70px] ${isToday ? (darkMode ? 'bg-blue-600/20' : 'bg-blue-100 text-blue-800') : ''}`}
                                         >
-                                            <div className="text-[10px] sm:text-xs">{day.toLocaleDateString('pl-PL', { weekday: 'short' })}</div>
-                                            <div className="text-[9px] sm:text-[10px] opacity-70">{day.toLocaleDateString('pl-PL', { day: 'numeric', month: 'numeric' })}</div>
+                                            <div className="text-[9px] sm:text-[11px] leading-tight">{day.toLocaleDateString('pl-PL', { weekday: 'short' })}</div>
+                                            <div className="text-[8px] sm:text-[9px] opacity-70 leading-tight">{day.toLocaleDateString('pl-PL', { day: 'numeric', month: 'numeric' })}</div>
                                             {breakfastCount > 0 && (
-                                                <div className={`text-[10px] mt-0.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full ${darkMode ? 'bg-orange-500/20 text-orange-300' : 'bg-orange-100 text-orange-700'}`}>
+                                                <div className={`text-[8px] mt-0.5 inline-flex items-center gap-0.5 px-1 py-0 rounded-full ${darkMode ? 'bg-orange-500/20 text-orange-300' : 'bg-orange-100 text-orange-700'}`}>
                                                     🍳 {breakfastCount}
                                                 </div>
                                             )}
@@ -332,14 +331,14 @@ export default function CalendarView({ hotelData, modalData }) {
 
                                 return (
                                     <tr key={room.id} className={`border-t ${darkMode ? 'border-gray-600/50' : 'border-gray-200'}`}>
-                                        <td className={`px-0.5 sm:px-3 py-1 sm:py-1.5 font-medium sticky left-0 z-30 ${darkMode ? 'bg-gray-800' : 'bg-white'} border-r ${darkMode ? 'border-gray-700' : 'border-gray-200'} w-[50px] sm:w-auto max-w-[50px] sm:max-w-none`}>
-                                            <div className={`flex items-center justify-start gap-0.5 sm:gap-1.5 sm:pr-2`}>
+                                        <td className={`px-0.5 sm:px-1 py-0.5 sm:py-1 font-medium sticky left-0 z-30 ${darkMode ? 'bg-gray-800' : 'bg-white'} border-r ${darkMode ? 'border-gray-700' : 'border-gray-200'} w-[45px] sm:w-[60px] max-w-[45px] sm:max-w-none`}>
+                                            <div className={`flex items-center justify-start gap-0.5 sm:gap-1 pl-0.5 sm:pl-1`}>
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         toggleRoomStatus(room.id);
                                                     }}
-                                                    className={`w-1 h-6 sm:w-1.5 sm:h-12 flex-shrink-0 rounded-full cursor-pointer hover:opacity-80 hover:scale-110 transition-all ${statusColors[roomStatus]} z-30`}
+                                                    className={`w-1 h-5 sm:w-1.5 sm:h-8 flex-shrink-0 rounded-full cursor-pointer hover:opacity-80 hover:scale-110 transition-all ${statusColors[roomStatus]} z-30`}
                                                     title={
                                                         roomStatus === 'clean' ? 'Czysty i gotowy (kliknij → Zajęty)' :
                                                             roomStatus === 'occupied' ? 'Zajęty przez gościa (kliknij → Do sprzątania)' :
@@ -347,8 +346,8 @@ export default function CalendarView({ hotelData, modalData }) {
                                                     }
                                                 />
                                                 <div className="w-full overflow-hidden flex flex-col justify-center">
-                                                    <div className={`text-[10px] sm:text-xs font-semibold ${darkMode ? 'text-gray-100' : 'text-gray-900'} truncate leading-tight`}>{room.number}</div>
-                                                    <div className={`text-[8px] sm:text-[10px] truncate ${darkMode ? 'text-gray-400' : 'text-gray-600'} leading-none`} title={roomCategories?.find(c => c.id === room.categoryId)?.name || room.name}>
+                                                    <div className={`text-[9px] sm:text-[11px] font-bold ${darkMode ? 'text-gray-100' : 'text-gray-900'} truncate leading-none`}>{room.number}</div>
+                                                    <div className={`text-[7px] sm:text-[9px] truncate ${darkMode ? 'text-gray-400' : 'text-gray-600'} leading-none mt-0.5`} title={roomCategories?.find(c => c.id === room.categoryId)?.name || room.name}>
                                                         {roomCategories?.find(c => c.id === room.categoryId)?.name || room.name}
                                                     </div>
                                                 </div>
@@ -400,7 +399,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                                         }
                                                     }}
                                                 >
-                                                    <div className="h-10 relative">
+                                                    <div className="h-6 sm:h-8 relative">
                                                         {roomReservations.filter(r => {
                                                             const firstVisibleDate = formatDate(calendarDays[0]);
                                                             const lastVisibleDate = formatDate(calendarDays[calendarDays.length - 1]);
@@ -507,35 +506,35 @@ export default function CalendarView({ hotelData, modalData }) {
                 </div>
             </div>
 
-            <div className="mt-6 flex gap-4 items-center flex-wrap">
-                <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-md bg-gradient-to-r from-amber-500 to-yellow-500 border-l-2 border-amber-300"></div>
-                    <span className="text-sm">Wstępna</span>
+            <div className="mt-2 sm:mt-4 flex gap-2 sm:gap-4 items-center flex-wrap pt-2 border-t border-gray-600/20">
+                <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded bg-gradient-to-r from-amber-500 to-yellow-500 border-l border-amber-300"></div>
+                    <span className="text-[10px] sm:text-xs">Wstępna</span>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-md bg-gradient-to-r from-blue-500 to-indigo-500 border-l-2 border-blue-300"></div>
-                    <span className="text-sm">Potwierdzona</span>
+                <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded bg-gradient-to-r from-blue-500 to-indigo-500 border-l border-blue-300"></div>
+                    <span className="text-[10px] sm:text-xs">Potwierdzona</span>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-md bg-gradient-to-r from-emerald-500 to-green-500 border-l-2 border-emerald-300"></div>
-                    <span className="text-sm">Opłacona</span>
+                <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded bg-gradient-to-r from-emerald-500 to-green-500 border-l border-emerald-300"></div>
+                    <span className="text-[10px] sm:text-xs">Opłacona</span>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-md bg-gradient-to-r from-gray-400 to-gray-500 border-l-2 border-gray-300"></div>
-                    <span className="text-sm">Zakończona</span>
+                <div className="flex items-center gap-1.5">
+                    <div className="w-3 h-3 rounded bg-gradient-to-r from-gray-400 to-gray-500 border-l border-gray-300"></div>
+                    <span className="text-[10px] sm:text-xs">Zakończona</span>
                 </div>
-                <div className="h-6 w-px bg-gray-600 mx-2"></div>
-                <div className="flex items-center gap-2">
-                    <div className="w-2 h-6 rounded-full bg-green-500"></div>
-                    <span className="text-sm">Pokój czysty</span>
+                <div className="h-4 w-px bg-gray-600 mx-1"></div>
+                <div className="flex items-center gap-1.5">
+                    <div className="w-1.5 h-4 rounded-full bg-green-500"></div>
+                    <span className="text-[10px] sm:text-xs">Pokój czysty</span>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className={`w-2 h-6 rounded-full border-2 ${darkMode ? 'bg-gray-800/50 border-gray-500' : 'bg-gray-200 border-gray-400'}`}></div>
-                    <span className="text-sm">Zajęty</span>
+                <div className="flex items-center gap-1.5">
+                    <div className={`w-1.5 h-4 rounded-full border ${darkMode ? 'bg-gray-800/50 border-gray-500' : 'bg-gray-200 border-gray-400'}`}></div>
+                    <span className="text-[10px] sm:text-xs">Zajęty</span>
                 </div>
-                <div className="flex items-center gap-2">
-                    <div className="w-2 h-6 rounded-full bg-red-500"></div>
-                    <span className="text-sm">Do sprzątania</span>
+                <div className="flex items-center gap-1.5">
+                    <div className="w-1.5 h-4 rounded-full bg-red-500"></div>
+                    <span className="text-[10px] sm:text-xs">Do sprzątania</span>
                 </div>
             </div>
         </div >

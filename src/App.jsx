@@ -32,7 +32,7 @@ function AppContent() {
     <div className={`min-h-screen overflow-x-hidden w-full ${theme.bg} ${theme.text} transition-colors duration-300`}>
       <Header currentView={currentView} setCurrentView={setCurrentView} hotelData={hotelData} />
 
-      <main className="max-w-[98%] mx-auto px-3 py-4">
+      <main className="max-w-[99%] mx-auto px-1 sm:px-2 py-1 sm:py-2">
         <Suspense fallback={
           <div className="flex justify-center items-center h-[50vh]">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
