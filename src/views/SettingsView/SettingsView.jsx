@@ -58,6 +58,9 @@ export default function SettingsView({ hotelData, modalData }) {
         return <PinLockScreen verifyPinAPI={verifyPinAPI} onUnlock={() => setIsUnlocked(true)} />;
     }
 
+    const apiUrl = import.meta.env.VITE_API_URL || 'https://hotel-backend-t1xo.onrender.com/api';
+    const icalExportUrl = `${apiUrl}/ical/export/all/calendar.ics`;
+
     return (
         <div>
 
@@ -257,12 +260,12 @@ export default function SettingsView({ hotelData, modalData }) {
                         <input
                             type="text"
                             readOnly
-                            value={`${import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : window.location.origin.replace(':5173', ':3001')}/api/ical/export/all/calendar.ics`}
+                            value={icalExportUrl}
                             className={`w-full sm:flex-1 px-4 py-3 rounded-lg border ${theme.input} font-mono text-xs sm:text-sm outline-none`}
                         />
                         <button
                             onClick={() => {
-                                navigator.clipboard.writeText(`${import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : window.location.origin.replace(':5173', ':3001')}/api/ical/export/all/calendar.ics`);
+                                navigator.clipboard.writeText(icalExportUrl);
                                 setAlertMessage('✅ Skopiowano link do schowka!');
                             }}
                             className={`w-full sm:w-auto px-4 py-3 rounded-lg ${theme.button} whitespace-nowrap font-medium`}
