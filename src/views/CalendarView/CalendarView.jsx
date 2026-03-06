@@ -451,6 +451,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                                             return (
                                                                 <div
                                                                     key={r.id}
+                                                                    title={`${r.payment === 'booking' || r.isNewIcal ? '🅱️ ' : (r.groupId ? '👥 ' : '')}${getGuestName(r.guestId)}`}
                                                                     onMouseDown={(e) => e.stopPropagation()}
                                                                     onMouseUp={(e) => e.stopPropagation()}
                                                                     onClick={(e) => {
