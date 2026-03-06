@@ -331,14 +331,14 @@ export default function CalendarView({ hotelData, modalData }) {
 
                                 return (
                                     <tr key={room.id} className={`border-t ${darkMode ? 'border-gray-600/50' : 'border-gray-200'}`}>
-                                        <td className={`px-0.5 sm:px-1 py-0.5 sm:py-1 font-medium sticky left-0 z-30 ${darkMode ? 'bg-gray-800' : 'bg-white'} border-r ${darkMode ? 'border-gray-700' : 'border-gray-200'} w-[45px] sm:w-[60px] max-w-[45px] sm:max-w-none`}>
+                                        <td className={`px-1 sm:px-2 py-1 sm:py-1.5 font-medium sticky left-0 z-30 ${darkMode ? 'bg-gray-800' : 'bg-white'} border-r ${darkMode ? 'border-gray-700' : 'border-gray-200'} w-[45px] sm:w-[60px] max-w-[45px] sm:max-w-none`}>
                                             <div className={`flex items-center justify-start gap-0.5 sm:gap-1 pl-0.5 sm:pl-1`}>
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         toggleRoomStatus(room.id);
                                                     }}
-                                                    className={`w-1 h-5 sm:w-1.5 sm:h-8 flex-shrink-0 rounded-full cursor-pointer hover:opacity-80 hover:scale-110 transition-all ${statusColors[roomStatus]} z-30`}
+                                                    className={`w-1 h-6 sm:w-1.5 sm:h-10 flex-shrink-0 rounded-full cursor-pointer hover:opacity-80 hover:scale-110 transition-all ${statusColors[roomStatus]} z-30`}
                                                     title={
                                                         roomStatus === 'clean' ? 'Czysty i gotowy (kliknij → Zajęty)' :
                                                             roomStatus === 'occupied' ? 'Zajęty przez gościa (kliknij → Do sprzątania)' :
@@ -346,8 +346,8 @@ export default function CalendarView({ hotelData, modalData }) {
                                                     }
                                                 />
                                                 <div className="w-full overflow-hidden flex flex-col justify-center">
-                                                    <div className={`text-[9px] sm:text-[11px] font-bold ${darkMode ? 'text-gray-100' : 'text-gray-900'} truncate leading-none`}>{room.number}</div>
-                                                    <div className={`text-[7px] sm:text-[9px] truncate ${darkMode ? 'text-gray-400' : 'text-gray-600'} leading-none mt-0.5`} title={roomCategories?.find(c => c.id === room.categoryId)?.name || room.name}>
+                                                    <div className={`text-[10px] sm:text-xs font-bold ${darkMode ? 'text-gray-100' : 'text-gray-900'} truncate leading-none`}>{room.number}</div>
+                                                    <div className={`text-[8px] sm:text-[10px] truncate ${darkMode ? 'text-gray-400' : 'text-gray-600'} leading-none mt-0.5`} title={roomCategories?.find(c => c.id === room.categoryId)?.name || room.name}>
                                                         {roomCategories?.find(c => c.id === room.categoryId)?.name || room.name}
                                                     </div>
                                                 </div>
@@ -395,11 +395,10 @@ export default function CalendarView({ hotelData, modalData }) {
                                                     onMouseEnter={() => {
                                                         if (dragInfo.current.isDragging && dragInfo.current.roomId === room.id) {
                                                             dragInfo.current.endDate = dateStr;
-                                                            setDragState({ ...dragInfo.current });
                                                         }
                                                     }}
                                                 >
-                                                    <div className="h-6 sm:h-8 relative">
+                                                    <div className="h-8 sm:h-10 relative">
                                                         {roomReservations.filter(r => {
                                                             const firstVisibleDate = formatDate(calendarDays[0]);
                                                             const lastVisibleDate = formatDate(calendarDays[calendarDays.length - 1]);
