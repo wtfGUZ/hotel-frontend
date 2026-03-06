@@ -158,7 +158,7 @@ export default function SettingsView({ hotelData, modalData }) {
 
                 <div className={`${theme.card} rounded-xl p-6 shadow-lg`}>
                     <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-xl font-bold">Kategorie Pokoi (dla iCal)</h3>
+                        <h3 className="text-xl font-bold">Kategorie Pokoi</h3>
                         <button
                             onClick={() => {
                                 const newCat = { id: Date.now().toString(), name: 'Nowa Kategoria', icalUrl: '' };
@@ -171,9 +171,6 @@ export default function SettingsView({ hotelData, modalData }) {
                             Dodaj
                         </button>
                     </div>
-                    <p className={`text-sm ${theme.textSecondary} mb-4`}>
-                        Utwórz kategorie (np. "Jednoosobowy", "Dwuosobowy") i dodaj do nich ceny oraz linki iCal z Booking.com. Pokoje przypiszesz do kategorii w edycji pokoju.
-                    </p>
                     <div className="space-y-3">
                         {(roomCategories || []).map(cat => (
                             <div key={cat.id} className={`${theme.input} rounded-lg p-4 flex flex-col gap-3 border-l-4 border-blue-500`}>
@@ -241,6 +238,37 @@ export default function SettingsView({ hotelData, modalData }) {
                         {(!roomCategories || roomCategories.length === 0) && (
                             <p className="text-sm text-gray-500 text-center py-4">Brak dodanych kategorii.</p>
                         )}
+                    </div>
+                </div>
+
+                <div className={`${theme.card} rounded-xl p-6 shadow-lg`}>
+                    <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-xl font-bold">Kalendarz iCal (Eksport)</h3>
+                    </div>
+                    <p className={`text-sm ${theme.textSecondary} mb-4`}>
+                        Dodaj ten uniwersalny link do swojego kalendarza na telefonie (np. Apple Calendar, Google Calendar), aby mieć podgląd wszystkich bieżących rezerwacji ze wszystkich pokoi.
+                    </p>
+                    <div className="flex flex-col sm:flex-row items-center gap-2">
+                        <input
+                            type="text"
+                            readOnly
+                            value={`${import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : window.location.origin.replace(':5173', ':3001')}/api/ical/export/all/calendar.ics`}
+                            className={`w-full sm:flex-1 px-4 py-3 rounded-lg border ${theme.input} font-mono text-xs sm:text-sm outline-none`}
+                        />
+                        <button
+                            onClick={() => {
+                                navigator.clipboard.writeText(`${import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : window.location.origin.replace(':5173', ':3001')}/api/ical/export/all/calendar.ics`);
+                                setAlertMessage('✅ Skopiowano link do schowka!');
+                            }}
+                            className={`w-full sm:w-auto px-4 py-3 rounded-lg ${theme.button} whitespace-nowrap font-medium`}
+                        >
+                            Kopiuj Link
+                        </button>
                     </div>
                 </div>
 
@@ -381,7 +409,7 @@ export default function SettingsView({ hotelData, modalData }) {
                         </button>
                     </form>
                 </div>
-            </div>
+            </div >
         </div >
     );
 }
