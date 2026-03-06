@@ -11,6 +11,7 @@ export default function CalendarView({ hotelData, modalData }) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [jumpStep, setJumpStep] = useState(7); // Domyślnie 7, zostanie nadpisane przez useEffect
     const [isDeleteMode, setIsDeleteMode] = useState(false);
+    const [selectedForDelete, setSelectedForDelete] = useState(new Set());
     const dragInfo = useRef({ isDragging: false, roomId: null, startDate: null, endDate: null });
     const [dragState, setDragState] = useState({ roomId: null, startDate: null, endDate: null });
 
@@ -209,15 +210,76 @@ export default function CalendarView({ hotelData, modalData }) {
                         <ChevronRight className="w-4 h-4" />
                     </button>
 
-                    <button
-                        onClick={() => setIsDeleteMode(!isDeleteMode)}
-                        className={`px-3 sm:px-4 py-2 rounded-lg ${isDeleteMode ? 'bg-red-500 text-white hover:bg-red-600' : theme.buttonSecondary} flex items-center justify-center gap-2 touch-manipulation w-full sm:w-auto mt-2 sm:mt-0 transition-colors`}
-                        title="Tryb usuwania rezerwacji z kalendarza"
-                    >
-                        <Trash2 className="w-5 h-5" />
-                        <span className="hidden sm:inline">{isDeleteMode ? 'Wyłącz usuwanie' : 'Usuwaj'}</span>
-                        <span className="sm:hidden">{isDeleteMode ? 'Anuluj usuwanie' : 'Usuwaj'}</span>
-                    </button>
+                    {isDeleteMode && selectedForDelete.size > 0 ? (
+                        <button
+                            onClick={() => {
+                                // Zbierz zaznaczone rezerwacje
+                                const selectedIds = Array.from(selectedForDelete);
+                                const selectedReservations = reservations.filter(r => selectedIds.includes(r.id));
+
+                                // Sprawdź czy wśród zaznaczonych są rezerwacje grupowe
+                                const groupIds = new Set();
+                                const partialGroups = [];
+                                selectedReservations.forEach(r => {
+                                    if (r.groupId) groupIds.add(r.groupId);
+                                });
+
+                                // Dla każdej grupy sprawdź, czy zaznaczono WSZYSTKIE elementy grupy
+                                let hasPartialGroup = false;
+                                groupIds.forEach(gId => {
+                                    const allInGroup = reservations.filter(r => r.groupId === gId);
+                                    const selectedInGroup = selectedReservations.filter(r => r.groupId === gId);
+                                    if (selectedInGroup.length < allInGroup.length) {
+                                        hasPartialGroup = true;
+                                        partialGroups.push({ groupId: gId, allInGroup, selectedInGroup });
+                                    }
+                                });
+
+                                if (hasPartialGroup) {
+                                    // Pokaż modal z pytaniem o grupy
+                                    const firstPartial = partialGroups[0];
+                                    setDeleteConfirm({
+                                        type: 'bulkWithGroups',
+                                        selectedIds,
+                                        partialGroups,
+                                        message: `Zaznaczono ${selectedIds.length} rezerwacji. Wśród nich są rezerwacje grupowe, z których zaznaczono tylko część. Czy chcesz usunąć tylko zaznaczone czy całe grupy?`
+                                    });
+                                } else {
+                                    // Wszystkie zaznaczone — zwykłe bulk delete
+                                    setDeleteConfirm({
+                                        type: 'bulk-reservations',
+                                        ids: selectedIds.map(String)
+                                    });
+                                }
+                                setIsDeleteMode(false);
+                                setSelectedForDelete(new Set());
+                            }}
+                            className="px-3 sm:px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 flex items-center justify-center gap-2 touch-manipulation w-full sm:w-auto mt-2 sm:mt-0 transition-colors animate-pulse"
+                            title={`Usuń ${selectedForDelete.size} zaznaczonych rezerwacji`}
+                        >
+                            <Trash2 className="w-5 h-5" />
+                            <span>Usuń zaznaczone ({selectedForDelete.size})</span>
+                        </button>
+                    ) : (
+                        <button
+                            onClick={() => {
+                                if (isDeleteMode) {
+                                    // Wyjdź z trybu usuwania (anuluj)
+                                    setIsDeleteMode(false);
+                                    setSelectedForDelete(new Set());
+                                } else {
+                                    setIsDeleteMode(true);
+                                    setSelectedForDelete(new Set());
+                                }
+                            }}
+                            className={`px-3 sm:px-4 py-2 rounded-lg ${isDeleteMode ? 'bg-red-500/20 text-red-400 border border-red-500/50 hover:bg-red-500/30' : theme.buttonSecondary} flex items-center justify-center gap-2 touch-manipulation w-full sm:w-auto mt-2 sm:mt-0 transition-colors`}
+                            title="Tryb usuwania rezerwacji z kalendarza"
+                        >
+                            <Trash2 className="w-5 h-5" />
+                            <span className="hidden sm:inline">{isDeleteMode ? 'Anuluj' : 'Usuwaj'}</span>
+                            <span className="sm:hidden">{isDeleteMode ? 'Anuluj' : 'Usuwaj'}</span>
+                        </button>
+                    )}
 
                     <button
                         onClick={() => openModal('reservation')}
@@ -395,14 +457,16 @@ export default function CalendarView({ hotelData, modalData }) {
                                                                     onClick={(e) => {
                                                                         e.stopPropagation();
                                                                         if (isDeleteMode) {
-                                                                            if (r.groupId) {
-                                                                                const siblings = reservations.filter(s => s.groupId === r.groupId && s.id !== r.id);
-                                                                                if (siblings.length > 0) {
-                                                                                    setDeleteConfirm({ type: 'groupReservation', reservation: r, siblings });
-                                                                                    return;
+                                                                            // Tryb zaznaczania — toggle selekcji
+                                                                            setSelectedForDelete(prev => {
+                                                                                const next = new Set(prev);
+                                                                                if (next.has(r.id)) {
+                                                                                    next.delete(r.id);
+                                                                                } else {
+                                                                                    next.add(r.id);
                                                                                 }
-                                                                            }
-                                                                            setDeleteConfirm({ type: 'reservation', id: r.id });
+                                                                                return next;
+                                                                            });
                                                                             return;
                                                                         }
 
@@ -415,13 +479,16 @@ export default function CalendarView({ hotelData, modalData }) {
                                                                         }
                                                                         openModal('reservation', r);
                                                                     }}
-                                                                    className={`absolute top-0.5 bottom-0.5 rounded-md flex items-center cursor-pointer hover:brightness-110 hover:scale-[1.02] transition-all ${getStatusColor(r.status)} pointer-events-auto overflow-hidden`}
+                                                                    className={`absolute top-0.5 bottom-0.5 rounded-md flex items-center cursor-pointer hover:brightness-110 hover:scale-[1.02] transition-all ${getStatusColor(r.status)} pointer-events-auto overflow-hidden ${isDeleteMode && selectedForDelete.has(r.id) ? 'ring-2 ring-red-500 ring-offset-1 brightness-90' : ''} ${isDeleteMode ? 'cursor-crosshair' : ''}`}
                                                                     style={{
                                                                         left: `calc(${startOffset * 100}%)`,
                                                                         width: `calc(${widthInCells * 100}% - 2px)`,
                                                                         zIndex: 20
                                                                     }}
                                                                 >
+                                                                    {isDeleteMode && selectedForDelete.has(r.id) && (
+                                                                        <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-[8px] font-bold z-30 shadow">✓</span>
+                                                                    )}
                                                                     <span className={`truncate pointer-events-none font-semibold drop-shadow-md pl-1 ${textSizeClass}`}>
                                                                         {r.payment === 'booking' || r.isNewIcal ? '🅱️ ' : (r.groupId ? '👥 ' : '')}{getGuestName(r.guestId)}
                                                                     </span>

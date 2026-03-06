@@ -216,6 +216,30 @@ export default function GlobalModals({ hotelData, modalData }) {
         }
     };
 
+    // --- Bulk delete with group handling ---
+    const handleBulkDeleteSelectedOnly = async () => {
+        try {
+            await deleteMultipleReservationsAPI(deleteConfirm.selectedIds.map(String));
+            setDeleteConfirm(null);
+        } catch (err) {
+            setAlertMessage('Błąd przy usuwaniu zaznaczonych rezerwacji.');
+        }
+    };
+
+    const handleBulkDeleteWithFullGroups = async () => {
+        try {
+            const allIds = new Set(deleteConfirm.selectedIds.map(String));
+            // Dodaj brakujące elementy grup
+            deleteConfirm.partialGroups.forEach(pg => {
+                pg.allInGroup.forEach(r => allIds.add(String(r.id)));
+            });
+            await deleteMultipleReservationsAPI(Array.from(allIds));
+            setDeleteConfirm(null);
+        } catch (err) {
+            setAlertMessage('Błąd przy usuwaniu rezerwacji z grupami.');
+        }
+    };
+
     return (
         <>
             <AlertModal message={alertMessage} onClose={() => setAlertMessage(null)} />
@@ -241,6 +265,40 @@ export default function GlobalModals({ hotelData, modalData }) {
                 onEditGroup={() => handleGroupEditChoice('group')}
                 onCancel={() => setGroupEditChoice(null)}
             />
+
+            {deleteConfirm && deleteConfirm.type === 'bulkWithGroups' && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+                    <div className={`${theme.card} rounded-2xl p-6 max-w-md w-full shadow-2xl`}>
+                        <h3 className="text-xl font-bold mb-2 text-red-500">Usuwanie z rezerwacjami grupowymi</h3>
+                        <p className={`${theme.textSecondary} mb-4 text-sm`}>
+                            {deleteConfirm.message}
+                        </p>
+                        <div className="flex flex-col gap-2">
+                            <button
+                                type="button"
+                                onClick={handleBulkDeleteSelectedOnly}
+                                className={`w-full px-4 py-3 rounded-lg ${theme.buttonSecondary} border border-red-500/30 text-red-500 font-medium hover:bg-red-500/10 transition-colors text-left`}
+                            >
+                                🗑️ Usuń tylko zaznaczone ({deleteConfirm.selectedIds.length})
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleBulkDeleteWithFullGroups}
+                                className="w-full px-4 py-3 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors text-left shadow-lg hover:shadow-xl"
+                            >
+                                💣 Usuń zaznaczone + całe ich grupy
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setDeleteConfirm(null)}
+                                className={`w-full px-4 py-2 mt-2 rounded-lg text-sm ${theme.textSecondary} hover:opacity-80 transition-opacity`}
+                            >
+                                Anuluj
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <FormModal
                 showModal={showModal}
