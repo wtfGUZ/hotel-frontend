@@ -38,10 +38,11 @@ export const useHotelData = () => {
     };
 
 
-    // 1. Inicjalne ładowanie z zewnętrznego serwera
+    // 1. Inicjalne ładowanie z zewnętrznego serwera oraz auto-odświeżanie w tle
     useEffect(() => {
-        const fetchData = async () => {
+        const fetchData = async (silent = false) => {
             try {
+                if (!silent) setIsLoading(true);
                 const [resRooms, resGuests, resReservations, resSettings, resCategories] = await Promise.all([
                     apiFetch('/rooms'),
                     apiFetch('/guests'),
@@ -65,11 +66,27 @@ export const useHotelData = () => {
                 console.error('Błąd pobierania danych z serwera:', error);
                 console.warn("Nie udało się połączyć z bazą danych (serwerem). Upewnij się, że backend jest uruchomiony.");
             } finally {
-                setIsLoading(false);
+                if (!silent) setIsLoading(false);
             }
         };
 
-        fetchData();
+        fetchData(); // Pierwsze pobranie
+
+        // Automatyczne odświeżanie w tle, co 30 sekund
+        const intervalId = setInterval(() => {
+            fetchData(true);
+        }, 30000);
+
+        // Odświeżenie danych podczas powrotu użytkownika do zakładki
+        const handleFocus = () => {
+            fetchData(true);
+        };
+        window.addEventListener('focus', handleFocus);
+
+        return () => {
+            clearInterval(intervalId);
+            window.removeEventListener('focus', handleFocus);
+        };
     }, []);
 
     const syncAllIcalCategoriesAPI = async () => {
