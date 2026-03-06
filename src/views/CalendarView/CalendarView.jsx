@@ -521,8 +521,8 @@ export default function CalendarView({ hotelData, modalData }) {
                     <span className="text-sm">Opłacona</span>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 rounded-md bg-red-600 border-2 border-red-500 animate-pulse"></div>
-                    <span className="text-sm">⚠️ Konflikt</span>
+                    <div className="w-4 h-4 rounded-md bg-gradient-to-r from-gray-400 to-gray-500 border-l-2 border-gray-300"></div>
+                    <span className="text-sm">Zakończona</span>
                 </div>
                 <div className="h-6 w-px bg-gray-600 mx-2"></div>
                 <div className="flex items-center gap-2">
@@ -536,10 +536,6 @@ export default function CalendarView({ hotelData, modalData }) {
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-6 rounded-full bg-red-500"></div>
                     <span className="text-sm">Do sprzątania</span>
-                </div>
-                <div className="h-6 w-px bg-gray-600 mx-2"></div>
-                <div className={`flex items-center gap-2 px-3 py-1 rounded-lg bg-blue-500/10 border border-blue-500/30`}>
-                    <span className="text-xs">ℹ️ Check-in: 2. połowa dnia | Check-out: 1. połowa dnia</span>
                 </div>
             </div>
         </div >
