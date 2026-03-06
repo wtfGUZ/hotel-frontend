@@ -395,6 +395,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                                     onMouseEnter={() => {
                                                         if (dragInfo.current.isDragging && dragInfo.current.roomId === room.id) {
                                                             dragInfo.current.endDate = dateStr;
+                                                            setDragState({ ...dragInfo.current });
                                                         }
                                                     }}
                                                 >
