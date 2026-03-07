@@ -404,7 +404,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                                             const firstVisibleDate = formatDate(calendarDays[0]);
                                                             const lastVisibleDate = formatDate(calendarDays[calendarDays.length - 1]);
 
-                                                            if (r.checkOut <= firstVisibleDate) return false;
+                                                            if (r.checkOut < firstVisibleDate) return false;
                                                             if (r.checkIn >= lastVisibleDate) return false;
 
                                                             const isFirstVisibleCell = idx === 0;
