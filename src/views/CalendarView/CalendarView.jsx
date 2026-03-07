@@ -448,6 +448,13 @@ export default function CalendarView({ hotelData, modalData }) {
                                                                     durationDays === 2 ? 'text-[10px] px-1' :
                                                                         'text-xs sm:text-sm px-2';
 
+                                                            const isCutLeft = startOffset === 0;
+                                                            const isCutRight = endOffset === calendarDays.length - idx;
+                                                            let roundedClass = 'rounded-md';
+                                                            if (isCutLeft && isCutRight) roundedClass = 'rounded-none';
+                                                            else if (isCutLeft) roundedClass = 'rounded-r-md';
+                                                            else if (isCutRight) roundedClass = 'rounded-l-md';
+
                                                             return (
                                                                 <div
                                                                     key={r.id}
@@ -479,7 +486,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                                                         }
                                                                         openModal('reservation', r);
                                                                     }}
-                                                                    className={`absolute top-0.5 bottom-0.5 rounded-md flex items-center cursor-pointer hover:brightness-110 hover:scale-[1.02] transition-all ${getStatusColor(r.status, startOffset === 0)} pointer-events-auto overflow-hidden ${isDeleteMode && selectedForDelete.has(r.id) ? 'ring-2 ring-red-500 ring-offset-1 brightness-90' : ''} ${isDeleteMode ? 'cursor-crosshair' : ''}`}
+                                                                    className={`absolute top-0.5 bottom-0.5 ${roundedClass} flex items-center cursor-pointer hover:brightness-110 hover:scale-[1.02] transition-all ${getStatusColor(r.status, startOffset === 0)} pointer-events-auto overflow-hidden ${isDeleteMode && selectedForDelete.has(r.id) ? 'ring-2 ring-red-500 ring-offset-1 brightness-90' : ''} ${isDeleteMode ? 'cursor-crosshair' : ''}`}
                                                                     style={{
                                                                         left: `calc(${startOffset * 100}%)`,
                                                                         width: `calc(${widthInCells * 100}% - 2px)`,
