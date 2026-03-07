@@ -450,36 +450,38 @@ export default function ReservationModal({
                 )}
             </div>
 
-            <div>
-                <label className="block mb-1 font-medium text-sm sm:text-base">Status</label>
-                <select
-                    required
-                    value={formData.status || 'preliminary'}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className={`w-full px-3 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}
-                >
-                    <option value="preliminary">Wstępna</option>
-                    <option value="confirmed">Potwierdzona</option>
-                    <option value="paid">Opłacona</option>
-                    <option value="completed">Zakończona</option>
-                </select>
-            </div>
+            <div className="grid grid-cols-2 gap-2 sm:gap-4">
+                <div>
+                    <label className="block mb-1 font-medium text-sm sm:text-base">Status</label>
+                    <select
+                        required
+                        value={formData.status || 'preliminary'}
+                        onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                        className={`w-full px-3 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}
+                    >
+                        <option value="preliminary">Wstępna</option>
+                        <option value="confirmed">Potwierdzona</option>
+                        <option value="paid">Opłacona</option>
+                        <option value="completed">Zakończona</option>
+                    </select>
+                </div>
 
-            <div>
-                <label className="block mb-1 font-medium text-sm sm:text-base">Sposób płatności</label>
-                <select
-                    required
-                    value={formData.payment || 'unpaid'}
-                    onChange={(e) => setFormData({ ...formData, payment: e.target.value })}
-                    className={`w-full px-3 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}
-                >
-                    <option value="unpaid">Nie zapłacono</option>
-                    <option value="cash">Gotówka</option>
-                    <option value="card">Karta</option>
-                    <option value="transfer">Przelew</option>
-                    <option value="booking">Booking.com</option>
-                    <option value="invoice">Faktura</option>
-                </select>
+                <div>
+                    <label className="block mb-1 font-medium text-sm sm:text-base">Sposób płatności</label>
+                    <select
+                        required
+                        value={formData.payment || 'unpaid'}
+                        onChange={(e) => setFormData({ ...formData, payment: e.target.value })}
+                        className={`w-full px-3 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}
+                    >
+                        <option value="unpaid">Nie zapłacono</option>
+                        <option value="cash">Gotówka</option>
+                        <option value="card">Karta</option>
+                        <option value="transfer">Przelew</option>
+                        <option value="booking">Booking.com</option>
+                        <option value="invoice">Faktura</option>
+                    </select>
+                </div>
             </div>
 
             <div className="flex items-center gap-3">

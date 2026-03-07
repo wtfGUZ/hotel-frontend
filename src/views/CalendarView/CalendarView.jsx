@@ -9,31 +9,11 @@ export default function CalendarView({ hotelData, modalData }) {
     const { openModal, setFormData, setGroupEditChoice, setDeleteConfirm } = modalData;
 
     const [currentDate, setCurrentDate] = useState(new Date());
-    const [jumpStep, setJumpStep] = useState(7); // Domyślnie 7, zostanie nadpisane przez useEffect
+    const [jumpStep] = useState(1); // Domyślnie 1 dzień na każdym urządzeniu
     const [isDeleteMode, setIsDeleteMode] = useState(false);
     const [selectedForDelete, setSelectedForDelete] = useState(new Set());
     const dragInfo = useRef({ isDragging: false, roomId: null, startDate: null, endDate: null });
     const [dragState, setDragState] = useState({ roomId: null, startDate: null, endDate: null });
-
-    // Obliczanie docelowego "skoku" w dniach na podstawie szerokości okna
-    useEffect(() => {
-        const updateJumpStep = () => {
-            if (window.innerWidth < 640) {
-                setJumpStep(1); // Telefon: widać ~1 dzień na raz (zależy od scrolla, ale 1-3 to dobra wartość na przewijanie dotykiem)
-            } else if (window.innerWidth < 1024) {
-                setJumpStep(3); // Tablet: ~3 dni
-            } else {
-                setJumpStep(7); // Desktop: cały tydzień
-            }
-        };
-
-        // Oblicz przy montowaniu komponentu
-        updateJumpStep();
-
-        // Dodaj nasłuchiwacz zmiany rozmiaru okna
-        window.addEventListener('resize', updateJumpStep);
-        return () => window.removeEventListener('resize', updateJumpStep);
-    }, []);
 
     const contextRefs = useRef({ openModal, setFormData });
     useEffect(() => {
