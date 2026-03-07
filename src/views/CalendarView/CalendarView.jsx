@@ -5,7 +5,7 @@ import { addDays, formatDate, getStatusColor } from '../../utils/utils';
 
 export default function CalendarView({ hotelData, modalData }) {
     const { theme, darkMode } = useTheme();
-    const { rooms, reservations, roomCategories, roomStatuses, toggleRoomStatus, getRoomStatus, getGuestName, isLoading } = hotelData;
+    const { rooms, reservations, guests, roomCategories, roomStatuses, toggleRoomStatus, getRoomStatus, getGuestName, isLoading } = hotelData;
     const { openModal, setFormData, setGroupEditChoice, setDeleteConfirm } = modalData;
 
     const [currentDate, setCurrentDate] = useState(new Date());
