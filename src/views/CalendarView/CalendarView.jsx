@@ -457,10 +457,15 @@ export default function CalendarView({ hotelData, modalData }) {
                                                             else if (isCutLeft) roundedClass = 'rounded-r-md';
                                                             else if (isCutRight) roundedClass = 'rounded-l-md';
 
+                                                            const tooltipGuest = guests.find(g => g.id === r.guestId);
+                                                            const tooltipPhone = tooltipGuest?.phone ? `\nTelefon: ${tooltipGuest.phone}` : '';
+                                                            const tooltipNotes = r.notes ? `\nNotatki: ${r.notes}` : '';
+                                                            const tooltipTitle = `${r.payment === 'booking' || r.isNewIcal ? '🅱️ ' : (r.groupId ? '👥 ' : '')}${getGuestName(r.guestId)}\nŚniadanie: ${r.breakfast ? 'Tak' : 'Nie'}${tooltipPhone}${tooltipNotes}`;
+
                                                             return (
                                                                 <div
                                                                     key={r.id}
-                                                                    title={`${r.payment === 'booking' || r.isNewIcal ? '🅱️ ' : (r.groupId ? '👥 ' : '')}${getGuestName(r.guestId)}`}
+                                                                    title={tooltipTitle}
                                                                     onMouseDown={(e) => e.stopPropagation()}
                                                                     onMouseUp={(e) => e.stopPropagation()}
                                                                     onClick={(e) => {

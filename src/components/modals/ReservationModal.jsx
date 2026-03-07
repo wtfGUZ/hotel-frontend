@@ -541,7 +541,7 @@ export default function ReservationModal({
                 <textarea
                     value={formData.notes || ''}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    rows={2}
+                    rows={formData.notes && formData.notes.trim().length > 0 ? 5 : 2}
                     className={`w-full px-4 py-1.5 sm:py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none resize-none text-sm sm:text-base`}
                     placeholder="Dodatkowe informacje..."
                 />
