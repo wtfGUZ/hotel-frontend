@@ -29,12 +29,20 @@ export const calculateTotalPrice = (room, checkIn, checkOut, hasBreakfast) => {
     return nights * pricePerNight;
 };
 
-export const getStatusColor = (status) => {
+export const getStatusColor = (status, isCutLeftSide = false) => {
+    const baseBorder = isCutLeftSide ? '' : ' border-l-[3px]';
+    const borders = {
+        preliminary: isCutLeftSide ? '' : ' border-amber-300',
+        confirmed: isCutLeftSide ? '' : ' border-blue-300',
+        paid: isCutLeftSide ? '' : ' border-emerald-300',
+        completed: isCutLeftSide ? '' : ' border-gray-300'
+    };
+
     const colors = {
-        preliminary: 'bg-gradient-to-r from-amber-500/80 to-yellow-500/70 text-white border-l-[3px] border-amber-300 backdrop-blur-sm shadow-lg shadow-amber-500/20',
-        confirmed: 'bg-gradient-to-r from-blue-500/80 to-indigo-500/70 text-white border-l-[3px] border-blue-300 backdrop-blur-sm shadow-lg shadow-blue-500/20',
-        paid: 'bg-gradient-to-r from-emerald-500/80 to-green-500/70 text-white border-l-[3px] border-emerald-300 backdrop-blur-sm shadow-lg shadow-emerald-500/20',
-        completed: 'bg-gradient-to-r from-gray-500/80 to-gray-400/70 text-white border-l-[3px] border-gray-300 backdrop-blur-sm shadow-lg shadow-gray-500/20'
+        preliminary: `bg-gradient-to-r from-amber-500/80 to-yellow-500/70 text-white${baseBorder}${borders.preliminary} backdrop-blur-sm shadow-lg shadow-amber-500/20`,
+        confirmed: `bg-gradient-to-r from-blue-500/80 to-indigo-500/70 text-white${baseBorder}${borders.confirmed} backdrop-blur-sm shadow-lg shadow-blue-500/20`,
+        paid: `bg-gradient-to-r from-emerald-500/80 to-green-500/70 text-white${baseBorder}${borders.paid} backdrop-blur-sm shadow-lg shadow-emerald-500/20`,
+        completed: `bg-gradient-to-r from-gray-500/80 to-gray-400/70 text-white${baseBorder}${borders.completed} backdrop-blur-sm shadow-lg shadow-gray-500/20`
     };
     return colors[status] || colors.preliminary;
 };

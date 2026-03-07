@@ -479,7 +479,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                                                         }
                                                                         openModal('reservation', r);
                                                                     }}
-                                                                    className={`absolute top-0.5 bottom-0.5 rounded-md flex items-center cursor-pointer hover:brightness-110 hover:scale-[1.02] transition-all ${getStatusColor(r.status)} pointer-events-auto overflow-hidden ${isDeleteMode && selectedForDelete.has(r.id) ? 'ring-2 ring-red-500 ring-offset-1 brightness-90' : ''} ${isDeleteMode ? 'cursor-crosshair' : ''}`}
+                                                                    className={`absolute top-0.5 bottom-0.5 rounded-md flex items-center cursor-pointer hover:brightness-110 hover:scale-[1.02] transition-all ${getStatusColor(r.status, startOffset === 0)} pointer-events-auto overflow-hidden ${isDeleteMode && selectedForDelete.has(r.id) ? 'ring-2 ring-red-500 ring-offset-1 brightness-90' : ''} ${isDeleteMode ? 'cursor-crosshair' : ''}`}
                                                                     style={{
                                                                         left: `calc(${startOffset * 100}%)`,
                                                                         width: `calc(${widthInCells * 100}% - 2px)`,
