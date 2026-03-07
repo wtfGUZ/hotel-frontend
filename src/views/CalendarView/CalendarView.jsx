@@ -210,85 +210,87 @@ export default function CalendarView({ hotelData, modalData }) {
                         <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </button>
 
-                    {isDeleteMode && selectedForDelete.size > 0 ? (
-                        <button
-                            onClick={() => {
-                                // Zbierz zaznaczone rezerwacje
-                                const selectedIds = Array.from(selectedForDelete);
-                                const selectedReservations = reservations.filter(r => selectedIds.includes(r.id));
+                    <div className="flex w-full sm:w-auto gap-1 sm:gap-2 mt-1 sm:mt-0">
+                        {isDeleteMode && selectedForDelete.size > 0 ? (
+                            <button
+                                onClick={() => {
+                                    // Zbierz zaznaczone rezerwacje
+                                    const selectedIds = Array.from(selectedForDelete);
+                                    const selectedReservations = reservations.filter(r => selectedIds.includes(r.id));
 
-                                // Sprawdź czy wśród zaznaczonych są rezerwacje grupowe
-                                const groupIds = new Set();
-                                const partialGroups = [];
-                                selectedReservations.forEach(r => {
-                                    if (r.groupId) groupIds.add(r.groupId);
-                                });
+                                    // Sprawdź czy wśród zaznaczonych są rezerwacje grupowe
+                                    const groupIds = new Set();
+                                    const partialGroups = [];
+                                    selectedReservations.forEach(r => {
+                                        if (r.groupId) groupIds.add(r.groupId);
+                                    });
 
-                                // Dla każdej grupy sprawdź, czy zaznaczono WSZYSTKIE elementy grupy
-                                let hasPartialGroup = false;
-                                groupIds.forEach(gId => {
-                                    const allInGroup = reservations.filter(r => r.groupId === gId);
-                                    const selectedInGroup = selectedReservations.filter(r => r.groupId === gId);
-                                    if (selectedInGroup.length < allInGroup.length) {
-                                        hasPartialGroup = true;
-                                        partialGroups.push({ groupId: gId, allInGroup, selectedInGroup });
+                                    // Dla każdej grupy sprawdź, czy zaznaczono WSZYSTKIE elementy grupy
+                                    let hasPartialGroup = false;
+                                    groupIds.forEach(gId => {
+                                        const allInGroup = reservations.filter(r => r.groupId === gId);
+                                        const selectedInGroup = selectedReservations.filter(r => r.groupId === gId);
+                                        if (selectedInGroup.length < allInGroup.length) {
+                                            hasPartialGroup = true;
+                                            partialGroups.push({ groupId: gId, allInGroup, selectedInGroup });
+                                        }
+                                    });
+
+                                    if (hasPartialGroup) {
+                                        // Pokaż modal z pytaniem o grupy
+                                        const firstPartial = partialGroups[0];
+                                        setDeleteConfirm({
+                                            type: 'bulkWithGroups',
+                                            selectedIds,
+                                            partialGroups,
+                                            message: `Zaznaczono ${selectedIds.length} rezerwacji. Wśród nich są rezerwacje grupowe, z których zaznaczono tylko część. Czy chcesz usunąć tylko zaznaczone czy całe grupy?`
+                                        });
+                                    } else {
+                                        // Wszystkie zaznaczone — zwykłe bulk delete
+                                        setDeleteConfirm({
+                                            type: 'bulk-reservations',
+                                            ids: selectedIds.map(String)
+                                        });
                                     }
-                                });
-
-                                if (hasPartialGroup) {
-                                    // Pokaż modal z pytaniem o grupy
-                                    const firstPartial = partialGroups[0];
-                                    setDeleteConfirm({
-                                        type: 'bulkWithGroups',
-                                        selectedIds,
-                                        partialGroups,
-                                        message: `Zaznaczono ${selectedIds.length} rezerwacji. Wśród nich są rezerwacje grupowe, z których zaznaczono tylko część. Czy chcesz usunąć tylko zaznaczone czy całe grupy?`
-                                    });
-                                } else {
-                                    // Wszystkie zaznaczone — zwykłe bulk delete
-                                    setDeleteConfirm({
-                                        type: 'bulk-reservations',
-                                        ids: selectedIds.map(String)
-                                    });
-                                }
-                                setIsDeleteMode(false);
-                                setSelectedForDelete(new Set());
-                            }}
-                            className="px-3 sm:px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 flex items-center justify-center gap-1 touch-manipulation w-full sm:w-auto mt-2 sm:mt-0 transition-colors animate-pulse text-xs sm:text-sm"
-                            title={`Usuń ${selectedForDelete.size} zaznaczonych rezerwacji`}
-                        >
-                            <Trash2 className="w-4 h-4" />
-                            <span>Usuń zaznaczone ({selectedForDelete.size})</span>
-                        </button>
-                    ) : (
-                        <button
-                            onClick={() => {
-                                if (isDeleteMode) {
-                                    // Wyjdź z trybu usuwania (anuluj)
                                     setIsDeleteMode(false);
                                     setSelectedForDelete(new Set());
-                                } else {
-                                    setIsDeleteMode(true);
-                                    setSelectedForDelete(new Set());
-                                }
-                            }}
-                            className={`px-3 sm:px-4 py-2 rounded-lg ${isDeleteMode ? 'bg-red-500/20 text-red-400 border border-red-500/50 hover:bg-red-500/30' : theme.buttonSecondary} flex items-center justify-center gap-1 touch-manipulation w-full sm:w-auto mt-2 sm:mt-0 transition-colors text-xs sm:text-sm`}
-                            title="Tryb usuwania rezerwacji z kalendarza"
-                        >
-                            <Trash2 className="w-4 h-4" />
-                            <span className="hidden sm:inline">{isDeleteMode ? 'Anuluj' : 'Usuwaj'}</span>
-                            <span className="sm:hidden">{isDeleteMode ? 'Anuluj' : 'Usuwaj'}</span>
-                        </button>
-                    )}
+                                }}
+                                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 flex items-center justify-center gap-1 touch-manipulation transition-colors animate-pulse text-xs sm:text-sm"
+                                title={`Usuń ${selectedForDelete.size} zaznaczonych rezerwacji`}
+                            >
+                                <Trash2 className="w-4 h-4 flex-shrink-0" />
+                                <span className="truncate">Usuń zaznaczone ({selectedForDelete.size})</span>
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => {
+                                    if (isDeleteMode) {
+                                        // Wyjdź z trybu usuwania (anuluj)
+                                        setIsDeleteMode(false);
+                                        setSelectedForDelete(new Set());
+                                    } else {
+                                        setIsDeleteMode(true);
+                                        setSelectedForDelete(new Set());
+                                    }
+                                }}
+                                className={`flex-1 sm:flex-none px-2 sm:px-4 py-1.5 sm:py-2 rounded-lg ${isDeleteMode ? 'bg-red-500/20 text-red-400 border border-red-500/50 hover:bg-red-500/30' : theme.buttonSecondary} flex items-center justify-center gap-1 touch-manipulation transition-colors text-xs sm:text-sm`}
+                                title="Tryb usuwania rezerwacji z kalendarza"
+                            >
+                                <Trash2 className="w-4 h-4 flex-shrink-0" />
+                                <span className="hidden sm:inline">{isDeleteMode ? 'Anuluj' : 'Usuwaj'}</span>
+                                <span className="sm:hidden truncate">{isDeleteMode ? 'Anuluj' : 'Usuwaj'}</span>
+                            </button>
+                        )}
 
-                    <button
-                        onClick={() => openModal('reservation')}
-                        className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg ${theme.button} flex items-center justify-center gap-1 touch-manipulation w-full sm:w-auto mt-1 sm:mt-0 text-xs sm:text-sm`}
-                    >
-                        <Plus className="w-4 h-4" />
-                        <span className="hidden sm:inline">Nowa Rezerwacja</span>
-                        <span className="sm:hidden">Dodaj Rezerwację</span>
-                    </button>
+                        <button
+                            onClick={() => openModal('reservation')}
+                            className={`flex-1 sm:flex-none px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg ${theme.button} flex items-center justify-center gap-1 touch-manipulation text-xs sm:text-sm`}
+                        >
+                            <Plus className="w-4 h-4 flex-shrink-0" />
+                            <span className="hidden sm:inline">Nowa Rezerwacja</span>
+                            <span className="sm:hidden truncate">Dodaj</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
