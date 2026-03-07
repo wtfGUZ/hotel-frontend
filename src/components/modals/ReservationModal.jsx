@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Check } from 'lucide-react';
+import { Plus, Check, Edit } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { calculateNights, calculateTotalPrice, formatDate, addDays } from '../../utils/utils';
 
@@ -75,18 +75,37 @@ export default function ReservationModal({
             <div className="relative guest-search-container">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 mb-1">
                     <label className="font-medium text-sm sm:text-base">Gość (wpisz imię i nazwisko) *</label>
-                    <button
-                        type="button"
-                        onClick={() => {
-                            setShowQuickGuestForm(true);
-                            setShowGuestDropdown(false);
-                            setQuickGuestData({});
-                        }}
-                        className={`text-xs sm:text-sm whitespace-nowrap flex items-center gap-1 px-3 py-1.5 sm:py-1 rounded-lg ${theme.button}`}
-                    >
-                        <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
-                        Dodaj nowego
-                    </button>
+                    <div className="flex items-center gap-2">
+                        {formData.guestId && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    const guest = guests.find(g => g.id === formData.guestId);
+                                    if (guest) {
+                                        setQuickGuestData({ ...guest });
+                                        setShowQuickGuestForm(true);
+                                        setShowGuestDropdown(false);
+                                    }
+                                }}
+                                className={`text-xs sm:text-sm whitespace-nowrap flex items-center gap-1 px-3 py-1.5 sm:py-1 rounded-lg ${theme.buttonSecondary}`}
+                            >
+                                <Edit className="w-3 h-3 sm:w-4 sm:h-4" />
+                                Edytuj gościa
+                            </button>
+                        )}
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setShowQuickGuestForm(true);
+                                setShowGuestDropdown(false);
+                                setQuickGuestData({});
+                            }}
+                            className={`text-xs sm:text-sm whitespace-nowrap flex items-center gap-1 px-3 py-1.5 sm:py-1 rounded-lg ${theme.button}`}
+                        >
+                            <Plus className="w-3 h-3 sm:w-4 sm:h-4" />
+                            Dodaj nowego
+                        </button>
+                    </div>
                 </div>
                 <input
                     type="text"
@@ -105,10 +124,10 @@ export default function ReservationModal({
                 />
 
                 {showGuestDropdown && guestSearchTerm && (
-                    <div className={`absolute z-10 w-full mt-1 ${theme.card} border rounded-lg shadow-xl max-h-60 overflow-y-auto`}>
+                    <div className={`absolute z-20 w-full mt-2 ${theme.card} border-2 border-blue-500 rounded-xl shadow-2xl overflow-y-auto`} style={{ maxHeight: '350px' }}>
                         {filteredGuestsForSearch.length > 0 ? (
-                            <>
-                                {filteredGuestsForSearch.map(guest => (
+                            <div className="py-1">
+                                {filteredGuestsForSearch.map((guest, index) => (
                                     <div
                                         key={guest.id}
                                         onClick={() => {
@@ -116,13 +135,22 @@ export default function ReservationModal({
                                             setFormData({ ...formData, guestId: guest.id });
                                             setShowGuestDropdown(false);
                                         }}
-                                        className={`px-4 py-3 cursor-pointer hover:bg-blue-600/20 transition-colors border-b ${theme.textSecondary} border-gray-700/30`}
+                                        className={`px-5 py-3 cursor-pointer hover:bg-blue-500/30 transition-colors ${index !== filteredGuestsForSearch.length - 1 ? 'border-b border-gray-700/50' : ''}`}
                                     >
-                                        <div className="font-medium text-gray-100">{guest.firstName} {guest.lastName}</div>
-                                        <div className="text-xs">{guest.email} • {guest.phone}</div>
+                                        <div className="font-bold text-base text-blue-400 mb-0.5">{guest.firstName} {guest.lastName}</div>
+                                        <div className="text-xs text-gray-300 font-medium">
+                                            {guest.email && <span className="mr-2">📧 {guest.email}</span>}
+                                            {guest.phone && <span className="mr-2">📞 {guest.phone}</span>}
+                                        </div>
+                                        {(guest.pesel || guest.idNumber) && (
+                                            <div className="text-[10px] text-gray-400 mt-1 flex gap-3">
+                                                {guest.pesel && <span>PESEL: <span className="text-gray-200">{guest.pesel}</span></span>}
+                                                {guest.idNumber && <span>ID: <span className="text-gray-200">{guest.idNumber}</span></span>}
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
-                            </>
+                            </div>
                         ) : (
                             <div className="px-4 py-3">
                                 <div className="text-yellow-400 mb-2">
@@ -161,7 +189,7 @@ export default function ReservationModal({
 
                 {showQuickGuestForm && (
                     <div className={`${theme.card} p-4 rounded-lg space-y-3 mt-3 border-2 border-blue-500/30`}>
-                        <h4 className="font-medium text-sm text-blue-400">Dodaj nowego gościa</h4>
+                        <h4 className="font-medium text-sm text-blue-400">{quickGuestData.id ? 'Edytuj gościa' : 'Dodaj nowego gościa'}</h4>
                         <div className="grid grid-cols-2 gap-3">
                             <input
                                 type="text"
@@ -192,6 +220,22 @@ export default function ReservationModal({
                             onChange={(e) => setQuickGuestData({ ...quickGuestData, phone: e.target.value })}
                             className={`w-full px-3 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none text-sm`}
                         />
+                        <div className="grid grid-cols-2 gap-3 mt-2">
+                            <input
+                                type="text"
+                                placeholder="PESEL"
+                                value={quickGuestData.pesel || ''}
+                                onChange={(e) => setQuickGuestData({ ...quickGuestData, pesel: e.target.value })}
+                                className={`w-full px-3 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none text-sm`}
+                            />
+                            <input
+                                type="text"
+                                placeholder="Nr dokumentu"
+                                value={quickGuestData.idNumber || ''}
+                                onChange={(e) => setQuickGuestData({ ...quickGuestData, idNumber: e.target.value })}
+                                className={`w-full px-3 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none text-sm`}
+                            />
+                        </div>
                         <div className="flex gap-2">
                             <button
                                 type="button"
@@ -205,9 +249,16 @@ export default function ReservationModal({
                                             firstName: quickGuestData.firstName,
                                             lastName: quickGuestData.lastName,
                                             email: quickGuestData.email || '',
-                                            phone: quickGuestData.phone || ''
+                                            phone: quickGuestData.phone || '',
+                                            pesel: quickGuestData.pesel || '',
+                                            idNumber: quickGuestData.idNumber || ''
                                         };
-                                        const savedGuest = await hotelData.addGuestAPI(guestPayload);
+                                        let savedGuest;
+                                        if (quickGuestData.id) {
+                                            savedGuest = await hotelData.updateGuestAPI(quickGuestData.id, guestPayload);
+                                        } else {
+                                            savedGuest = await hotelData.addGuestAPI(guestPayload);
+                                        }
                                         setGuestSearchTerm(`${savedGuest.firstName} ${savedGuest.lastName}`);
                                         setFormData({ ...formData, guestId: savedGuest.id });
                                         setQuickGuestData({});
@@ -219,7 +270,7 @@ export default function ReservationModal({
                                 className={`flex-1 px-4 py-2 rounded-lg ${theme.buttonSecondary} border border-gray-600/50 text-sm font-medium flex items-center justify-center gap-2`}
                             >
                                 <Check className="w-4 h-4" />
-                                Dodaj i wybierz
+                                {quickGuestData.id ? 'Zapisz zmiany' : 'Dodaj i wybierz'}
                             </button>
                             <button
                                 type="button"
@@ -414,23 +465,22 @@ export default function ReservationModal({
                 </select>
             </div>
 
-            {(formData.status === 'paid' || formData.status === 'completed') && (
-                <div>
-                    <label className="block mb-1 font-medium text-sm sm:text-base">Sposób płatności</label>
-                    <select
-                        required
-                        value={formData.payment || 'cash'}
-                        onChange={(e) => setFormData({ ...formData, payment: e.target.value })}
-                        className={`w-full px-3 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}
-                    >
-                        <option value="cash">Gotówka</option>
-                        <option value="card">Karta</option>
-                        <option value="transfer">Przelew</option>
-                        <option value="booking">Booking.com</option>
-                        <option value="invoice">Faktura</option>
-                    </select>
-                </div>
-            )}
+            <div>
+                <label className="block mb-1 font-medium text-sm sm:text-base">Sposób płatności</label>
+                <select
+                    required
+                    value={formData.payment || 'unpaid'}
+                    onChange={(e) => setFormData({ ...formData, payment: e.target.value })}
+                    className={`w-full px-3 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}
+                >
+                    <option value="unpaid">Nie zapłacono</option>
+                    <option value="cash">Gotówka</option>
+                    <option value="card">Karta</option>
+                    <option value="transfer">Przelew</option>
+                    <option value="booking">Booking.com</option>
+                    <option value="invoice">Faktura</option>
+                </select>
+            </div>
 
             <div className="flex items-center gap-3">
                 <input

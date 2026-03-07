@@ -50,6 +50,28 @@ export default function GuestModal({ formData, setFormData }) {
                     placeholder="+48 123 456 789"
                 />
             </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                <div>
+                    <label className="block mb-2 font-medium">PESEL</label>
+                    <input
+                        type="text"
+                        value={formData.pesel || ''}
+                        onChange={(e) => setFormData({ ...formData, pesel: e.target.value })}
+                        className={`w-full px-4 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}
+                    />
+                </div>
+
+                <div>
+                    <label className="block mb-2 font-medium">Nr dokumentu tożsamości</label>
+                    <input
+                        type="text"
+                        value={formData.idNumber || ''}
+                        onChange={(e) => setFormData({ ...formData, idNumber: e.target.value })}
+                        className={`w-full px-4 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}
+                    />
+                </div>
+            </div>
         </>
     );
 }

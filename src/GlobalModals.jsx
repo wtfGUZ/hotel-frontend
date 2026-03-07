@@ -137,7 +137,9 @@ export default function GlobalModals({ hotelData, modalData }) {
                     firstName: String(formData.firstName),
                     lastName: String(formData.lastName),
                     email: String(formData.email || ''),
-                    phone: String(formData.phone || '')
+                    phone: String(formData.phone || ''),
+                    pesel: String(formData.pesel || ''),
+                    idNumber: String(formData.idNumber || '')
                 };
                 if (editingItem) {
                     await updateGuestAPI(String(editingItem.id), guestPayload);
