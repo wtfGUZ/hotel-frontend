@@ -164,7 +164,7 @@ export default function SettingsView({ hotelData, modalData }) {
                         <h3 className="text-xl font-bold">Kategorie Pokoi</h3>
                         <button
                             onClick={() => {
-                                const newCat = { id: Date.now().toString(), name: 'Nowa Kategoria', icalUrl: '' };
+                                const newCat = { id: Date.now().toString(), name: 'Nowa Kategoria', icalUrl: '', priority: 10 };
                                 const updated = [...(roomCategories || []), newCat];
                                 saveRoomCategoriesAPI(updated);
                             }}
@@ -201,7 +201,24 @@ export default function SettingsView({ hotelData, modalData }) {
                                         <Trash2 className="w-5 h-5 sm:w-4 sm:h-4" />
                                     </button>
                                 </div>
-                                <div className="mt-3 grid grid-cols-2 gap-3">
+                                <div className="mt-3 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <div>
+                                        <label className="block text-xs font-semibold mb-1 text-gray-400">Poziom Standardu (1-100)</label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            max="100"
+                                            className={`w-full px-3 py-2 text-sm rounded-lg border focus:ring-1 focus:ring-blue-500 outline-none ${theme.input} font-bold text-blue-500`}
+                                            placeholder="10"
+                                            value={cat.priority ?? ''}
+                                            onChange={(e) => {
+                                                const val = parseInt(e.target.value, 10);
+                                                const updated = roomCategories.map(c => c.id === cat.id ? { ...c, priority: isNaN(val) ? 0 : val } : c);
+                                                setRoomCategories(updated);
+                                            }}
+                                            onBlur={() => saveRoomCategoriesAPI(roomCategories)}
+                                        />
+                                    </div>
                                     <div>
                                         <label className="block text-xs font-semibold mb-1 text-gray-400">Cena za noc (zł)</label>
                                         <input
@@ -219,7 +236,7 @@ export default function SettingsView({ hotelData, modalData }) {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-semibold mb-1 text-gray-400">Cena za noc ze śniadaniem (zł)</label>
+                                        <label className="block text-xs font-semibold mb-1 text-gray-400">Za noc + Śniadanie (zł)</label>
                                         <input
                                             type="number"
                                             min="0"
