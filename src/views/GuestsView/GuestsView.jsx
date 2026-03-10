@@ -67,7 +67,7 @@ export default function GuestsView({ hotelData, modalData }) {
                                             <span>{guest.idNumber || <span className="text-gray-500 italic">Brak</span>}</span>
                                         </div>
                                         <div>
-                                            <span className={theme.textSecondary}>Liczba pobytów: </span>
+                                            <span className={theme.textSecondary}>🛏️ Liczba pobytów: </span>
                                             <span className="font-medium">{guestReservations.length}</span>
                                         </div>
                                     </div>
