@@ -24,43 +24,43 @@ export default function ReservationsView({ hotelData, modalData }) {
 
     return (
         <div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
-                <div></div>
-                <button
-                    onClick={() => openModal('reservation')}
-                    className={`px-4 py-3 rounded-lg ${theme.button} flex items-center justify-center gap-2 touch-manipulation`}
-                >
-                    <Plus className="w-5 h-5" />
-                    <span>Nowa Rezerwacja</span>
-                </button>
-            </div>
+            {/* TOOLBAR */}
+            <div className="flex flex-col xl:flex-row xl:items-center justify-between gap-4 mb-4 sm:mb-6 bg-transparent">
 
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <div className="flex-1 relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                        type="text"
-                        placeholder="Szukaj po nazwisku lub numerze pokoju..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className={`w-full pl-10 pr-4 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}
-                    />
+                {/* LEFT SIDE: Search & Filter */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 flex-1">
+                    {/* Search Input (Fixed shorter width on large screens) */}
+                    <div className="relative w-full sm:w-64 md:w-72 shrink-0">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="Szukaj po nazwisku/pokoju..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className={`w-full pl-9 sm:pl-10 pr-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none transition-shadow`}
+                        />
+                    </div>
+
+                    {/* Status Filter */}
+                    <select
+                        value={filterStatus}
+                        onChange={(e) => setFilterStatus(e.target.value)}
+                        className={`px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none shrink-0 transition-shadow`}
+                    >
+                        <option value="all">Wszystkie statusy</option>
+                        <option value="preliminary">Wstępna</option>
+                        <option value="confirmed">Potwierdzona</option>
+                        <option value="paid">Opłacona</option>
+                        <option value="completed">Zakończona</option>
+                    </select>
+
+                    <div className="text-sm text-gray-400 hidden lg:block whitespace-nowrap ml-2">
+                        Znaleziono: {filteredReservations.length}
+                    </div>
                 </div>
-                <select
-                    value={filterStatus}
-                    onChange={(e) => setFilterStatus(e.target.value)}
-                    className={`px-4 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}
-                >
-                    <option value="all">Wszystkie statusy</option>
-                    <option value="preliminary">Wstępna</option>
-                    <option value="confirmed">Potwierdzona</option>
-                    <option value="paid">Opłacona</option>
-                    <option value="completed">Zakończona</option>
-                </select>
-            </div>
 
-            <div className="flex justify-between items-center mb-4">
-                <div className="flex gap-2">
+                {/* RIGHT SIDE: Action Buttons */}
+                <div className="flex flex-wrap items-center gap-2 xl:justify-end">
                     <button
                         onClick={() => {
                             if (selectedIds.length === filteredReservations.length && filteredReservations.length > 0) {
@@ -69,10 +69,11 @@ export default function ReservationsView({ hotelData, modalData }) {
                                 setSelectedIds(filteredReservations.map(r => r.id));
                             }
                         }}
-                        className={`px-4 py-2 rounded-lg text-sm font-medium ${theme.buttonSecondary} transition-opacity hover:opacity-80`}
+                        className={`px-3 py-2 sm:py-2.5 rounded-lg text-sm font-medium ${theme.buttonSecondary} transition-opacity hover:opacity-80 shrink-0`}
                     >
-                        {selectedIds.length === filteredReservations.length && filteredReservations.length > 0 ? 'Odznacz wszystkie' : 'Zaznacz wszystkie'}
+                        {selectedIds.length === filteredReservations.length && filteredReservations.length > 0 ? 'Odznacz' : 'Zaznacz wszystkie'}
                     </button>
+
                     {selectedIds.length > 0 && (
                         <button
                             onClick={() => setDeleteConfirm({
@@ -80,15 +81,20 @@ export default function ReservationsView({ hotelData, modalData }) {
                                 ids: selectedIds,
                                 message: `Czy na pewno chcesz usunąć zaznaczone rezerwacje (${selectedIds.length} szt.)?`
                             })}
-                            className={`px-4 py-2 rounded-lg ${theme.buttonDanger} flex items-center gap-2`}
+                            className={`px-3 py-2 sm:py-2.5 rounded-lg text-sm ${theme.buttonDanger} flex items-center gap-1.5 shrink-0 hover:bg-red-600 transition-colors`}
                         >
                             <Trash2 className="w-4 h-4" />
-                            Usuń zaznaczone ({selectedIds.length})
+                            <span className="hidden sm:inline">Usuń</span> ({selectedIds.length})
                         </button>
                     )}
-                </div>
-                <div className="text-sm text-gray-400 hidden sm:block">
-                    Znaleziono: {filteredReservations.length}
+
+                    <button
+                        onClick={() => openModal('reservation')}
+                        className={`px-4 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base font-medium ${theme.button} flex items-center gap-2 shrink-0 touch-manipulation hover:opacity-90 transition-opacity whitespace-nowrap`}
+                    >
+                        <Plus className="w-5 h-5" />
+                        <span>Nowa Rezerwacja</span>
+                    </button>
                 </div>
             </div>
 
