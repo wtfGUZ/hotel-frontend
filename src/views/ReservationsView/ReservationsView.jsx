@@ -100,11 +100,24 @@ export default function ReservationsView({ hotelData, modalData }) {
                     return (
                         <div key={reservation.id} className={`${theme.card} rounded-xl p-5 sm:p-6 shadow-lg hover:shadow-xl transition-all ${selectedIds.includes(reservation.id) ? 'ring-2 ring-blue-500 bg-blue-500/5' : ''}`}>
 
-                            {/* TOP ROW: Checkbox + Name + Buttons */}
+                            {/* TOP ROW: Name + Buttons & Checkbox */}
                             <div className="flex items-start justify-between gap-3 mb-4">
                                 <div className="flex items-center gap-3 min-w-0">
+                                    <div className="min-w-0">
+                                        <h3 className="text-lg sm:text-xl font-bold leading-snug truncate">
+                                            {reservation.payment === 'booking' || reservation.isNewIcal ? '🅱️ ' : (reservation.groupId ? '👥 ' : '')}
+                                            {guest ? `${guest.firstName} ${guest.lastName}` : 'Nieznany'}
+                                        </h3>
+                                        <span className={`mt-1 inline-block px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(reservation.status)}`}>
+                                            {getStatusText(reservation.status)}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Actions – top-right always */}
+                                <div className="flex items-center gap-2 shrink-0">
                                     {/* Unified checkbox */}
-                                    <div className="relative flex items-center justify-center w-6 h-6 shrink-0 mt-0.5">
+                                    <div className="relative flex items-center justify-center w-8 h-8 shrink-0 mr-1 sm:mr-2">
                                         <input
                                             type="checkbox"
                                             className={`peer appearance-none w-6 h-6 border-2 rounded shadow-sm cursor-pointer transition-all ${theme.darkMode ? 'border-gray-500 bg-gray-800' : 'border-gray-300 bg-white'} checked:bg-blue-600 checked:border-blue-600 hover:border-blue-500`}
@@ -119,19 +132,7 @@ export default function ReservationsView({ hotelData, modalData }) {
                                         />
                                         <Check className="absolute w-3.5 h-3.5 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity" strokeWidth={3} />
                                     </div>
-                                    <div className="min-w-0">
-                                        <h3 className="text-lg sm:text-xl font-bold leading-snug truncate">
-                                            {reservation.payment === 'booking' || reservation.isNewIcal ? '🅱️ ' : (reservation.groupId ? '👥 ' : '')}
-                                            {guest ? `${guest.firstName} ${guest.lastName}` : 'Nieznany'}
-                                        </h3>
-                                        <span className={`mt-1 inline-block px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(reservation.status)}`}>
-                                            {getStatusText(reservation.status)}
-                                        </span>
-                                    </div>
-                                </div>
 
-                                {/* Edit / Delete – top-right always */}
-                                <div className="flex gap-1.5 shrink-0">
                                     <button
                                         type="button"
                                         onClick={() => {
@@ -160,8 +161,8 @@ export default function ReservationsView({ hotelData, modalData }) {
                                 </div>
                             </div>
 
-                            {/* DETAILS – indented under checkbox */}
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm pl-9 sm:pl-0">
+                            {/* DETAILS */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                                 <div className="flex flex-col gap-0.5">
                                     <span className={`text-xs ${theme.textSecondary}`}>Pokój</span>
                                     <span className="font-medium">{room ? `${room.number} – ${room.name}` : 'Nieznany'}</span>
@@ -190,7 +191,7 @@ export default function ReservationsView({ hotelData, modalData }) {
                             </div>
 
                             {reservation.notes && (
-                                <div className="mt-4 pl-9 sm:pl-0 text-sm">
+                                <div className="mt-4 text-sm">
                                     <span className={theme.textSecondary}>Notatki: </span>
                                     <span>{reservation.notes}</span>
                                 </div>
