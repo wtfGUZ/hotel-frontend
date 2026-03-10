@@ -50,30 +50,22 @@ export default function GuestsView({ hotelData, modalData }) {
                                 <div className="flex-1 w-full">
                                     <h3 className="text-xl font-bold mb-2">{guest.firstName} {guest.lastName}</h3>
                                     <div className="flex flex-col gap-2 text-sm w-full">
-                                        {guest.email && (
-                                            <div>
-                                                <span className={theme.textSecondary}>Email: </span>
-                                                <span>{guest.email}</span>
-                                            </div>
-                                        )}
-                                        {guest.phone && (
-                                            <div>
-                                                <span className={theme.textSecondary}>Telefon: </span>
-                                                <span>{guest.phone}</span>
-                                            </div>
-                                        )}
-                                        {guest.pesel && (
-                                            <div>
-                                                <span className={theme.textSecondary}>PESEL: </span>
-                                                <span>{guest.pesel}</span>
-                                            </div>
-                                        )}
-                                        {guest.idNumber && (
-                                            <div>
-                                                <span className={theme.textSecondary}>Nr dokumentu: </span>
-                                                <span>{guest.idNumber}</span>
-                                            </div>
-                                        )}
+                                        <div>
+                                            <span className={theme.textSecondary}>Email: </span>
+                                            <span>{guest.email || <span className="text-gray-500 italic">Brak</span>}</span>
+                                        </div>
+                                        <div>
+                                            <span className={theme.textSecondary}>Telefon: </span>
+                                            <span>{guest.phone || <span className="text-gray-500 italic">Brak</span>}</span>
+                                        </div>
+                                        <div>
+                                            <span className={theme.textSecondary}>PESEL: </span>
+                                            <span>{guest.pesel || <span className="text-gray-500 italic">Brak</span>}</span>
+                                        </div>
+                                        <div>
+                                            <span className={theme.textSecondary}>Nr dokumentu: </span>
+                                            <span>{guest.idNumber || <span className="text-gray-500 italic">Brak</span>}</span>
+                                        </div>
                                         <div>
                                             <span className={theme.textSecondary}>Liczba pobytów: </span>
                                             <span className="font-medium">{guestReservations.length}</span>
