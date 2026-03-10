@@ -57,15 +57,15 @@ export const useHotelData = () => {
                 const dbGuests = await resGuests.json();
                 const dbReservations = await resReservations.json();
                 const dbLogo = await resSettings.json();
-                const dbCategories = await resCategories.json();
-                const dbNotifications = await resNotifications.json();
+                const dbCategories = await resCategories.json().catch(() => ({}));
+                const dbNotifications = await resNotifications.json().catch(() => []);
 
-                setRooms(dbRooms);
-                setGuests(dbGuests);
-                setReservations(dbReservations);
+                setRooms(Array.isArray(dbRooms) ? dbRooms : []);
+                setGuests(Array.isArray(dbGuests) ? dbGuests : []);
+                setReservations(Array.isArray(dbReservations) ? dbReservations : []);
                 if (dbLogo && dbLogo.value) setLogoUrl(JSON.parse(dbLogo.value));
                 if (dbCategories && dbCategories.value) setRoomCategories(JSON.parse(dbCategories.value));
-                setNotifications(dbNotifications);
+                setNotifications(Array.isArray(dbNotifications) ? dbNotifications : []);
             } catch (error) {
                 console.error('Błąd pobierania danych z serwera:', error);
                 console.warn("Nie udało się połączyć z bazą danych (serwerem). Upewnij się, że backend jest uruchomiony.");
@@ -118,10 +118,10 @@ export const useHotelData = () => {
                     apiFetch('/reservations'),
                     apiFetch('/notifications')
                 ]);
-                const dbReservations = await resReservations.json();
-                const dbNotifications = await resNotifications.json();
-                setReservations(dbReservations);
-                setNotifications(dbNotifications);
+                const dbReservations = await resReservations.json().catch(() => []);
+                const dbNotifications = await resNotifications.json().catch(() => []);
+                setReservations(Array.isArray(dbReservations) ? dbReservations : []);
+                setNotifications(Array.isArray(dbNotifications) ? dbNotifications : []);
             }
             return true;
         } catch (err) {
