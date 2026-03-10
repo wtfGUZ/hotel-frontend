@@ -25,10 +25,11 @@ export default function NotificationStack({ hotelData }) {
         return `${diffDays} dni temu`;
     };
 
-    // Filter unacknowledged ical reservations
+    // Filter unacknowledged ical reservations and moved reservations
     const newReservations = reservations.filter(r => r.isNewIcal === true);
+    const movedReservations = reservations.filter(r => r.isMovedIcal === true);
 
-    if (!newReservations || newReservations.length === 0) return null;
+    if (newReservations.length === 0 && movedReservations.length === 0) return null;
 
     return (
         <div className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-3 max-w-sm w-full pointer-events-none p-2 md:p-0">
@@ -65,6 +66,41 @@ export default function NotificationStack({ hotelData }) {
                             <button
                                 onClick={() => acknowledgeReservationAPI(res.id)}
                                 className={`w-full flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-medium transition-colors ${theme.button}`}
+                            >
+                                <Check className="w-4 h-4" />
+                                Potwierdź odczytanie
+                            </button>
+                        </div>
+                    </div>
+                );
+            })}
+
+            {movedReservations.map(res => {
+                const room = rooms.find(r => String(r.id) === String(res.roomId));
+                const categoryName = roomCategories?.find(c => c.id === room?.categoryId)?.name || room?.name || 'Nieznany pokój';
+                const guestName = getGuestName(res.guestId);
+                const timeAgo = getTimeAgo(res.createdAt); // Lepsze by było modifiedAt, ale createdAt nie szkodzi
+
+                return (
+                    <div
+                        key={`moved-${res.id}`}
+                        className={`pointer-events-auto flex items-start gap-3 p-4 rounded-xl shadow-2xl border-l-4 border-amber-500 transform transition-all duration-300 translate-y-0 opacity-100 ${darkMode ? 'bg-amber-900/40 border-amber-600' : 'bg-white'}`}
+                    >
+                        <div className={`p-2 rounded-full shrink-0 ${darkMode ? 'bg-amber-500/20 text-amber-400' : 'bg-amber-100 text-amber-600'}`}>
+                            <Bell className="w-5 h-5 animate-pulse" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <h4 className="font-bold text-sm mb-1 truncate text-amber-600 dark:text-amber-400">Rezerwacja przeniesiona</h4>
+                            <p className="text-xs opacity-80 mb-0.5 whitespace-normal">
+                                Z powodu nadpisywania z Bookingu, pokój gościa: <br />
+                                <strong>{guestName}</strong> został automatycznie zmieniony.
+                            </p>
+                            <p className="text-xs opacity-80 truncate mb-1.5 pb-1.5 border-b border-amber-500/20">
+                                Nowy pokój: <strong>{room?.number} ({categoryName})</strong>
+                            </p>
+                            <button
+                                onClick={() => acknowledgeReservationAPI(res.id)}
+                                className={`w-full flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-xs font-medium transition-colors bg-amber-500 text-white hover:bg-amber-600`}
                             >
                                 <Check className="w-4 h-4" />
                                 Potwierdź odczytanie
