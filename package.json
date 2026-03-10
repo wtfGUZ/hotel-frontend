@@ -2,12 +2,13 @@
   "name": "hotelmanager",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "main": "main.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build-32": "electron-builder --win --ia32"
   },
   "dependencies": {
     "lucide-react": "^0.576.0",
@@ -26,6 +27,31 @@
     "globals": "^16.5.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.19",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "electron": "^22.3.27",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.hotelmanager.desktop",
+    "productName": "Hotel Manager",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "dist/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "dir",
+          "arch": [
+            "ia32"
+          ]
+        }
+      ],
+      "icon": "dist/logo.png"
+    }
   }
 }

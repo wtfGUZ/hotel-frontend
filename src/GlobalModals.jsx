@@ -130,12 +130,9 @@ export default function GlobalModals({ hotelData, modalData }) {
                     await addRoomAPI(roomPayload);
                 }
             } else if (modalType === 'guest') {
-                if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone) {
-                    setAlertMessage('Wypełnij wszystkie wymagane pola'); return;
-                }
                 const guestPayload = {
-                    firstName: String(formData.firstName),
-                    lastName: String(formData.lastName),
+                    firstName: String(formData.firstName || ''),
+                    lastName: String(formData.lastName || ''),
                     email: String(formData.email || ''),
                     phone: String(formData.phone || ''),
                     pesel: String(formData.pesel || ''),

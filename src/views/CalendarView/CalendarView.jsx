@@ -440,7 +440,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                                             const tooltipGuest = guests.find(g => g.id === r.guestId);
                                                             const tooltipPhone = tooltipGuest?.phone ? `\nTelefon: ${tooltipGuest.phone}` : '';
                                                             const tooltipNotes = r.notes ? `\nNotatki: ${r.notes}` : '';
-                                                            const tooltipTitle = `${r.payment === 'booking' || r.isNewIcal ? '🅱️ ' : (r.groupId ? '👥 ' : '')}${getGuestName(r.guestId)}\nŚniadanie: ${r.breakfast ? 'Tak' : 'Nie'}${tooltipPhone}${tooltipNotes}`;
+                                                            const tooltipTitle = `${r.externalId || r.payment === 'booking' || r.isNewIcal ? '🅱️ ' : (r.groupId ? '👥 ' : '')}${getGuestName(r.guestId)}\nŚniadanie: ${r.breakfast ? 'Tak' : 'Nie'}${tooltipPhone}${tooltipNotes}`;
 
                                                             return (
                                                                 <div
@@ -484,7 +484,7 @@ export default function CalendarView({ hotelData, modalData }) {
                                                                         <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center text-white text-[8px] font-bold z-30 shadow">✓</span>
                                                                     )}
                                                                     <span className={`overflow-hidden whitespace-nowrap pointer-events-none font-semibold drop-shadow-md pl-1 ${textSizeClass}`}>
-                                                                        {r.payment === 'booking' || r.isNewIcal ? '🅱️ ' : (r.groupId ? '👥 ' : '')}{getGuestName(r.guestId)}
+                                                                        {r.externalId || r.payment === 'booking' || r.isNewIcal ? '🅱️ ' : (r.groupId ? '👥 ' : '')}{getGuestName(r.guestId)}
                                                                     </span>
                                                                 </div>
                                                             );

@@ -46,7 +46,12 @@ export default function FormModal({ showModal, modalType, editingItem, formData,
                             <button type="button" onClick={onClose} className={`flex-1 sm:flex-none px-3 sm:px-6 py-3 rounded-lg ${theme.buttonSecondary} font-medium hover:opacity-90 transition-opacity`}>
                                 Anuluj
                             </button>
-                            <button type="submit" disabled={isSaving} className={`flex-[2] sm:flex-[0_1_auto] px-3 sm:px-6 py-3 rounded-lg ${theme.button} font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 min-w-0`}>
+                            <button
+                                type="submit"
+                                disabled={isSaving || (modalType === 'reservation' && modalData?.showQuickGuestForm)}
+                                title={(modalType === 'reservation' && modalData?.showQuickGuestForm) ? "Zatwierdź najpierw dodawanie gościa wyżej!" : ""}
+                                className={`flex-[2] sm:flex-[0_1_auto] px-3 sm:px-6 py-3 rounded-lg ${theme.button} font-medium flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 min-w-0`}
+                            >
                                 <Check className="w-5 h-5 flex-shrink-0" />
                                 <span className="truncate">{isSaving ? 'Zapisywanie...' : (editingItem ? 'Zapisz' : 'Dodaj')}</span>
                             </button>

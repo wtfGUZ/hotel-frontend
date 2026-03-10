@@ -9,11 +9,14 @@ export default function GuestsView({ hotelData, modalData }) {
 
     const [searchTerm, setSearchTerm] = useState('');
 
-    const filteredGuests = guests.filter(g =>
-        `${g.firstName} ${g.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (g.email && g.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (g.phone && g.phone.includes(searchTerm))
-    );
+    const filteredGuests = guests.filter(g => {
+        const term = searchTerm.toLowerCase();
+        return `${g.firstName} ${g.lastName}`.toLowerCase().includes(term) ||
+            (g.email && g.email.toLowerCase().includes(term)) ||
+            (g.phone && g.phone.includes(term)) ||
+            (g.pesel && g.pesel.toLowerCase().includes(term)) ||
+            (g.idNumber && g.idNumber.toLowerCase().includes(term));
+    });
 
     return (
         <div>
@@ -46,16 +49,32 @@ export default function GuestsView({ hotelData, modalData }) {
                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                 <div className="flex-1 w-full">
                                     <h3 className="text-xl font-bold mb-2">{guest.firstName} {guest.lastName}</h3>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 text-sm w-full">
+                                    <div className="flex flex-col gap-2 text-sm w-full">
+                                        {guest.email && (
+                                            <div>
+                                                <span className={theme.textSecondary}>Email: </span>
+                                                <span>{guest.email}</span>
+                                            </div>
+                                        )}
+                                        {guest.phone && (
+                                            <div>
+                                                <span className={theme.textSecondary}>Telefon: </span>
+                                                <span>{guest.phone}</span>
+                                            </div>
+                                        )}
+                                        {guest.pesel && (
+                                            <div>
+                                                <span className={theme.textSecondary}>PESEL: </span>
+                                                <span>{guest.pesel}</span>
+                                            </div>
+                                        )}
+                                        {guest.idNumber && (
+                                            <div>
+                                                <span className={theme.textSecondary}>Nr dokumentu: </span>
+                                                <span>{guest.idNumber}</span>
+                                            </div>
+                                        )}
                                         <div>
-                                            <span className={theme.textSecondary}>Email: </span>
-                                            <span>{guest.email}</span>
-                                        </div>
-                                        <div>
-                                            <span className={theme.textSecondary}>Telefon: </span>
-                                            <span>{guest.phone}</span>
-                                        </div>
-                                        <div className="col-span-2">
                                             <span className={theme.textSecondary}>Liczba pobytów: </span>
                                             <span className="font-medium">{guestReservations.length}</span>
                                         </div>

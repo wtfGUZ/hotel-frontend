@@ -11,7 +11,6 @@ export default function GuestModal({ formData, setFormData }) {
                     <label className="block mb-2 font-medium">Imię</label>
                     <input
                         type="text"
-                        required
                         value={formData.firstName || ''}
                         onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                         className={`w-full px-4 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}
@@ -22,7 +21,6 @@ export default function GuestModal({ formData, setFormData }) {
                     <label className="block mb-2 font-medium">Nazwisko</label>
                     <input
                         type="text"
-                        required
                         value={formData.lastName || ''}
                         onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                         className={`w-full px-4 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none`}

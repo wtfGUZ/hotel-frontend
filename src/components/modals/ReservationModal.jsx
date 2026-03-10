@@ -19,8 +19,13 @@ export default function ReservationModal({
     } = modalData;
 
     const filteredGuestsForSearch = guests.filter(guest => {
+        const term = guestSearchTerm.toLowerCase();
         const fullName = `${guest.firstName} ${guest.lastName}`.toLowerCase();
-        return fullName.includes(guestSearchTerm.toLowerCase());
+        return fullName.includes(term) ||
+            (guest.pesel && guest.pesel.toLowerCase().includes(term)) ||
+            (guest.idNumber && guest.idNumber.toLowerCase().includes(term)) ||
+            (guest.phone && guest.phone.includes(term)) ||
+            (guest.email && guest.email.toLowerCase().includes(term));
     });
 
     const hasInitializedSearchTerm = React.useRef(false);
@@ -161,16 +166,28 @@ export default function ReservationModal({
                                     onClick={() => {
                                         setShowGuestDropdown(false);
                                         setShowQuickGuestForm(true);
-                                        const parts = guestSearchTerm.trim().split(' ');
-                                        if (parts.length >= 2) {
-                                            setQuickGuestData({
-                                                firstName: parts[0],
-                                                lastName: parts.slice(1).join(' ')
-                                            });
-                                        } else if (parts.length === 1) {
-                                            setQuickGuestData({
-                                                firstName: parts[0]
-                                            });
+                                        const term = guestSearchTerm.trim();
+                                        const isNumber = /^[\d\s\-+]+$/.test(term);
+                                        const cleanNum = term.replace(/[-\s+]/g, '');
+
+                                        if (isNumber) {
+                                            if (cleanNum.length === 11) {
+                                                setQuickGuestData({ pesel: term });
+                                            } else {
+                                                setQuickGuestData({ phone: term });
+                                            }
+                                        } else {
+                                            const parts = term.split(' ');
+                                            if (parts.length >= 2) {
+                                                setQuickGuestData({
+                                                    firstName: parts[0],
+                                                    lastName: parts.slice(1).join(' ')
+                                                });
+                                            } else if (parts.length === 1) {
+                                                setQuickGuestData({
+                                                    firstName: parts[0]
+                                                });
+                                            }
                                         }
                                     }}
                                     className={`w-full px-4 py-2 rounded-lg ${theme.button} flex items-center justify-center gap-2`}
@@ -193,14 +210,14 @@ export default function ReservationModal({
                         <div className="grid grid-cols-2 gap-3">
                             <input
                                 type="text"
-                                placeholder="Imię *"
+                                placeholder="Imię"
                                 value={quickGuestData.firstName || ''}
                                 onChange={(e) => setQuickGuestData({ ...quickGuestData, firstName: e.target.value })}
                                 className={`px-3 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none text-sm`}
                             />
                             <input
                                 type="text"
-                                placeholder="Nazwisko *"
+                                placeholder="Nazwisko"
                                 value={quickGuestData.lastName || ''}
                                 onChange={(e) => setQuickGuestData({ ...quickGuestData, lastName: e.target.value })}
                                 className={`px-3 py-2 rounded-lg ${theme.input} border focus:ring-2 focus:ring-blue-500 outline-none text-sm`}
@@ -240,10 +257,6 @@ export default function ReservationModal({
                             <button
                                 type="button"
                                 onClick={async () => {
-                                    if (!quickGuestData.firstName || !quickGuestData.lastName) {
-                                        setAlertMessage('Wypełnij przynajmniej imię i nazwisko');
-                                        return;
-                                    }
                                     try {
                                         const guestPayload = {
                                             firstName: quickGuestData.firstName,
