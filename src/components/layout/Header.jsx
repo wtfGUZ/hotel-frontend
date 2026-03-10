@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bed, Calendar, Users, Settings, Moon, Sun, Menu as MenuIcon, Bell } from 'lucide-react';
+import { Bed, Calendar, Users, Settings, Moon, Sun, Menu as MenuIcon, Bell, BarChart } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
 export default function Header({ currentView, setCurrentView, hotelData }) {
@@ -103,6 +103,13 @@ export default function Header({ currentView, setCurrentView, hotelData }) {
                             Ustawienia
                         </button>
                         <button
+                            onClick={() => setCurrentView('statistics')}
+                            className={`px-4 py-2 rounded-lg transition-all ${currentView === 'statistics' ? theme.button : theme.buttonSecondary}`}
+                        >
+                            <BarChart className="w-5 h-5 inline mr-2" />
+                            Statystyki
+                        </button>
+                        <button
                             onClick={() => setCurrentView('notifications')}
                             className={`px-4 py-2 rounded-lg transition-all flex items-center ${currentView === 'notifications' ? theme.button : theme.buttonSecondary}`}
                         >
@@ -185,6 +192,13 @@ export default function Header({ currentView, setCurrentView, hotelData }) {
                         >
                             <Settings className="w-5 h-5" />
                             <span>Ustawienia</span>
+                        </button>
+                        <button
+                            onClick={() => { setCurrentView('statistics'); setMobileMenuOpen(false); }}
+                            className={`w-full px-4 py-3 rounded-lg transition-all text-left flex items-center gap-3 ${currentView === 'statistics' ? theme.button : theme.buttonSecondary}`}
+                        >
+                            <BarChart className="w-5 h-5" />
+                            <span>Statystyki</span>
                         </button>
                         <button
                             onClick={() => { setCurrentView('notifications'); setMobileMenuOpen(false); }}
