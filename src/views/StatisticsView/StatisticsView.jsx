@@ -5,6 +5,7 @@ import {
     BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
     PieChart, Pie, Cell, AreaChart, Area, CartesianGrid, Legend
 } from 'recharts';
+import PinLockScreen from '../../components/PinLockScreen';
 
 export default function StatisticsView({ hotelData }) {
     const { theme, darkMode } = useTheme();
@@ -12,28 +13,6 @@ export default function StatisticsView({ hotelData }) {
 
     // PIN Protection State
     const [isPinVerified, setIsPinVerified] = useState(false);
-    const [pinInput, setPinInput] = useState('');
-    const [pinError, setPinError] = useState('');
-    const [isCheckingPin, setIsCheckingPin] = useState(false);
-
-    const handlePinSubmit = async (e) => {
-        e.preventDefault();
-        setPinError('');
-        setIsCheckingPin(true);
-        try {
-            const isValid = await verifyPinAPI(pinInput);
-            if (isValid) {
-                setIsPinVerified(true);
-            } else {
-                setPinError('Nieprawidłowy PIN');
-                setPinInput('');
-            }
-        } catch (error) {
-            setPinError('Błąd połączenia. Spróbuj ponownie.');
-        } finally {
-            setIsCheckingPin(false);
-        }
-    };
 
     // --- Statistics Calculations ---
     const stats = useMemo(() => {
@@ -101,61 +80,7 @@ export default function StatisticsView({ hotelData }) {
 
     // --- Render PIN Screen ---
     if (!isPinVerified) {
-        return (
-            <div className={`p-4 md:p-8 ${theme.bg} min-h-screen rounded-xl flex items-center justify-center`}>
-                <div className={`max-w-md w-full p-8 rounded-2xl shadow-xl border ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-100'}`}>
-                    <div className="flex justify-center mb-6">
-                        <div className={`p-4 md:p-5 rounded-full ${darkMode ? 'bg-blue-500/10' : 'bg-blue-50'}`}>
-                            <TrendingUp className={`w-10 h-10 md:w-12 md:h-12 ${darkMode ? 'text-blue-400' : 'text-blue-600'}`} />
-                        </div>
-                    </div>
-                    <div className="text-center mb-8">
-                        <h2 className="text-2xl font-bold mb-2">Panel Statystyk</h2>
-                        <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                            Wprowadź kod PIN managera, aby uzyskać dostęp do wskaźników analitycznych hotelu.
-                        </p>
-                    </div>
-
-                    <form onSubmit={handlePinSubmit} className="space-y-6">
-                        <div>
-                            <input
-                                type="password"
-                                value={pinInput}
-                                onChange={(e) => setPinInput(e.target.value)}
-                                placeholder="••••"
-                                autoComplete="current-password"
-                                maxLength={8}
-                                disabled={isCheckingPin}
-                                className={`w-full text-center text-3xl tracking-widest px-4 py-4 rounded-xl border-2 transition-colors
-                                  ${darkMode
-                                        ? 'bg-gray-900 border-gray-700 text-white focus:border-blue-500'
-                                        : 'bg-gray-50 border-gray-200 text-gray-900 focus:border-blue-500'}
-                                  focus:outline-none`}
-                            />
-                            {pinError && (
-                                <p className="text-red-500 text-sm text-center mt-3 animate-pulse">{pinError}</p>
-                            )}
-                        </div>
-
-                        <button
-                            type="submit"
-                            disabled={!pinInput || isCheckingPin}
-                            className={`w-full py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all
-                              ${!pinInput || isCheckingPin
-                                    ? 'bg-gray-400 text-white cursor-not-allowed opacity-50'
-                                    : 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-blue-500/25'}`}
-                        >
-                            {isCheckingPin ? 'Weryfikacja...' : (
-                                <>
-                                    <Lock className="w-5 h-5" />
-                                    Odblokuj Statystyki
-                                </>
-                            )}
-                        </button>
-                    </form>
-                </div>
-            </div>
-        );
+        return <PinLockScreen verifyPinAPI={verifyPinAPI} onUnlock={() => setIsPinVerified(true)} />;
     }
 
     // --- Render Analytics Dashboard ---
