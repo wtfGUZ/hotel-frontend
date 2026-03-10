@@ -167,8 +167,8 @@ export default function CalendarView({ hotelData, modalData }) {
                         title={`Cofnij o ${jumpStep} dni`}
                         aria-label={`Cofnij o ${jumpStep} dni`}
                     >
-                        <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                        <span className="hidden sm:inline">Wstecz ({jumpStep}d)</span>
+                        <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
+                        <span className="hidden sm:inline" aria-hidden="true">Wstecz ({jumpStep}d)</span>
                     </button>
 
                     <button
@@ -186,8 +186,8 @@ export default function CalendarView({ hotelData, modalData }) {
                         title={`Naprzód o ${jumpStep} dni`}
                         aria-label={`Naprzód o ${jumpStep} dni`}
                     >
-                        <span className="hidden sm:inline">Naprzód ({jumpStep}d)</span>
-                        <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        <span className="hidden sm:inline" aria-hidden="true">Naprzód ({jumpStep}d)</span>
+                        <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden="true" />
                     </button>
 
                     <div className="flex w-full sm:w-auto gap-1 sm:gap-2 mt-1 sm:mt-0">

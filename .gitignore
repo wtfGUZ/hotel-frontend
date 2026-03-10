@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+ 
+release/ 
+lh-mobile.json 
+lh-desktop.json 

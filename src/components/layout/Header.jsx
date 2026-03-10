@@ -52,6 +52,7 @@ export default function Header({ currentView, setCurrentView, hotelData }) {
                             alt="Hotel Logo"
                             width="120"
                             height="48"
+                            fetchpriority="high"
                             className="h-8 sm:h-12 w-auto object-contain rounded"
                             onError={(e) => {
                                 // Fallback w przypadku braku pliku vite.png w folderze public
@@ -106,6 +107,7 @@ export default function Header({ currentView, setCurrentView, hotelData }) {
                             <button
                                 onClick={handleSync}
                                 disabled={isSyncing}
+                                aria-label="Wymuś synchronizację iCal"
                                 className={`p-2 rounded-lg ${theme.buttonSecondary} relative flex items-center justify-center w-10 h-10 ${isSyncing ? 'opacity-70 cursor-wait' : ''}`}
                                 title="Wymuś synchronizację iCal"
                             >
@@ -121,6 +123,7 @@ export default function Header({ currentView, setCurrentView, hotelData }) {
                         </div>
                         <button
                             onClick={toggleDarkMode}
+                            aria-label="Przełącz motyw"
                             className={`p-2 rounded-lg transition-all ${theme.buttonSecondary}`}
                         >
                             {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -130,6 +133,7 @@ export default function Header({ currentView, setCurrentView, hotelData }) {
                     {/* Mobile Hamburger */}
                     <button
                         onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        aria-label="Menu nawigacji"
                         className={`lg:hidden p-2 rounded-lg ${theme.buttonSecondary}`}
                     >
                         <MenuIcon className="w-6 h-6" />
