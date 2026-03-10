@@ -9,6 +9,7 @@ export const useHotelData = () => {
     const [reservations, setReservations] = useState([]);
     const [logoUrl, setLogoUrl] = useState('/vite.png');
     const [roomCategories, setRoomCategories] = useState([]);
+    const [notifications, setNotifications] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [logoInitialized, setLogoInitialized] = useState(false);
@@ -43,12 +44,13 @@ export const useHotelData = () => {
         const fetchData = async (silent = false) => {
             try {
                 if (!silent) setIsLoading(true);
-                const [resRooms, resGuests, resReservations, resSettings, resCategories] = await Promise.all([
+                const [resRooms, resGuests, resReservations, resSettings, resCategories, resNotifications] = await Promise.all([
                     apiFetch('/rooms'),
                     apiFetch('/guests'),
                     apiFetch('/reservations'),
                     apiFetch('/settings/hotelLogo'),
-                    apiFetch('/settings/room_categories')
+                    apiFetch('/settings/room_categories'),
+                    apiFetch('/notifications')
                 ]);
 
                 const dbRooms = await resRooms.json();
@@ -56,12 +58,14 @@ export const useHotelData = () => {
                 const dbReservations = await resReservations.json();
                 const dbLogo = await resSettings.json();
                 const dbCategories = await resCategories.json();
+                const dbNotifications = await resNotifications.json();
 
                 setRooms(dbRooms);
                 setGuests(dbGuests);
                 setReservations(dbReservations);
                 if (dbLogo && dbLogo.value) setLogoUrl(JSON.parse(dbLogo.value));
                 if (dbCategories && dbCategories.value) setRoomCategories(JSON.parse(dbCategories.value));
+                setNotifications(dbNotifications);
             } catch (error) {
                 console.error('Błąd pobierania danych z serwera:', error);
                 console.warn("Nie udało się połączyć z bazą danych (serwerem). Upewnij się, że backend jest uruchomiony.");
@@ -110,9 +114,14 @@ export const useHotelData = () => {
 
             if (syncPromises.length > 0) {
                 await Promise.all(syncPromises);
-                const resReservations = await apiFetch('/reservations');
+                const [resReservations, resNotifications] = await Promise.all([
+                    apiFetch('/reservations'),
+                    apiFetch('/notifications')
+                ]);
                 const dbReservations = await resReservations.json();
+                const dbNotifications = await resNotifications.json();
                 setReservations(dbReservations);
+                setNotifications(dbNotifications);
             }
             return true;
         } catch (err) {
@@ -309,6 +318,25 @@ export const useHotelData = () => {
         } catch (error) { console.error(error); throw error; }
     };
 
+    // Obsługa powiadomień
+    const markNotificationAsReadAPI = async (id) => {
+        try {
+            await apiFetch(`/notifications/${id}/read`, { method: 'PUT' });
+            setNotifications(prev => prev.map(n => n.id === id ? { ...n, isRead: true } : n));
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const markAllNotificationsAsReadAPI = async () => {
+        try {
+            await apiFetch(`/notifications/read-all`, { method: 'PUT' });
+            setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return {
         rooms, setRooms, addRoomAPI, updateRoomAPI, deleteRoomAPI,
         guests, setGuests, addGuestAPI, updateGuestAPI, deleteGuestAPI,
@@ -319,6 +347,7 @@ export const useHotelData = () => {
         getRoomStatus,
         toggleRoomStatus,
         getGuestName,
+        notifications, markNotificationAsReadAPI, markAllNotificationsAsReadAPI,
         isLoading,
         isSaving,
         setIsSaving

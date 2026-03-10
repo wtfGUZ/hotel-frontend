@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bed, Calendar, Users, Settings, Moon, Sun, Menu as MenuIcon } from 'lucide-react';
+import { Bed, Calendar, Users, Settings, Moon, Sun, Menu as MenuIcon, Bell } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
 export default function Header({ currentView, setCurrentView, hotelData }) {
@@ -8,6 +8,9 @@ export default function Header({ currentView, setCurrentView, hotelData }) {
     const [syncCountdown, setSyncCountdown] = useState(60);
     const [showSyncTooltip, setShowSyncTooltip] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
+
+    const { notifications } = hotelData || {};
+    const unreadCount = notifications ? notifications.filter(n => !n.isRead).length : 0;
 
     // Przechowujemy referencję do aktualnej funkcji API unikając wciąż restartującego się useEffect interval
     const syncFnRef = React.useRef(hotelData?.syncAllIcalCategoriesAPI);
@@ -99,6 +102,18 @@ export default function Header({ currentView, setCurrentView, hotelData }) {
                             <Settings className="w-5 h-5 inline mr-2" />
                             Ustawienia
                         </button>
+                        <button
+                            onClick={() => setCurrentView('notifications')}
+                            className={`px-4 py-2 rounded-lg transition-all flex items-center ${currentView === 'notifications' ? theme.button : theme.buttonSecondary}`}
+                        >
+                            <Bell className="w-5 h-5 inline mr-2" />
+                            Historia
+                            {unreadCount > 0 && (
+                                <span className="ml-2 bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                                    {unreadCount}
+                                </span>
+                            )}
+                        </button>
                         <div
                             className="relative"
                             onMouseEnter={() => setShowSyncTooltip(true)}
@@ -170,6 +185,20 @@ export default function Header({ currentView, setCurrentView, hotelData }) {
                         >
                             <Settings className="w-5 h-5" />
                             <span>Ustawienia</span>
+                        </button>
+                        <button
+                            onClick={() => { setCurrentView('notifications'); setMobileMenuOpen(false); }}
+                            className={`w-full px-4 py-3 rounded-lg transition-all text-left flex items-center gap-3 justify-between ${currentView === 'notifications' ? theme.button : theme.buttonSecondary}`}
+                        >
+                            <div className="flex items-center gap-3">
+                                <Bell className="w-5 h-5" />
+                                <span>Historia Powiadomień</span>
+                            </div>
+                            {unreadCount > 0 && (
+                                <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                    {unreadCount}
+                                </span>
+                            )}
                         </button>
                         <button
                             onClick={(e) => {

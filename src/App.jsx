@@ -8,6 +8,7 @@ const CalendarView = lazy(() => import('./views/CalendarView/CalendarView'));
 const ReservationsView = lazy(() => import('./views/ReservationsView/ReservationsView'));
 const GuestsView = lazy(() => import('./views/GuestsView/GuestsView'));
 const SettingsView = lazy(() => import('./views/SettingsView/SettingsView'));
+const NotificationsView = lazy(() => import('./views/NotificationsView/NotificationsView'));
 const GlobalModals = lazy(() => import('./GlobalModals'));
 const NotificationStack = lazy(() => import('./components/layout/NotificationStack'));
 
@@ -52,6 +53,7 @@ function AppContent() {
           {currentView === 'reservations' && <ReservationsView hotelData={hotelData} modalData={modalData} />}
           {currentView === 'guests' && <GuestsView hotelData={hotelData} modalData={modalData} />}
           {currentView === 'settings' && <SettingsView hotelData={hotelData} modalData={modalData} />}
+          {currentView === 'notifications' && <NotificationsView hotelData={hotelData} />}
         </Suspense>
       </main>
 
