@@ -531,6 +531,15 @@ export default function CalendarView({ hotelData, modalData }) {
                     <div className="w-1.5 h-4 rounded-full bg-red-500"></div>
                     <span className="text-[10px] sm:text-xs">Do sprzątania</span>
                 </div>
+                <div className="h-4 w-px bg-gray-600 mx-1 hidden sm:block"></div>
+                <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] sm:text-xs">🅱️</span>
+                    <span className="text-[10px] sm:text-xs">Booking.com</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] sm:text-xs">👥</span>
+                    <span className="text-[10px] sm:text-xs">Rezerwacja grupowa</span>
+                </div>
             </div>
         </div >
     );
