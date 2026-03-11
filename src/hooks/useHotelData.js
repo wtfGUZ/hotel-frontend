@@ -203,10 +203,22 @@ export const useHotelData = () => {
         try {
             const res = await apiFetch(`/reservations/${id}/acknowledge`, { method: 'PUT' });
             const updated = await handleRes(res);
-            setReservations(prev => prev.map(r => r.id === id ? { ...r, isNewIcal: false } : r));
+            setReservations(prev => prev.map(r => r.id === id ? { ...r, isNewIcal: false, isMovedIcal: false } : r));
             return updated;
         } catch (error) {
             console.error("Nie udało się potwierdzić rezerwacji:", error);
+            throw error;
+        }
+    };
+
+    const unlockReservationSyncAPI = async (id) => {
+        try {
+            const res = await apiFetch(`/reservations/${id}/unlock-sync`, { method: 'POST' });
+            const updated = await handleRes(res);
+            setReservations(prev => prev.map(r => r.id === id ? { ...r, syncLock: false } : r));
+            return updated;
+        } catch (error) {
+            console.error("Nie udało się odblokować synchronizacji:", error);
             throw error;
         }
     };
@@ -340,7 +352,7 @@ export const useHotelData = () => {
     return {
         rooms, setRooms, addRoomAPI, updateRoomAPI, deleteRoomAPI,
         guests, setGuests, addGuestAPI, updateGuestAPI, deleteGuestAPI,
-        reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI, deleteMultipleReservationsAPI, acknowledgeReservationAPI,
+        reservations, setReservations, addReservationAPI, updateReservationAPI, deleteReservationAPI, deleteMultipleReservationsAPI, acknowledgeReservationAPI, unlockReservationSyncAPI,
         logoUrl, setLogoUrl,
         roomCategories, setRoomCategories, saveRoomCategoriesAPI, syncAllIcalCategoriesAPI,
         verifyPinAPI, changePinAPI,

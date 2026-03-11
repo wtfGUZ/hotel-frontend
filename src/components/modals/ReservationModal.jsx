@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, Check, Edit } from 'lucide-react';
+import { Plus, Check, Edit, RefreshCw, Lock } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 import { calculateNights, calculateTotalPrice, formatDate, addDays } from '../../utils/utils';
 
@@ -548,6 +548,39 @@ export default function ReservationModal({
                             </span>
                         </div>
                     </div>
+                </div>
+            )}
+
+            {formData.syncLock && (
+                <div className={`p-3 rounded-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${darkMode ? 'bg-orange-500/10 border-orange-500/30' : 'bg-orange-50 border-orange-200'} border shadow-sm`}>
+                    <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-full ${darkMode ? 'bg-orange-500/20' : 'bg-orange-100'}`}>
+                            <Lock className={`w-4 h-4 ${darkMode ? 'text-orange-400' : 'text-orange-600'}`} />
+                        </div>
+                        <div>
+                            <p className="text-xs sm:text-sm font-bold">Synchronizacja iCal zablokowana</p>
+                            <p className={`text-[10px] sm:text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                Zmiany ręczne zapobiegają nadpisywaniu dat przez Booking.com.
+                            </p>
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={async () => {
+                            try {
+                                if (!formData.id) return;
+                                await hotelData.unlockReservationSyncAPI(formData.id);
+                                setFormData({ ...formData, syncLock: false });
+                            } catch (err) {
+                                setAlertMessage('Nie udało się przywrócić synchronizacji.');
+                            }
+                        }}
+                        className={`text-xs px-3 py-1.5 rounded-lg flex items-center gap-2 font-medium transition-all
+                          ${darkMode ? 'bg-orange-500/20 text-orange-300 hover:bg-orange-500/30' : 'bg-white text-orange-700 hover:bg-orange-100 border border-orange-200 shadow-sm'}`}
+                    >
+                        <RefreshCw className="w-3 h-3" />
+                        Przywróć automat
+                    </button>
                 </div>
             )}
 
